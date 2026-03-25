@@ -1,0 +1,905 @@
+import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, Lock, CheckCircle, Globe, Monitor, Key, Tag, IdCard, Hash, Cake, Briefcase, Users, XCircle, Smartphone, Home as HomeIcon, User } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Badge } from '../components/Badge';
+import { PermissionBadge } from '../components/PermissionBadge';
+import { ChangePasswordModal, type PasswordData } from '../components/ChangePasswordModal';
+import { EditUserModal, type UserData } from '../components/EditUserModal';
+import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
+import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
+import { DetailCard } from '../components/DetailCard';
+
+// Mock data - en producción vendría de una API o contexto de autenticación
+const currentUser = {
+  id: 1,
+  firstName: 'Carlos',
+  lastName: 'Ramírez',
+  email: 'carlos.ramirez@hospital.com',
+  phone: '+34 612 345 678',
+  userType: 'Administrador',
+  status: 'Confirmado',
+  profilePicture: 'CR',
+  clerkId: 'user_2abcdef123456',
+  location: 'Madrid, España',
+  createdAt: '2026-01-15 10:30:00',
+  lastLogin: '2026-03-20 09:15:00',
+  permissions: [],
+  roles: [
+    {
+      id: 1,
+      name: 'Administrador del Sistema',
+      modules: [
+        {
+          name: 'Usuarios',
+          key: 'user',
+          color: 'blue',
+          permissions: [
+            { key: 'full', label: 'Completo', granted: true },
+            { 
+              key: 'read', 
+              label: 'Lectura', 
+              granted: true,
+              children: [
+                { key: 'list', label: 'Listar', granted: true },
+                { key: 'get', label: 'Detalle', granted: true },
+              ]
+            },
+            { key: 'create', label: 'Crear', granted: true },
+            { key: 'update', label: 'Editar', granted: true },
+            { key: 'delete', label: 'Eliminar', granted: true },
+            { key: 'assignRole', label: 'Asignar Rol', granted: true },
+            { key: 'assignPermission', label: 'Asignar Permiso', granted: true },
+          ]
+        },
+        {
+          name: 'Roles',
+          key: 'role',
+          color: 'purple',
+          permissions: [
+            { key: 'full', label: 'Completo', granted: true },
+            { 
+              key: 'read', 
+              label: 'Lectura', 
+              granted: true,
+              children: [
+                { key: 'list', label: 'Listar', granted: true },
+                { key: 'get', label: 'Detalle', granted: true },
+              ]
+            },
+            { key: 'create', label: 'Crear', granted: true },
+            { key: 'update', label: 'Editar', granted: true },
+            { key: 'delete', label: 'Eliminar', granted: true },
+            { key: 'assignUser', label: 'Asignar Usuario', granted: true },
+            { key: 'assignPermission', label: 'Asignar Permiso', granted: true },
+          ]
+        },
+        {
+          name: 'Personas',
+          key: 'person',
+          color: 'green',
+          permissions: [
+            { key: 'full', label: 'Completo', granted: true },
+            { 
+              key: 'read', 
+              label: 'Lectura', 
+              granted: true,
+              children: [
+                { key: 'list', label: 'Listar', granted: true },
+                { key: 'get', label: 'Detalle', granted: true },
+              ]
+            },
+            { key: 'create', label: 'Crear', granted: true },
+            { key: 'update', label: 'Editar', granted: true },
+            { key: 'delete', label: 'Eliminar', granted: true },
+          ]
+        },
+        {
+          name: 'Citas',
+          key: 'appointments',
+          color: 'purple',
+          permissions: [
+            { key: 'full', label: 'Completo', granted: true },
+            { 
+              key: 'read', 
+              label: 'Lectura', 
+              granted: true,
+              children: [
+                { key: 'list', label: 'Listar', granted: true },
+                { key: 'get', label: 'Detalle', granted: true },
+              ]
+            },
+            { key: 'create', label: 'Crear', granted: true },
+            { key: 'update', label: 'Editar', granted: true },
+            { key: 'delete', label: 'Eliminar', granted: true },
+          ]
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Editor de Contenido',
+      modules: [
+        {
+          name: 'Personas',
+          key: 'person',
+          color: 'green',
+          permissions: [
+            { key: 'full', label: 'Completo', granted: false },
+            { 
+              key: 'read', 
+              label: 'Lectura', 
+              granted: true,
+              children: [
+                { key: 'list', label: 'Listar', granted: true },
+                { key: 'get', label: 'Detalle', granted: true },
+              ]
+            },
+            { key: 'create', label: 'Crear', granted: true },
+            { key: 'update', label: 'Editar', granted: true },
+            { key: 'delete', label: 'Eliminar', granted: false },
+          ]
+        }
+      ]
+    }
+  ],
+  directModules: [
+    {
+      name: 'Usuarios',
+      key: 'user',
+      color: 'blue',
+      permissions: [
+        { key: 'full', label: 'Completo', granted: false },
+        { 
+          key: 'read', 
+          label: 'Lectura', 
+          granted: true,
+          children: [
+            { key: 'list', label: 'Listar', granted: true },
+            { key: 'get', label: 'Detalle', granted: true },
+          ]
+        },
+        { key: 'create', label: 'Crear', granted: false },
+        { key: 'update', label: 'Editar', granted: false },
+        { key: 'delete', label: 'Eliminar', granted: false },
+        { key: 'assignRole', label: 'Asignar Rol', granted: true },
+        { key: 'assignPermission', label: 'Asignar Permiso', granted: false },
+      ]
+    },
+    {
+      name: 'Roles',
+      key: 'role',
+      color: 'purple',
+      permissions: [
+        { key: 'full', label: 'Completo', granted: false },
+        { 
+          key: 'read', 
+          label: 'Lectura', 
+          granted: true,
+          children: [
+            { key: 'list', label: 'Listar', granted: true },
+            { key: 'get', label: 'Detalle', granted: false },
+          ]
+        },
+        { key: 'create', label: 'Crear', granted: false },
+        { key: 'update', label: 'Editar', granted: false },
+        { key: 'delete', label: 'Eliminar', granted: false },
+        { key: 'assignUser', label: 'Asignar Usuario', granted: false },
+        { key: 'assignPermission', label: 'Asignar Permiso', granted: false },
+      ]
+    }
+  ],
+  activityHistory: [
+    {
+      id: 1,
+      event: 'Inicio de sesión exitoso',
+      timestamp: '2026-03-20 09:15:32',
+      ip: '192.168.1.105',
+      userAgent: 'Chrome 120.0.0 (Windows 10)',
+      location: 'Madrid, España'
+    },
+    {
+      id: 2,
+      event: 'Cambio de contraseña',
+      timestamp: '2026-03-19 14:22:10',
+      ip: '192.168.1.105',
+      userAgent: 'Chrome 120.0.0 (Windows 10)',
+      location: 'Madrid, España'
+    },
+    {
+      id: 3,
+      event: 'Inicio de sesión exitoso',
+      timestamp: '2026-03-19 08:45:12',
+      ip: '192.168.1.105',
+      userAgent: 'Chrome 120.0.0 (Windows 10)',
+      location: 'Madrid, España'
+    },
+    {
+      id: 4,
+      event: 'Cierre de sesión',
+      timestamp: '2026-03-18 18:30:45',
+      ip: '192.168.1.105',
+      userAgent: 'Chrome 120.0.0 (Windows 10)',
+      location: 'Madrid, España'
+    },
+    {
+      id: 5,
+      event: 'Inicio de sesión exitoso',
+      timestamp: '2026-03-18 08:15:22',
+      ip: '192.168.1.105',
+      userAgent: 'Chrome 120.0.0 (Windows 10)',
+      location: 'Madrid, España'
+    }
+  ],
+  phones: [
+    { number: '+34 612 345 678', type: 'Móvil', isPrimary: true },
+    { number: '+34 91 234 5678', type: 'Trabajo', isPrimary: false }
+  ],
+  emails: [
+    { address: 'carlos.ramirez@hospital.com', type: 'Trabajo', isPrimary: true },
+    { address: 'carlos.ramirez.personal@gmail.com', type: 'Personal', isPrimary: false }
+  ],
+  addresses: [
+    { 
+      street: 'Calle Mayor 123', 
+      city: 'Madrid', 
+      postalCode: '28013', 
+      country: 'España',
+      type: 'Casa',
+      isPrimary: true 
+    },
+    { 
+      street: 'Av. de la Castellana 261', 
+      city: 'Madrid', 
+      postalCode: '28046', 
+      country: 'España',
+      type: 'Trabajo',
+      isPrimary: false 
+    }
+  ],
+  stats: {
+    totalLogins: 142,
+    lastPasswordChange: '2026-03-19',
+    accountAge: 64, // días
+    sessionsThisMonth: 28
+  }
+};
+
+export function Profile() {
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
+  const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showContactsMenu, setShowContactsMenu] = useState(false);
+  const [showAddressesMenu, setShowAddressesMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const contactsMenuRef = useRef<HTMLDivElement>(null);
+  const addressesMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+      if (contactsMenuRef.current && !contactsMenuRef.current.contains(event.target as Node)) {
+        setShowContactsMenu(false);
+      }
+      if (addressesMenuRef.current && !addressesMenuRef.current.contains(event.target as Node)) {
+        setShowAddressesMenu(false);
+      }
+    };
+
+    if (showMenu || showContactsMenu || showAddressesMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu, showContactsMenu, showAddressesMenu]);
+
+  const getInitials = (firstName: string, lastName: string) => {
+    return (firstName[0] + lastName[0]).toUpperCase();
+  };
+
+  const handleEditUser = (updatedUser: UserData) => {
+    console.log('Usuario actualizado:', updatedUser);
+    // Aquí iría la lógica para actualizar el perfil en la API
+  };
+
+  const handleChangePassword = (passwords: PasswordData) => {
+    console.log('Contraseña cambiada:', passwords);
+    // Aquí iría la lógica para cambiar la contraseña en la API
+  };
+
+  const handleEditContacts = (contacts: ContactsData) => {
+    console.log('Contactos actualizados:', contacts);
+    // Aquí iría la lógica para actualizar los contactos en la API
+  };
+
+  const handleEditAddresses = (addresses: AddressesData) => {
+    console.log('Direcciones actualizadas:', addresses);
+    // Aquí iría la lógica para actualizar las direcciones en la API
+  };
+
+  const getEventIcon = (event: string) => {
+    if (event.includes('Inicio de sesión')) return <CheckCircle size={16} className="text-green-600" />;
+    if (event.includes('Cierre de sesión')) return <XCircle size={16} className="text-gray-600" />;
+    return <Clock size={16} className="text-blue-600" />;
+  };
+
+  const getEmailTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Trabajo':
+        return <Briefcase size={10} className="text-blue-600" />;
+      case 'Personal':
+        return <User size={10} className="text-blue-600" />;
+      default:
+        return <Mail size={10} className="text-blue-600" />;
+    }
+  };
+
+  const getPhoneTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Móvil':
+        return <Smartphone size={10} className="text-blue-600" />;
+      case 'Trabajo':
+        return <Briefcase size={10} className="text-blue-600" />;
+      case 'Casa':
+        return <HomeIcon size={10} className="text-blue-600" />;
+      default:
+        return <Phone size={10} className="text-blue-600" />;
+    }
+  };
+
+  const getAddressTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Casa':
+        return <HomeIcon size={10} className="text-blue-600" />;
+      case 'Trabajo':
+        return <Briefcase size={10} className="text-blue-600" />;
+      default:
+        return <MapPin size={10} className="text-blue-600" />;
+    }
+  };
+
+  // Calcular total de permisos
+  const totalPermissions = currentUser.roles.reduce((total, role) => {
+    return total + role.modules.reduce((moduleTotal, module) => {
+      return moduleTotal + module.permissions.length;
+    }, 0);
+  }, 0) + currentUser.directModules.length;
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">Mi Perfil</h1>
+          <p className="text-xs text-gray-500">Información personal y configuración de cuenta</p>
+        </div>
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <MoreVertical size={20} />
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+              <button 
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                  setShowMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Edit size={14} />
+                Editar Perfil
+              </button>
+              <button 
+                onClick={() => {
+                  setIsChangePasswordModalOpen(true);
+                  setShowMenu(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Lock size={14} />
+                Cambiar Contraseña
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Info Card */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-24 rounded-t-xl"></div>
+        <div className="px-6 pb-6">
+          <div className="flex items-start gap-6 -mt-12">
+            <div className="w-24 h-24 rounded-xl bg-blue-600 text-white flex items-center justify-center text-3xl font-bold border-4 border-white shadow-lg">
+              {getInitials(currentUser.firstName, currentUser.lastName)}
+            </div>
+            <div className="flex-1 mt-14">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    {currentUser.firstName} {currentUser.lastName}
+                  </h2>
+                  <div className="flex items-center gap-4 mt-2">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Mail size={16} />
+                      <span className="text-sm">{currentUser.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={currentUser.status === 'Confirmado' ? 'green' : 'yellow'}>
+                        {currentUser.status}
+                      </Badge>
+                      <Badge variant="blue">
+                        <Shield size={12} />
+                        {currentUser.userType}
+                      </Badge>
+                      <Badge variant="gray">
+                        <Clock size={12} />
+                        Último acceso: {new Date(currentUser.lastLogin).toLocaleString('es-ES', { 
+                          day: '2-digit', 
+                          month: '2-digit', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dashboard de Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <TrendingUp size={20} className="text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500">Total de Accesos</p>
+              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.totalLogins}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+              <Activity size={20} className="text-green-600" />
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500">Sesiones del Mes</p>
+              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.sessionsThisMonth}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+              <Shield size={20} className="text-purple-600" />
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500">Roles Asignados</p>
+              <p className="text-sm font-semibold text-gray-900">{currentUser.roles.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+              <Calendar size={20} className="text-orange-600" />
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500">Días de Antigüedad</p>
+              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.accountAge}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-5">
+          {/* Información Personal */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 rounded-lg">
+                    <UserCircle size={14} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Información Personal</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="blue">
+                    <Shield size={10} />
+                    {currentUser.userType}
+                  </Badge>
+                  <Badge variant={currentUser.status === 'Confirmado' ? 'green' : 'yellow'}>
+                    <CheckCircle size={10} />
+                    {currentUser.status}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="space-y-3">
+                {/* Nombre Completo */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
+                    <UserCircle size={14} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Nombre Completo</label>
+                    <p className="text-xs text-gray-900 font-medium">{currentUser.firstName} {currentUser.lastName}</p>
+                  </div>
+                </div>
+
+                {/* Fecha de Creación */}
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100">
+                    <Calendar size={14} className="text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Fecha de Creación</label>
+                    <p className="text-xs text-gray-900 font-medium">
+                      {new Date(currentUser.createdAt).toLocaleString('es-ES', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Roles Asignados */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Shield size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Roles Asignados</h3>
+                <Badge variant="gray" size="sm" className="ml-auto">
+                  {currentUser.roles.length} {currentUser.roles.length === 1 ? 'rol' : 'roles'}
+                </Badge>
+              </div>
+            </div>
+            <div className="p-4 space-y-4">
+              {currentUser.roles.map((role) => (
+                <div key={role.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <h4 className="text-xs font-medium text-gray-900 mb-3 flex items-center gap-2">
+                    <Shield size={14} className="text-blue-600" />
+                    {role.name}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {role.modules.map((module, index) => (
+                      <PermissionBadge
+                        key={index}
+                        moduleName={module.name}
+                        moduleKey={module.key}
+                        permissions={module.permissions}
+                        color={module.color}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Permisos Directos */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <CheckCircle size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Permisos Directos</h3>
+                <Badge variant="gray" size="sm" className="ml-auto">
+                  {currentUser.directModules.length} {currentUser.directModules.length === 1 ? 'módulo' : 'módulos'}
+                </Badge>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="flex flex-wrap gap-2">
+                {currentUser.directModules.map((module, index) => (
+                  <PermissionBadge
+                    key={index}
+                    moduleName={module.name}
+                    moduleKey={module.key}
+                    permissions={module.permissions}
+                    color={module.color}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Historial de Actividad */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Clock size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Historial de Actividad</h3>
+                <Badge variant="gray" size="sm" className="ml-auto">
+                  Últimas {currentUser.activityHistory.length} actividades
+                </Badge>
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
+              {currentUser.activityHistory.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-4 pb-3 border-b border-gray-100 last:border-0">
+                  <div className="mt-0.5">
+                    {getEventIcon(activity.event)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs font-medium text-gray-900">{activity.event}</p>
+                      <span className="text-[10px] text-gray-500 whitespace-nowrap">{activity.timestamp}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-[10px] text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Globe size={10} />
+                        <span>{activity.ip}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Monitor size={10} />
+                        <span>{activity.userAgent}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin size={10} />
+                        <span>{activity.location}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-5">
+          {/* Resumen Rápido */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Activity size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Resumen de Cuenta</h3>
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Shield size={14} className="text-blue-600" />
+                  <span className="text-[10px] text-gray-700">Roles</span>
+                </div>
+                <span className="text-xs font-semibold text-gray-900">{currentUser.roles.length}</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={14} className="text-green-600" />
+                  <span className="text-[10px] text-gray-700">Permisos</span>
+                </div>
+                <span className="text-xs font-semibold text-gray-900">{totalPermissions}</span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Activity size={14} className="text-purple-600" />
+                  <span className="text-[10px] text-gray-700">Sesiones</span>
+                </div>
+                <span className="text-xs font-semibold text-gray-900">{currentUser.stats.sessionsThisMonth}/mes</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Contactos */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Mail size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Contactos</h3>
+                <Badge variant="gray" size="sm">
+                  {currentUser.emails.length + currentUser.phones.length}
+                </Badge>
+              </div>
+              <div className="relative" ref={contactsMenuRef}>
+                <button
+                  onClick={() => setShowContactsMenu(!showContactsMenu)}
+                  className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors"
+                >
+                  <MoreVertical size={14} />
+                </button>
+                {showContactsMenu && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                    <button 
+                      onClick={() => {
+                        setIsEditContactsModalOpen(true);
+                        setShowContactsMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Edit size={12} />
+                      Editar Contactos
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="p-4 space-y-4">
+              {/* Correos Electrónicos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Mail size={10} />
+                  Correos Electrónicos
+                </label>
+                <div className="space-y-2">
+                  {currentUser.emails.map((email, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        email.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {email.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getEmailTypeIcon(email.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{email.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Teléfonos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Phone size={10} />
+                  Teléfonos
+                </label>
+                <div className="space-y-2">
+                  {currentUser.phones.map((phone, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        phone.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {phone.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getPhoneTypeIcon(phone.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{phone.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Direcciones */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <MapPin size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Direcciones</h3>
+                <Badge variant="gray" size="sm">
+                  {currentUser.addresses.length}
+                </Badge>
+              </div>
+              <div className="relative" ref={addressesMenuRef}>
+                <button
+                  onClick={() => setShowAddressesMenu(!showAddressesMenu)}
+                  className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors"
+                >
+                  <MoreVertical size={14} />
+                </button>
+                {showAddressesMenu && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                    <button 
+                      onClick={() => {
+                        setIsEditAddressesModalOpen(true);
+                        setShowAddressesMenu(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Edit size={12} />
+                      Editar Direcciones
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="p-4 space-y-2.5">
+              {currentUser.addresses.map((address, index) => (
+                <div 
+                  key={index} 
+                  className={`relative rounded-lg p-3 transition-all ${
+                    address.isPrimary 
+                      ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                      : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                  }`}
+                >
+                  {address.isPrimary && (
+                    <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                      Principal
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1.5 mb-2">
+                    {getAddressTypeIcon(address.type)}
+                    <span className="text-[10px] font-medium text-gray-600">{address.type}</span>
+                  </div>
+                  <p className="text-xs text-gray-900 font-medium">{address.street}</p>
+                  <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
+                  <p className="text-[10px] text-gray-600">{address.country}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <EditUserModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        userData={currentUser}
+        onSave={handleEditUser}
+      />
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+        onChange={handleChangePassword}
+        userName={`${currentUser.firstName} ${currentUser.lastName}`}
+      />
+      <EditContactsModal
+        isOpen={isEditContactsModalOpen}
+        onClose={() => setIsEditContactsModalOpen(false)}
+        contactsData={currentUser}
+        onSave={handleEditContacts}
+      />
+      <EditAddressesModal
+        isOpen={isEditAddressesModalOpen}
+        onClose={() => setIsEditAddressesModalOpen(false)}
+        addressesData={currentUser}
+        onSave={handleEditAddresses}
+      />
+    </div>
+  );
+}
