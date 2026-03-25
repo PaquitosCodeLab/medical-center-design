@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Badge } from '../components/Badge';
 import { DetailCard } from '../components/DetailCard';
@@ -30,14 +30,24 @@ export function PatientDetail() {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   };
 
+  // Helper functions for phone, email, and address type icons
+  const getPhoneTypeIcon = (type: string) => {
+    return <Phone size={14} className="text-blue-600" />;
+  };
+
+  const getEmailTypeIcon = (type: string) => {
+    return <Mail size={14} className="text-blue-600" />;
+  };
+
+  const getAddressTypeIcon = (type: string) => {
+    return <MapPin size={14} className="text-blue-600" />;
+  };
+
   // Mock data - en producción vendría de una API
   const patient = {
     id,
     name: 'María García',
     age: 45,
-    email: 'maria.garcia@email.com',
-    phone: '+1 234 567 8901',
-    address: 'Calle Principal 123, Ciudad',
     bloodType: 'O+',
     allergies: 'Penicilina',
     doctor: 'Dr. Carlos López',
@@ -46,6 +56,30 @@ export function PatientDetail() {
     identification: 'DNI 12345678A',
     birthDate: '1980-05-15',
     gender: 'Femenino',
+    phones: [
+      { type: 'Móvil', number: '+1 234 567 8901', isPrimary: true },
+      { type: 'Casa', number: '+1 234 567 8902', isPrimary: false },
+    ],
+    emails: [
+      { type: 'Personal', address: 'maria.garcia@email.com', isPrimary: true },
+      { type: 'Trabajo', address: 'mgarcia@empresa.com', isPrimary: false },
+    ],
+    addresses: [
+      { 
+        type: 'Casa', 
+        street: 'Calle Principal 123', 
+        city: 'Madrid',
+        postalCode: '28001',
+        isPrimary: true 
+      },
+      { 
+        type: 'Trabajo', 
+        street: 'Av. Empresarial 456', 
+        city: 'Madrid',
+        postalCode: '28002',
+        isPrimary: false 
+      },
+    ],
   };
 
   const medicalHistory = [
@@ -191,36 +225,6 @@ export function PatientDetail() {
                   </div>
                 </div>
               </div>
-
-              <div className="mt-3 space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-100">
-                    <Mail size={14} className="text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Email</label>
-                    <p className="text-xs text-gray-900 font-medium">{patient.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100">
-                    <Phone size={14} className="text-indigo-600" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Teléfono</label>
-                    <p className="text-xs text-gray-900 font-medium">{patient.phone}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100">
-                    <MapPin size={14} className="text-orange-600" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Dirección</label>
-                    <p className="text-xs text-gray-900 font-medium">{patient.address}</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </DetailCard>
 
@@ -298,7 +302,7 @@ export function PatientDetail() {
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Upcoming Appointments */}
+          {/* Próximas Citas */}
           <DetailCard 
             title="Próximas Citas" 
             icon={Calendar}
@@ -335,6 +339,119 @@ export function PatientDetail() {
               )}
             </div>
           </DetailCard>
+
+          {/* Contactos */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Phone size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Contactos</h3>
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
+              {/* Teléfonos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Phone size={10} />
+                  Teléfonos
+                </label>
+                <div className="space-y-2">
+                  {patient.phones.map((phone, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        phone.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {phone.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getPhoneTypeIcon(phone.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{phone.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Correos Electrónicos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Mail size={10} />
+                  Correos Electrónicos
+                </label>
+                <div className="space-y-2">
+                  {patient.emails.map((email, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        email.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {email.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getEmailTypeIcon(email.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{email.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Direcciones */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <MapPin size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Direcciones</h3>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="space-y-2.5">
+                {patient.addresses.map((address, index) => (
+                  <div 
+                    key={index} 
+                    className={`relative rounded-lg p-3 transition-all ${
+                      address.isPrimary 
+                        ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                        : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                    }`}
+                  >
+                    {address.isPrimary && (
+                      <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                        Principal
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 mb-2">
+                      {getAddressTypeIcon(address.type)}
+                      <span className="text-[10px] font-medium text-gray-600">{address.type}</span>
+                    </div>
+                    <p className="text-xs text-gray-900 font-medium">{address.street}</p>
+                    <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

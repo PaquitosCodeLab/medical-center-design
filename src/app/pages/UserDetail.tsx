@@ -1,10 +1,13 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Shield, CheckCircle, XCircle, Clock, MapPin, Globe, Monitor, Calendar, User, Phone, IdCard, Cake, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Mail, Shield, CheckCircle, XCircle, Clock, MapPin, Globe, Monitor, Calendar, User, Phone, IdCard, Cake, MoreVertical, Edit, Trash2, Settings } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
 import { EditUserModal, type UserData } from '../components/EditUserModal';
 import { DeleteUserModal } from '../components/DeleteUserModal';
+import { EditBasicInfoModal, type BasicInfoData } from '../components/EditBasicInfoModal';
+import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
+import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
 
 // Mock data - en producción vendría de una API
 const userData = {
@@ -247,25 +250,33 @@ export function UserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+  const [showPersonMenu, setShowPersonMenu] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isBasicInfoModalOpen, setIsBasicInfoModalOpen] = useState(false);
+  const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
+  const [isAddressesModalOpen, setIsAddressesModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const personMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
+      if (personMenuRef.current && !personMenuRef.current.contains(event.target as Node)) {
+        setShowPersonMenu(false);
+      }
     };
 
-    if (showMenu) {
+    if (showMenu || showPersonMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu]);
+  }, [showMenu, showPersonMenu]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return (firstName[0] + lastName[0]).toUpperCase();
@@ -287,6 +298,21 @@ export function UserDetail() {
     console.log('Usuario eliminado');
     // Aquí iría la lógica para eliminar el usuario en la API
     navigate('/accounts/users');
+  };
+
+  const handleEditBasicInfo = (updatedBasicInfo: BasicInfoData) => {
+    console.log('Información básica actualizada:', updatedBasicInfo);
+    // Aquí iría la lógica para actualizar la información básica en la API
+  };
+
+  const handleEditContacts = (updatedContacts: ContactsData) => {
+    console.log('Contactos actualizados:', updatedContacts);
+    // Aquí iría la lógica para actualizar los contactos en la API
+  };
+
+  const handleEditAddresses = (updatedAddresses: AddressesData) => {
+    console.log('Direcciones actualizadas:', updatedAddresses);
+    // Aquí iría la lógica para actualizar las direcciones en la API
   };
 
   // Helper functions for phone, email, and address type icons
@@ -580,11 +606,55 @@ export function UserDetail() {
           {/* Persona Vinculada */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <User size={14} className="text-blue-600" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 rounded-lg">
+                    <User size={14} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Persona Vinculada</h3>
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Persona Vinculada</h3>
+                <div className="relative" ref={personMenuRef}>
+                  <button
+                    onClick={() => setShowPersonMenu(!showPersonMenu)}
+                    className="p-1.5 text-gray-600 hover:bg-blue-200 rounded-lg transition-colors"
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+                  {showPersonMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
+                      <button 
+                        onClick={() => {
+                          setIsBasicInfoModalOpen(true);
+                          setShowPersonMenu(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <IdCard size={14} />
+                        Editar Información Básica
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setIsContactsModalOpen(true);
+                          setShowPersonMenu(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <Phone size={14} />
+                        Editar Contactos
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setIsAddressesModalOpen(true);
+                          setShowPersonMenu(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <MapPin size={14} />
+                        Editar Direcciones
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="p-4 space-y-3">
@@ -741,6 +811,36 @@ export function UserDetail() {
         onConfirm={handleDeleteUser}
         userName={`${userData.firstName} ${userData.lastName}`}
         userEmail={userData.email}
+      />
+      <EditBasicInfoModal
+        isOpen={isBasicInfoModalOpen}
+        onClose={() => setIsBasicInfoModalOpen(false)}
+        basicInfoData={{
+          identifications: [{ 
+            type: userData.linkedPerson.identificationType, 
+            number: userData.linkedPerson.identificationNumber 
+          }],
+          gender: userData.linkedPerson.gender,
+          birthDate: userData.linkedPerson.birthDate,
+        }}
+        onSave={handleEditBasicInfo}
+      />
+      <EditContactsModal
+        isOpen={isContactsModalOpen}
+        onClose={() => setIsContactsModalOpen(false)}
+        contactsData={{
+          emails: userData.linkedPerson.emails,
+          phones: userData.linkedPerson.phones,
+        }}
+        onSave={handleEditContacts}
+      />
+      <EditAddressesModal
+        isOpen={isAddressesModalOpen}
+        onClose={() => setIsAddressesModalOpen(false)}
+        addressesData={{
+          addresses: userData.linkedPerson.addresses,
+        }}
+        onSave={handleEditAddresses}
       />
     </div>
   );

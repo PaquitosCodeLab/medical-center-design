@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, Users, Clock, MoreVertical, Edit, Trash2, Shield, GraduationCap, Award, Stethoscope, Building, Star, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, Users, Clock, MoreVertical, Edit, Trash2, Shield, GraduationCap, Award, Stethoscope, Building, Star, TrendingUp, MapPin } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Badge } from '../components/Badge';
 import { DetailCard } from '../components/DetailCard';
@@ -30,13 +30,24 @@ export function DoctorDetail() {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   };
 
+  // Helper functions for phone, email, and address type icons
+  const getPhoneTypeIcon = (type: string) => {
+    return <Phone size={14} className="text-blue-600" />;
+  };
+
+  const getEmailTypeIcon = (type: string) => {
+    return <Mail size={14} className="text-blue-600" />;
+  };
+
+  const getAddressTypeIcon = (type: string) => {
+    return <MapPin size={14} className="text-blue-600" />;
+  };
+
   // Mock data - en producción vendría de una API
   const doctor = {
     id,
     name: 'Dr. Carlos López',
     specialty: 'Cardiología',
-    email: 'carlos.lopez@hospital.com',
-    phone: '+1 234 567 8901',
     status: 'Activo',
     patients: 45,
     experience: '15 años',
@@ -45,6 +56,30 @@ export function DoctorDetail() {
     licenseNumber: 'MED-12345',
     rating: 4.8,
     hospital: 'Hospital General Central',
+    phones: [
+      { type: 'Oficina', number: '+1 234 567 8901', isPrimary: true },
+      { type: 'Móvil', number: '+1 234 567 8902', isPrimary: false },
+    ],
+    emails: [
+      { type: 'Profesional', address: 'carlos.lopez@hospital.com', isPrimary: true },
+      { type: 'Personal', address: 'clopez@email.com', isPrimary: false },
+    ],
+    addresses: [
+      { 
+        type: 'Consultorio', 
+        street: 'Av. Médica 789, Consultorio 5B', 
+        city: 'Madrid',
+        postalCode: '28003',
+        isPrimary: true 
+      },
+      { 
+        type: 'Hospital', 
+        street: 'Calle Hospital General 100', 
+        city: 'Madrid',
+        postalCode: '28004',
+        isPrimary: false 
+      },
+    ],
   };
 
   const upcomingAppointments = [
@@ -235,35 +270,11 @@ export function DoctorDetail() {
               </div>
             </div>
           </DetailCard>
-
-          {/* Información de Contacto */}
-          <DetailCard title="Información de Contacto" icon={Mail}>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-100">
-                  <Mail size={14} className="text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Email</label>
-                  <p className="text-xs text-gray-900 font-medium">{doctor.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
-                  <Phone size={14} className="text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Teléfono</label>
-                  <p className="text-xs text-gray-900 font-medium">{doctor.phone}</p>
-                </div>
-              </div>
-            </div>
-          </DetailCard>
         </div>
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Upcoming Appointments */}
+          {/* Próximas Citas */}
           <DetailCard 
             title="Próximas Citas" 
             icon={Calendar}
@@ -296,6 +307,119 @@ export function DoctorDetail() {
               ))}
             </div>
           </DetailCard>
+
+          {/* Contactos */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Phone size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Contactos</h3>
+              </div>
+            </div>
+            <div className="p-4 space-y-3">
+              {/* Teléfonos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Phone size={10} />
+                  Teléfonos
+                </label>
+                <div className="space-y-2">
+                  {doctor.phones.map((phone, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        phone.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {phone.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getPhoneTypeIcon(phone.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{phone.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Correos Electrónicos */}
+              <div>
+                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
+                  <Mail size={10} />
+                  Correos Electrónicos
+                </label>
+                <div className="space-y-2">
+                  {doctor.emails.map((email, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative rounded-lg p-3 transition-all ${
+                        email.isPrimary 
+                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                      }`}
+                    >
+                      {email.isPrimary && (
+                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                          Principal
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        {getEmailTypeIcon(email.type)}
+                        <span className="text-[10px] font-medium text-gray-600">{email.type}</span>
+                      </div>
+                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Direcciones */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <MapPin size={14} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Direcciones</h3>
+              </div>
+            </div>
+            <div className="p-4">
+              <div className="space-y-2.5">
+                {doctor.addresses.map((address, index) => (
+                  <div 
+                    key={index} 
+                    className={`relative rounded-lg p-3 transition-all ${
+                      address.isPrimary 
+                        ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
+                        : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
+                    }`}
+                  >
+                    {address.isPrimary && (
+                      <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                        Principal
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 mb-2">
+                      {getAddressTypeIcon(address.type)}
+                      <span className="text-[10px] font-medium text-gray-600">{address.type}</span>
+                    </div>
+                    <p className="text-xs text-gray-900 font-medium">{address.street}</p>
+                    <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
