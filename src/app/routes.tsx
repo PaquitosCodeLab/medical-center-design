@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { Appointments } from "./pages/Appointments";
@@ -17,32 +17,27 @@ import { NotFound } from "./pages/NotFound";
 import { SystemConfig } from "./pages/SystemConfig";
 import { Catalogs } from "./pages/Catalogs";
 
-export const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      Component: Layout,
-      children: [
-        { index: true, Component: Dashboard },
-        { path: "appointments", Component: Appointments },
-        { path: "doctors", Component: Doctors },
-        { path: "doctors/:id", Component: DoctorDetail },
-        { path: "patients", Component: Patients },
-        { path: "patients/:id", Component: PatientDetail },
-        { path: "accounts/users", Component: Users },
-        { path: "accounts/users/:id", Component: UserDetail },
-        { path: "accounts/roles", Component: Roles },
-        { path: "accounts/roles/:id", Component: RoleDetail },
-        { path: "settings/preferences", Component: Preferences },
-        { path: "settings/notifications", Component: NotificationsSettings },
-        { path: "config/system", Component: SystemConfig },
-        { path: "config/catalogs", Component: Catalogs },
-        { path: "profile", Component: Profile },
-        { path: "*", Component: NotFound },
-      ],
-    },
-  ],
+export const router = createHashRouter([
   {
-    basename: "/medical-center-design",
+    path: "/",
+    Component: Layout,
+    children: [
+      { index: true, Component: Dashboard },
+      { path: "appointments", Component: Appointments },
+      { path: "doctors", Component: Doctors },
+      { path: "doctors/:id", Component: DoctorDetail },
+      { path: "patients", Component: Patients },
+      { path: "patients/:id", Component: PatientDetail },
+      { path: "accounts/users", Component: Users },
+      { path: "accounts/users/:id", Component: UserDetail },
+      { path: "accounts/roles", Component: Roles },
+      { path: "accounts/roles/:id", Component: RoleDetail },
+      { path: "settings/preferences", Component: Preferences },
+      { path: "settings/notifications", Component: NotificationsSettings },
+      { path: "config/system", Component: SystemConfig },
+      { path: "config/catalogs", Component: Catalogs },
+      { path: "profile", Component: Profile },
+      { path: "*", Component: NotFound },
+    ],
   },
-);
+]);
