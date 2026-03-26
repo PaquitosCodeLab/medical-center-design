@@ -342,39 +342,6 @@ export function UserDetail() {
           <h1 className="text-lg font-semibold text-gray-900">Detalle del Usuario</h1>
           <p className="text-xs text-gray-500">Información completa y actividad del usuario</p>
         </div>
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <MoreVertical size={20} />
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
-              <button 
-                onClick={() => {
-                  setIsEditModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Edit size={14} />
-                Editar Usuario
-              </button>
-              <div className="border-t border-gray-100 my-1"></div>
-              <button 
-                onClick={() => {
-                  setIsDeleteModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-              >
-                <Trash2 size={14} />
-                Eliminar Usuario
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Main Info Card */}
@@ -405,10 +372,18 @@ export function UserDetail() {
                         {userData.userType}
                       </Badge>
                       <Badge variant="gray">
+                        <Calendar size={12} />
+                        Creado: {new Date(userData.createdAt).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </Badge>
+                      <Badge variant="gray">
                         <Clock size={12} />
-                        {new Date(userData.lastModified).toLocaleString('es-ES', { 
-                          day: '2-digit', 
-                          month: '2-digit', 
+                        Modificado: {new Date(userData.lastModified).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -416,6 +391,18 @@ export function UserDetail() {
                       </Badge>
                     </div>
                   </div>
+                </div>
+                <div className="relative flex-shrink-0" ref={menuRef}>
+                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
+                    <MoreVertical size={18} />
+                  </button>
+                  {showMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                      <button onClick={() => { setIsEditModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Usuario</button>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <button onClick={() => { setIsDeleteModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Usuario</button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -537,72 +524,6 @@ export function UserDetail() {
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Account Info */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <User size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Información de Cuenta</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
-                  <Mail size={14} className="text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Correo Electrónico</label>
-                  <p className="text-xs text-gray-900 font-medium">{userData.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100">
-                  <IdCard size={14} className="text-purple-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">ID Externo (Clerk)</label>
-                  <p className="text-[10px] text-gray-900 font-mono">{userData.clerkId}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-100">
-                  <Calendar size={14} className="text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Fecha de Creación</label>
-                  <p className="text-xs text-gray-900 font-medium">
-                    {new Date(userData.createdAt).toLocaleString('es-ES', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100">
-                  <Clock size={14} className="text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Última Modificación</label>
-                  <p className="text-xs text-gray-900 font-medium">
-                    {new Date(userData.lastModified).toLocaleString('es-ES', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Persona Vinculada */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">

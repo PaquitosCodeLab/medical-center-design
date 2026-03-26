@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  Users, 
+import { useSidebar } from './SidebarContext';
+import {
+  LayoutDashboard,
+  Calendar,
+  Users,
   Stethoscope,
   User,
   Shield,
@@ -12,132 +13,188 @@ import {
   ChevronDown,
   ChevronRight,
   UserCircle,
-  LogOut
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Heart,
+  Wrench,
+  Server,
+  List
 } from 'lucide-react';
+
+interface NavChild {
+  label: string;
+  path: string;
+  icon: React.ReactNode;
+}
 
 interface NavItem {
   icon: React.ReactNode;
   label: string;
   path?: string;
-  children?: { label: string; path: string }[];
+  children?: NavChild[];
 }
 
 const navItems: NavItem[] = [
   {
-    icon: <LayoutDashboard size={18} />,
+    icon: <LayoutDashboard size={16} />,
     label: 'Dashboard',
     path: '/',
   },
   {
-    icon: <Calendar size={18} />,
+    icon: <Calendar size={16} />,
     label: 'Citas',
     path: '/appointments',
   },
   {
-    icon: <Users size={18} />,
+    icon: <Users size={16} />,
     label: 'Personas',
     children: [
-      { label: 'Doctores', path: '/doctors' },
-      { label: 'Pacientes', path: '/patients' },
+      { label: 'Doctores', path: '/doctors', icon: <Stethoscope size={14} /> },
+      { label: 'Pacientes', path: '/patients', icon: <Heart size={14} /> },
     ],
   },
   {
-    icon: <User size={18} />,
+    icon: <User size={16} />,
     label: 'Cuentas',
     children: [
-      { label: 'Usuarios', path: '/accounts/users' },
-      { label: 'Roles', path: '/accounts/roles' },
+      { label: 'Usuarios', path: '/accounts/users', icon: <UserCircle size={14} /> },
+      { label: 'Roles', path: '/accounts/roles', icon: <Shield size={14} /> },
+    ],
+  },
+  {
+    icon: <Wrench size={16} />,
+    label: 'Configuraciones',
+    children: [
+      { label: 'Sistema', path: '/config/system', icon: <Server size={14} /> },
+      { label: 'Catálogos', path: '/config/catalogs', icon: <List size={14} /> },
     ],
   },
 ];
 
 export function Sidebar() {
   const location = useLocation();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Personas', 'Cuentas']);
+  const { collapsed, setCollapsed } = useSidebar();
+  const [expandedItems, setExpandedItems] = useState<string[]>(['Personas', 'Cuentas', 'Configuraciones']);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const isOpen = !collapsed || hovered;
 
   const toggleExpand = (label: string) => {
-    setExpandedItems(prev => 
-      prev.includes(label) 
+    setExpandedItems(prev =>
+      prev.includes(label)
         ? prev.filter(item => item !== label)
         : [...prev, label]
     );
   };
 
-  const isActive = (path?: string, children?: { label: string; path: string }[]) => {
-    if (path) {
-      return location.pathname === path;
-    }
-    if (children) {
-      return children.some(child => location.pathname.startsWith(child.path));
-    }
+  const isActive = (path?: string, children?: NavChild[]) => {
+    if (path) return location.pathname === path;
+    if (children) return children.some(child => location.pathname.startsWith(child.path));
     return false;
   };
 
   return (
-    <aside className="w-60 bg-gradient-to-b from-blue-700 to-blue-900 text-white flex flex-col h-screen fixed left-0 top-0">
-      {/* Logo */}
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-          <Stethoscope size={20} />
+    <aside
+      onMouseEnter={() => collapsed && setHovered(true)}
+      onMouseLeave={() => { setHovered(false); setUserMenuOpen(false); }}
+      className={`bg-gradient-to-b from-blue-700 to-blue-900 text-white flex flex-col h-screen fixed left-0 top-0 z-40 transition-all duration-300 ${isOpen ? 'w-60' : 'w-16'}`}
+    >
+      {/* Logo + Collapse */}
+      <div className={`p-4 flex items-center ${isOpen ? 'gap-3' : 'justify-center'}`}>
+        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <Stethoscope size={16} />
         </div>
-        <div>
-          <div className="font-semibold text-sm">Sistema Médico</div>
-          <div className="text-xs text-blue-300">Gestión Integral</div>
-        </div>
+        {isOpen && (
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-xs truncate">Sistema Médico</div>
+            <div className="text-[10px] text-blue-300 truncate">Gestión Integral</div>
+          </div>
+        )}
+        <button
+          onClick={() => { setCollapsed(!collapsed); setHovered(false); }}
+          className={`p-1 text-blue-300 hover:text-white hover:bg-blue-600/50 rounded-lg transition-colors flex-shrink-0 ${!isOpen ? 'hidden' : ''}`}
+        >
+          {collapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
+        </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => (
           <div key={item.label}>
             {item.path ? (
               <Link
                 to={item.path}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                title={!isOpen ? item.label : undefined}
+                className={`w-full flex items-center ${isOpen ? 'gap-3 px-3' : 'justify-center px-0'} py-2 rounded-lg transition-colors ${
                   isActive(item.path)
                     ? 'bg-blue-600 text-white'
                     : 'text-blue-100 hover:bg-blue-600/50'
                 }`}
               >
-                {item.icon}
-                <span className="text-sm flex-1">{item.label}</span>
+                <span className="flex-shrink-0">{item.icon}</span>
+                {isOpen && <span className="text-xs flex-1 truncate">{item.label}</span>}
               </Link>
             ) : (
               <>
                 <button
-                  onClick={() => toggleExpand(item.label)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                  onClick={() => isOpen ? toggleExpand(item.label) : undefined}
+                  title={!isOpen ? item.label : undefined}
+                  className={`w-full flex items-center ${isOpen ? 'gap-3 px-3' : 'justify-center px-0'} py-2 rounded-lg transition-colors ${
                     isActive(undefined, item.children)
                       ? 'bg-blue-600/30 text-white'
                       : 'text-blue-100 hover:bg-blue-600/50'
                   }`}
                 >
-                  {item.icon}
-                  <span className="text-sm flex-1 text-left">{item.label}</span>
-                  {expandedItems.includes(item.label) ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
+                  <span className="flex-shrink-0">{item.icon}</span>
+                  {isOpen && (
+                    <>
+                      <span className="text-xs flex-1 text-left truncate">{item.label}</span>
+                      {expandedItems.includes(item.label) ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    </>
                   )}
                 </button>
-                {expandedItems.includes(item.label) && item.children && (
-                  <div className="mt-1 ml-4 space-y-1">
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.path}
-                        to={child.path}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
-                          location.pathname.startsWith(child.path)
-                            ? 'bg-blue-600 text-white'
-                            : 'text-blue-100 hover:bg-blue-600/50'
-                        }`}
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-300"></div>
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
+                {/* Sub-items: show icons only when collapsed, full when open */}
+                {isOpen ? (
+                  expandedItems.includes(item.label) && item.children && (
+                    <div className="mt-0.5 ml-3 space-y-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-colors text-xs ${
+                            location.pathname.startsWith(child.path)
+                              ? 'bg-blue-600 text-white'
+                              : 'text-blue-100 hover:bg-blue-600/50'
+                          }`}
+                        >
+                          <span className="flex-shrink-0 opacity-70">{child.icon}</span>
+                          <span className="truncate">{child.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  item.children && (
+                    <div className="mt-0.5 space-y-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          title={child.label}
+                          className={`w-full flex items-center justify-center py-1.5 rounded-lg transition-colors ${
+                            location.pathname.startsWith(child.path)
+                              ? 'bg-blue-600 text-white'
+                              : 'text-blue-200/60 hover:text-blue-100 hover:bg-blue-600/50'
+                          }`}
+                        >
+                          <span className="flex-shrink-0">{child.icon}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )
                 )}
               </>
             )}
@@ -146,53 +203,39 @@ export function Sidebar() {
       </nav>
 
       {/* User Profile */}
-      <div className="p-4 border-t border-blue-600">
+      <div className="px-2 py-2 border-t border-blue-600">
         <button
-          onClick={() => setUserMenuOpen(!userMenuOpen)}
-          className="w-full flex items-center gap-3 hover:bg-blue-600/30 rounded-lg p-2 -m-2 transition-colors"
+          onClick={() => isOpen && setUserMenuOpen(!userMenuOpen)}
+          title={!isOpen ? 'Henry Gadea' : undefined}
+          className={`w-full flex items-center ${isOpen ? 'gap-3' : 'justify-center'} hover:bg-blue-600/30 rounded-lg p-2 transition-colors`}
         >
-          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium">HG</span>
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-[10px] font-medium">HG</span>
           </div>
-          <div className="flex-1 text-left">
-            <div className="text-sm font-medium">Henry Gadea</div>
-            <div className="text-xs text-blue-300">DEV</div>
-          </div>
-          <ChevronDown 
-            size={16} 
-            className={`transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
-          />
+          {isOpen && (
+            <>
+              <div className="flex-1 text-left min-w-0">
+                <div className="text-xs font-medium truncate">Henry Gadea</div>
+                <div className="text-[10px] text-blue-300">DEV</div>
+              </div>
+              <ChevronDown size={14} className={`transition-transform flex-shrink-0 ${userMenuOpen ? 'rotate-180' : ''}`} />
+            </>
+          )}
         </button>
-        
-        {userMenuOpen && (
-          <div className="mt-2 pt-2 border-t border-blue-600 space-y-1">
-            <Link
-              to="/profile"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-blue-100 hover:bg-blue-600/50"
-            >
-              <UserCircle size={16} />
-              Perfil
+
+        {isOpen && userMenuOpen && (
+          <div className="mt-2 pt-2 -mx-2 px-2 border-t border-blue-600 space-y-1">
+            <Link to="/profile" className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-colors text-xs text-blue-100 hover:bg-blue-600/50">
+              <UserCircle size={14} />Perfil
             </Link>
-            <Link
-              to="/settings/preferences"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-blue-100 hover:bg-blue-600/50"
-            >
-              <Settings size={16} />
-              Preferencias
+            <Link to="/settings/preferences" className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-colors text-xs text-blue-100 hover:bg-blue-600/50">
+              <Settings size={14} />Preferencias
             </Link>
-            <Link
-              to="/settings/notifications"
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-blue-100 hover:bg-blue-600/50"
-            >
-              <Bell size={16} />
-              Notificaciones
+            <Link to="/settings/notifications" className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-colors text-xs text-blue-100 hover:bg-blue-600/50">
+              <Bell size={14} />Notificaciones
             </Link>
-            <button
-              onClick={() => {/* Lógica de cerrar sesión */}}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-blue-100 hover:bg-red-500/50"
-            >
-              <LogOut size={16} />
-              Cerrar sesión
+            <button onClick={() => {}} className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-colors text-xs text-blue-100 hover:bg-red-500/50">
+              <LogOut size={14} />Cerrar sesión
             </button>
           </div>
         )}

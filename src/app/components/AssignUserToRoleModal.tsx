@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, ModalButton } from './Modal';
-import { Search, User, Shield, CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, User, Shield, CheckCircle, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from './Badge';
 import { PermissionBadge } from './PermissionBadge';
 
@@ -31,9 +31,9 @@ const availableUsers = [
             color: 'purple',
             permissions: [
               { key: 'full', label: 'Completo', granted: false },
-              { 
-                key: 'read', 
-                label: 'Lectura', 
+              {
+                key: 'read',
+                label: 'Lectura',
                 granted: true,
                 children: [
                   { key: 'list', label: 'Listar', granted: true },
@@ -55,9 +55,9 @@ const availableUsers = [
         color: 'green',
         permissions: [
           { key: 'full', label: 'Completo', granted: false },
-          { 
-            key: 'read', 
-            label: 'Lectura', 
+          {
+            key: 'read',
+            label: 'Lectura',
             granted: true,
             children: [
               { key: 'list', label: 'Listar', granted: true },
@@ -89,9 +89,9 @@ const availableUsers = [
             color: 'purple',
             permissions: [
               { key: 'full', label: 'Completo', granted: false },
-              { 
-                key: 'read', 
-                label: 'Lectura', 
+              {
+                key: 'read',
+                label: 'Lectura',
                 granted: true,
                 children: [
                   { key: 'list', label: 'Listar', granted: true },
@@ -123,9 +123,9 @@ const availableUsers = [
         color: 'green',
         permissions: [
           { key: 'full', label: 'Completo', granted: false },
-          { 
-            key: 'read', 
-            label: 'Lectura', 
+          {
+            key: 'read',
+            label: 'Lectura',
             granted: true,
             children: [
               { key: 'list', label: 'Listar', granted: true },
@@ -157,9 +157,9 @@ const availableUsers = [
             color: 'green',
             permissions: [
               { key: 'full', label: 'Completo', granted: false },
-              { 
-                key: 'read', 
-                label: 'Lectura', 
+              {
+                key: 'read',
+                label: 'Lectura',
                 granted: true,
                 children: [
                   { key: 'list', label: 'Listar', granted: true },
@@ -208,7 +208,6 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
   };
 
   const handleSelectUser = (user: typeof availableUsers[0]) => {
-    // Verificar si el usuario ya está seleccionado
     if (!selectedUsers.find(u => u.id === user.id)) {
       setSelectedUsers([...selectedUsers, user]);
     }
@@ -236,10 +235,9 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
     return (firstName[0] + lastName[0]).toUpperCase();
   };
 
-  // Filtrar usuarios por búsqueda y excluir los ya seleccionados
   const filteredUsers = availableUsers.filter(user => {
     const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = 
+    const matchesSearch =
       user.firstName.toLowerCase().includes(searchLower) ||
       user.lastName.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower);
@@ -258,11 +256,7 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
           <ModalButton onClick={handleClose} variant="secondary">
             Cancelar
           </ModalButton>
-          <ModalButton 
-            onClick={handleAssign} 
-            variant="primary"
-            disabled={selectedUsers.length === 0}
-          >
+          <ModalButton onClick={handleAssign} variant="primary">
             Asignar {selectedUsers.length > 0 && `(${selectedUsers.length})`}
           </ModalButton>
         </>
@@ -270,10 +264,10 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
     >
       <div className="space-y-3">
         {/* Info del Rol */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5">
-          <div className="flex items-center gap-2">
-            <Shield size={14} className="text-blue-600" />
-            <p className="text-xs text-blue-900">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5">
+          <div className="flex items-center gap-1.5">
+            <Shield size={12} className="text-blue-600" />
+            <p className="text-[10px] text-blue-900">
               Asignando al rol: <span className="font-semibold">{roleName}</span>
             </p>
           </div>
@@ -281,40 +275,40 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
 
         {/* Búsqueda de Usuario */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1.5">
+          <label className="block text-[10px] font-medium text-gray-600 mb-1">
             Buscar Usuario
           </label>
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar por nombre o correo electrónico..."
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500/30 focus:border-blue-500 text-sm transition-all"
+              className="w-full pl-8 pr-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all"
             />
           </div>
         </div>
 
         {/* Lista de Resultados de Búsqueda */}
         {searchQuery && (
-          <div className="border border-gray-200 rounded-lg overflow-hidden max-h-48 overflow-y-auto">
+          <div className="border border-gray-200 rounded-xl overflow-hidden max-h-40 overflow-y-auto">
             {filteredUsers.length > 0 ? (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-gray-100">
                 {filteredUsers.map((user) => (
                   <button
                     key={user.id}
                     onClick={() => handleSelectUser(user)}
-                    className="w-full px-3 py-2.5 hover:bg-gray-50 transition-colors text-left flex items-center gap-2.5"
+                    className="w-full px-3 py-2 hover:bg-gray-50 transition-colors text-left flex items-center gap-2"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-semibold flex-shrink-0">
                       {getInitials(user.firstName, user.lastName)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-xs font-medium text-gray-900">
                         {user.firstName} {user.lastName}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
                     </div>
                     <Badge variant={user.status === 'Confirmado' ? 'green' : 'yellow'} size="sm">
                       {user.status}
@@ -323,7 +317,7 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                 ))}
               </div>
             ) : (
-              <div className="px-3 py-6 text-center text-sm text-gray-500">
+              <div className="px-3 py-4 text-center text-[10px] text-gray-500">
                 No se encontraron usuarios
               </div>
             )}
@@ -333,75 +327,73 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
         {/* Lista de Usuarios Seleccionados */}
         {selectedUsers.length > 0 && (
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-gray-600">
+            <label className="block text-[10px] font-medium text-gray-600">
               Usuarios Seleccionados ({selectedUsers.length})
             </label>
             {selectedUsers.map((selectedUser) => {
               const isExpanded = expandedUsers.has(selectedUser.id);
               return (
-                <div key={selectedUser.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                  {/* Header del Usuario - Siempre Visible */}
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm text-white flex items-center justify-center text-xs font-semibold border-2 border-white/40">
-                        {getInitials(selectedUser.firstName, selectedUser.lastName)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-white">
-                          {selectedUser.firstName} {selectedUser.lastName}
-                        </h4>
-                        <p className="text-xs text-blue-100 truncate">{selectedUser.email}</p>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="purple" size="sm" className="flex-shrink-0">
-                          <Shield size={10} />
-                          Roles: {selectedUser.roles.length}
-                        </Badge>
-                        <Badge variant="green" size="sm" className="flex-shrink-0">
-                          <CheckCircle size={10} />
-                          Permisos: {selectedUser.directModules.length}
-                        </Badge>
-                      </div>
-                      <button
-                        onClick={() => toggleExpanded(selectedUser.id)}
-                        className="p-1 hover:bg-white/20 rounded transition-colors flex-shrink-0"
-                        title={isExpanded ? 'Ocultar detalles' : 'Mostrar detalles'}
-                      >
-                        {isExpanded ? (
-                          <ChevronUp size={16} className="text-white" />
-                        ) : (
-                          <ChevronDown size={16} className="text-white" />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleRemoveUser(selectedUser.id)}
-                        className="p-1 hover:bg-white/20 rounded transition-colors flex-shrink-0"
-                        title="Quitar usuario"
-                      >
-                        <XCircle size={16} className="text-white" />
-                      </button>
+                <div key={selectedUser.id} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-sm transition-all">
+                  {/* User Card Header */}
+                  <div className="px-3 py-2 bg-gradient-to-r from-blue-50 to-blue-100/50 flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-semibold flex-shrink-0">
+                      {getInitials(selectedUser.firstName, selectedUser.lastName)}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-900">
+                        {selectedUser.firstName} {selectedUser.lastName}
+                      </p>
+                      <p className="text-[10px] text-gray-500 truncate">{selectedUser.email}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
+                        {selectedUser.roles.length} roles
+                      </span>
+                      <span className="text-[9px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
+                        {selectedUser.directModules.length} permisos
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => toggleExpanded(selectedUser.id)}
+                      className="p-1 hover:bg-blue-200/50 rounded-lg transition-colors flex-shrink-0"
+                      title={isExpanded ? 'Ocultar detalles' : 'Mostrar detalles'}
+                    >
+                      {isExpanded ? (
+                        <ChevronUp size={14} className="text-gray-500" />
+                      ) : (
+                        <ChevronDown size={14} className="text-gray-500" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleRemoveUser(selectedUser.id)}
+                      className="p-1 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                      title="Quitar usuario"
+                    >
+                      <X size={14} className="text-gray-400 hover:text-red-600" />
+                    </button>
                   </div>
 
-                  {/* Contenido del Accordion - Roles y Permisos */}
+                  {/* Accordion Content */}
                   {isExpanded && (
-                    <>
-                      {/* Roles Actuales */}
-                      <div className="p-3 border-b border-gray-200">
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <Shield size={14} className="text-purple-600" />
-                          <h5 className="text-xs font-semibold text-gray-700">Roles</h5>
-                          <Badge variant="gray" size="sm" className="ml-auto">
+                    <div className="bg-white divide-y divide-gray-100">
+                      {/* Roles */}
+                      <div className="px-3 py-2">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="p-0.5 bg-blue-100 rounded">
+                            <Shield size={10} className="text-blue-600" />
+                          </div>
+                          <h5 className="text-[10px] font-semibold text-gray-700">Roles</h5>
+                          <span className="text-[9px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
                             {selectedUser.roles.length}
-                          </Badge>
+                          </span>
                         </div>
                         {selectedUser.roles.length > 0 ? (
-                          <div className="space-y-1.5">
+                          <div className="space-y-1">
                             {selectedUser.roles.map((role) => (
-                              <div key={role.id} className="bg-purple-50 border border-purple-200 rounded p-2">
-                                <div className="flex items-center gap-1.5 mb-1.5">
-                                  <Shield size={12} className="text-purple-600" />
-                                  <p className="text-xs font-medium text-gray-900">{role.name}</p>
+                              <div key={role.id} className="bg-gray-50 border border-gray-100 rounded-lg p-2">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                  <Shield size={10} className="text-blue-600" />
+                                  <p className="text-[10px] font-medium text-gray-900">{role.name}</p>
                                 </div>
                                 <div className="flex flex-wrap gap-1">
                                   {role.modules.map((module, index) => (
@@ -418,18 +410,20 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-gray-500 italic">Sin roles asignados</p>
+                          <p className="text-[10px] text-gray-500 italic">Sin roles asignados</p>
                         )}
                       </div>
 
                       {/* Permisos Directos */}
-                      <div className="p-3">
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <CheckCircle size={14} className="text-green-600" />
-                          <h5 className="text-xs font-semibold text-gray-700">Permisos Directos</h5>
-                          <Badge variant="gray" size="sm" className="ml-auto">
+                      <div className="px-3 py-2">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <div className="p-0.5 bg-blue-100 rounded">
+                            <CheckCircle size={10} className="text-blue-600" />
+                          </div>
+                          <h5 className="text-[10px] font-semibold text-gray-700">Permisos Directos</h5>
+                          <span className="text-[9px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
                             {selectedUser.directModules.length}
-                          </Badge>
+                          </span>
                         </div>
                         {selectedUser.directModules.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
@@ -444,10 +438,10 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-gray-500 italic">Sin permisos directos asignados</p>
+                          <p className="text-[10px] text-gray-500 italic">Sin permisos directos asignados</p>
                         )}
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               );
@@ -457,9 +451,11 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
 
         {/* Helper Text */}
         {selectedUsers.length === 0 && !searchQuery && (
-          <div className="text-center py-6 text-gray-500">
-            <User size={28} className="mx-auto mb-2 text-gray-400" />
-            <p className="text-sm">Busca usuarios para asignarlos a este rol</p>
+          <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
+            <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
+              <User size={18} className="text-gray-400" />
+            </div>
+            <p className="text-[10px] text-gray-500">Busca usuarios para asignarlos a este rol</p>
           </div>
         )}
       </div>

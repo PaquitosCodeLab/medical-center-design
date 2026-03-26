@@ -116,57 +116,41 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
       case 'Trabajo':
         return <Briefcase size={13} className="text-blue-600" />;
       case 'Personal':
-        return <User size={13} className="text-green-600" />;
+        return <User size={13} className="text-blue-600" />;
       default:
-        return <Mail size={13} className="text-gray-600" />;
+        return <Mail size={13} className="text-blue-600" />;
     }
   };
 
-  const getEmailTypeColor = (type: string) => {
-    switch (type) {
-      case 'Trabajo':
-        return 'bg-blue-50 border-blue-200 text-blue-700';
-      case 'Personal':
-        return 'bg-green-50 border-green-200 text-green-700';
-      default:
-        return 'bg-gray-50 border-gray-200 text-gray-700';
-    }
+  const getEmailTypeColor = (_type: string) => {
+    return 'bg-blue-50 border-blue-200 text-blue-700';
   };
 
   const getPhoneTypeIcon = (type: string) => {
     switch (type) {
       case 'Móvil':
-        return <Smartphone size={13} className="text-purple-600" />;
+        return <Smartphone size={13} className="text-blue-600" />;
       case 'Trabajo':
         return <Briefcase size={13} className="text-blue-600" />;
       case 'Casa':
-        return <HomeIcon size={13} className="text-orange-600" />;
+        return <HomeIcon size={13} className="text-blue-600" />;
       default:
-        return <Phone size={13} className="text-gray-600" />;
+        return <Phone size={13} className="text-blue-600" />;
     }
   };
 
-  const getPhoneTypeColor = (type: string) => {
-    switch (type) {
-      case 'Móvil':
-        return 'bg-purple-50 border-purple-200 text-purple-700';
-      case 'Trabajo':
-        return 'bg-blue-50 border-blue-200 text-blue-700';
-      case 'Casa':
-        return 'bg-orange-50 border-orange-200 text-orange-700';
-      default:
-        return 'bg-gray-50 border-gray-200 text-gray-700';
-    }
+  const getPhoneTypeColor = (_type: string) => {
+    return 'bg-blue-50 border-blue-200 text-blue-700';
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-green-50 via-blue-50 to-white">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg">
-              <Mail size={16} className="text-green-600" />
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <Mail size={16} className="text-blue-600" />
             </div>
             <h2 className="text-sm font-semibold text-gray-900">Editar Contactos</h2>
           </div>
@@ -185,8 +169,8 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="p-1 bg-green-100 rounded">
-                    <Mail size={12} className="text-green-600" />
+                  <div className="p-1 bg-blue-100 rounded">
+                    <Mail size={12} className="text-blue-600" />
                   </div>
                   <h3 className="text-xs font-semibold text-gray-900">Correos</h3>
                   <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
@@ -195,7 +179,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                 </div>
                 <button
                   onClick={handleAddEmail}
-                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200"
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
                   title="Agregar correo"
                 >
                   <Plus size={13} />
@@ -208,14 +192,14 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                   <div 
                     key={index} 
                     className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${
-                      email.isPrimary 
-                        ? 'border-green-300 bg-gradient-to-br from-green-50 to-white shadow-sm' 
+                      email.isPrimary
+                        ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm'
                         : 'border-gray-200 bg-white hover:border-gray-300'
                     }`}
                   >
                     {/* Primary Badge */}
                     {email.isPrimary && (
-                      <div className="absolute -top-2 -right-2 bg-green-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
                         Principal
                       </div>
                     )}
@@ -258,7 +242,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                         value={email.address}
                         onChange={(e) => handleEmailChange(index, 'address', e.target.value)}
                         placeholder="correo@ejemplo.com"
-                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all ${
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                           errors.emails[index] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
                         }`}
                       />
@@ -268,12 +252,12 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                     </div>
 
                     {/* Primary Checkbox */}
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-green-600 transition-colors mt-2">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-blue-600 transition-colors mt-2">
                       <input
                         type="checkbox"
                         checked={email.isPrimary}
                         onChange={(e) => handleEmailChange(index, 'isPrimary', e.target.checked)}
-                        className="w-3.5 h-3.5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
                       <span className="text-[10px] font-medium">Marcar como principal</span>
                     </label>
@@ -289,7 +273,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                   <p className="text-xs text-gray-600 mb-2">No hay correos agregados</p>
                   <button
                     onClick={handleAddEmail}
-                    className="px-3 py-1 text-xs font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200"
+                    className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
                   >
                     Agregar correo
                   </button>
@@ -425,7 +409,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
           </button>
           <button
             onClick={handleSave}
-            className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             Guardar
           </button>

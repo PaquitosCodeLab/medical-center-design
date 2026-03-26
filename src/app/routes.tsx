@@ -14,6 +14,8 @@ import { Preferences } from './pages/Preferences';
 import { NotificationsSettings } from './pages/NotificationsSettings';
 import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
+import { SystemConfig } from './pages/SystemConfig';
+import { Catalogs } from './pages/Catalogs';
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,8 @@ export const router = createBrowserRouter([
       { path: 'accounts/roles/:id', Component: RoleDetail },
       { path: 'settings/preferences', Component: Preferences },
       { path: 'settings/notifications', Component: NotificationsSettings },
+      { path: 'config/system', Component: SystemConfig },
+      { path: 'config/catalogs', Component: Catalogs },
       { path: 'profile', Component: Profile },
       { path: '*', Component: NotFound },
     ],

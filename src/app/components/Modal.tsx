@@ -41,7 +41,7 @@ export function Modal({
     >
       <div className={`bg-white rounded-xl shadow-xl w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
           <button
             onClick={onClose}

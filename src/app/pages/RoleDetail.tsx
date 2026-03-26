@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Shield, Users, CheckCircle, MoreVertical, Edit, Trash2, User, Mail, Clock, UserPlus } from 'lucide-react';
+import { ArrowLeft, Shield, Users, CheckCircle, MoreVertical, Edit, Trash2, User, Mail, Clock, Calendar, UserPlus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
-import { EditRoleModal, type RoleData } from '../components/EditRoleModal';
+import { EditRoleModal, EditPermissionsModal, type RoleData } from '../components/EditRoleModal';
 import { DeleteRoleModal } from '../components/DeleteRoleModal';
 import { AssignUserToRoleModal } from '../components/AssignUserToRoleModal';
 
@@ -85,19 +85,19 @@ const roleData = {
       key: 'appointments',
       color: 'purple',
       permissions: [
-        { key: 'full', label: 'Completo', granted: true },
-        { 
-          key: 'read', 
-          label: 'Lectura', 
+        { key: 'full', label: 'Completo', granted: false },
+        {
+          key: 'read',
+          label: 'Lectura',
           granted: true,
           children: [
             { key: 'list', label: 'Listar', granted: true },
-            { key: 'get', label: 'Detalle', granted: true },
+            { key: 'get', label: 'Detalle', granted: false },
           ]
         },
         { key: 'create', label: 'Crear', granted: true },
         { key: 'update', label: 'Editar', granted: true },
-        { key: 'delete', label: 'Eliminar', granted: true },
+        { key: 'delete', label: 'Eliminar', granted: false },
       ]
     }
   ],
@@ -152,26 +152,37 @@ export function RoleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+  const [showPermsMenu, setShowPermsMenu] = useState(false);
+  const [showUsersMenu, setShowUsersMenu] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditPermissionsModalOpen, setIsEditPermissionsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAssignUserModalOpen, setIsAssignUserModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const permsMenuRef = useRef<HTMLDivElement>(null);
+  const usersMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
+      if (permsMenuRef.current && !permsMenuRef.current.contains(event.target as Node)) {
+        setShowPermsMenu(false);
+      }
+      if (usersMenuRef.current && !usersMenuRef.current.contains(event.target as Node)) {
+        setShowUsersMenu(false);
+      }
     };
 
-    if (showMenu) {
+    if (showMenu || showPermsMenu || showUsersMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu]);
+  }, [showMenu, showPermsMenu, showUsersMenu]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return (firstName[0] + lastName[0]).toUpperCase();
@@ -234,54 +245,11 @@ export function RoleDetail() {
           <h1 className="text-lg font-semibold text-gray-900">Detalle del Rol</h1>
           <p className="text-xs text-gray-500">Información completa del rol y usuarios asignados</p>
         </div>
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <MoreVertical size={20} />
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
-              <button 
-                onClick={() => {
-                  setIsEditModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Edit size={14} />
-                Editar Rol
-              </button>
-              <button 
-                onClick={() => {
-                  setIsAssignUserModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <UserPlus size={14} />
-                Asignar Usuario
-              </button>
-              <div className="border-t border-gray-100 my-1"></div>
-              <button 
-                onClick={() => {
-                  setIsDeleteModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-              >
-                <Trash2 size={14} />
-                Eliminar Rol
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Main Info Card */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className={`bg-gradient-to-r ${gradientVariants[roleData.color]} h-24`}></div>
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className={`bg-gradient-to-r ${gradientVariants[roleData.color]} h-24 rounded-t-xl`}></div>
         <div className="px-6 pb-6">
           <div className="flex items-start gap-6 -mt-12">
             <div className={`w-24 h-24 rounded-xl ${colorVariants[roleData.color]} text-white flex items-center justify-center border-4 border-white shadow-lg`}>
@@ -305,10 +273,18 @@ export function RoleDetail() {
                         {roleData.stats.grantedPermissions}/{roleData.stats.totalPermissions} permisos
                       </Badge>
                       <Badge variant="gray">
+                        <Calendar size={12} />
+                        Creado: {new Date(roleData.createdAt).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </Badge>
+                      <Badge variant="gray">
                         <Clock size={12} />
-                        {new Date(roleData.lastModified).toLocaleString('es-ES', { 
-                          day: '2-digit', 
-                          month: '2-digit', 
+                        Modificado: {new Date(roleData.lastModified).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -317,11 +293,20 @@ export function RoleDetail() {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsAssignUserModalOpen(true)}
-                  className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                </button>
+                <div className="relative flex-shrink-0" ref={menuRef}>
+                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
+                    <MoreVertical size={18} />
+                  </button>
+                  {showMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                      <button onClick={() => { setIsEditModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Rol</button>
+                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Shield size={12} />Editar Permisos</button>
+                      <button onClick={() => { setIsAssignUserModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><UserPlus size={12} />Asignar Usuario</button>
+                      <div className="border-t border-gray-100 my-1"></div>
+                      <button onClick={() => { setIsDeleteModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Rol</button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -331,45 +316,35 @@ export function RoleDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Módulos y Permisos */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Shield size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Módulos y Permisos</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  {roleData.modules.length} módulos
-                </Badge>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="flex flex-wrap gap-2">
-                {roleData.modules.map((module, index) => (
-                  <PermissionBadge
-                    key={index}
-                    moduleName={module.name}
-                    moduleKey={module.key}
-                    permissions={module.permissions}
-                    color={module.color}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Usuarios Asignados */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Users size={14} className="text-blue-600" />
                 </div>
                 <h3 className="text-xs font-semibold text-gray-900">Usuarios Asignados</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Badge variant="gray" size="sm">
                   {roleData.assignedUsers.length} usuarios
                 </Badge>
+              <div className="relative" ref={usersMenuRef}>
+                <button onClick={() => setShowUsersMenu(!showUsersMenu)} className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors">
+                  <MoreVertical size={14} />
+                </button>
+                {showUsersMenu && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
+                    <button
+                      onClick={() => { setIsAssignUserModalOpen(true); setShowUsersMenu(false); }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <UserPlus size={12} />
+                      Asignar Usuario
+                    </button>
+                  </div>
+                )}
+              </div>
               </div>
             </div>
             <div className="p-4 space-y-2">
@@ -407,119 +382,70 @@ export function RoleDetail() {
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Estadísticas */}
+          {/* Permisos */}
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Users size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Estadísticas</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-600">Usuarios Totales</span>
-                  <span className="text-xs font-semibold text-gray-900">{roleData.stats.totalUsers}</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
-                  <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: '100%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-600">Usuarios Activos</span>
-                  <span className="text-xs font-semibold text-green-600">{roleData.stats.activeUsers}</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
-                  <div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${(roleData.stats.activeUsers / roleData.stats.totalUsers) * 100}%` }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-600">Usuarios Pendientes</span>
-                  <span className="text-xs font-semibold text-yellow-600">{roleData.stats.pendingUsers}</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
-                  <div className="bg-yellow-600 h-1.5 rounded-full" style={{ width: `${(roleData.stats.pendingUsers / roleData.stats.totalUsers) * 100}%` }}></div>
-                </div>
-              </div>
-              <div className="pt-3 border-t border-gray-200">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-gray-600">Permisos Otorgados</span>
-                  <span className="text-xs font-semibold text-gray-900">{roleData.stats.grantedPermissions}/{roleData.stats.totalPermissions}</span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
-                  <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: `${(roleData.stats.grantedPermissions / roleData.stats.totalPermissions) * 100}%` }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Información del Rol */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Shield size={14} className="text-blue-600" />
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Información del Rol</h3>
+                <h3 className="text-xs font-semibold text-gray-900">Permisos</h3>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Badge variant="gray" size="sm">
+                  {roleData.modules.length} módulos
+                </Badge>
+              <div className="relative" ref={permsMenuRef}>
+                <button onClick={() => setShowPermsMenu(!showPermsMenu)} className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors">
+                  <MoreVertical size={14} />
+                </button>
+                {showPermsMenu && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
+                    <button
+                      onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermsMenu(false); }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Shield size={12} />
+                      Editar Permisos
+                    </button>
+                  </div>
+                )}
+              </div>
               </div>
             </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100">
-                  <Shield size={14} className="text-indigo-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Nombre del Rol</label>
-                  <p className="text-xs text-gray-900 font-medium">{roleData.name}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
-                  <CheckCircle size={14} className="text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Descripción</label>
-                  <p className="text-xs text-gray-900 font-medium">{roleData.description}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-100">
-                  <Clock size={14} className="text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Fecha de Creación</label>
-                  <p className="text-xs text-gray-900 font-medium">
-                    {new Date(roleData.createdAt).toLocaleString('es-ES', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100">
-                  <Clock size={14} className="text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Última Modificación</label>
-                  <p className="text-xs text-gray-900 font-medium">
-                    {new Date(roleData.lastModified).toLocaleString('es-ES', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
+            <div className="p-3 space-y-2">
+              {roleData.modules.map((module, index) => {
+                const moduleIcons: Record<string, string> = { user: '👤', role: '🛡️', person: '🧑‍🤝‍🧑', appointments: '📦' };
+                const fullPerm = module.permissions.find(p => p.key === 'full');
+                const allGranted = fullPerm?.granted && module.permissions.filter(p => p.key !== 'full').every(p => p.granted);
+
+                return (
+                  <div key={index} className="border border-gray-200 rounded-xl p-2.5 hover:border-gray-300 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px]">{moduleIcons[module.key] || '📦'}</span>
+                      <span className="text-[10px] font-semibold text-gray-900">{module.name}</span>
+                    </div>
+
+                    {allGranted ? (
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 inline-flex items-center gap-1">
+                        <CheckCircle size={9} />Todos los permisos
+                      </span>
+                    ) : (
+                      <div className="flex flex-wrap gap-1">
+                        {module.permissions
+                          .filter(p => p.key !== 'full')
+                          .filter(p => p.granted)
+                          .map((perm) => (
+                            <span key={perm.key} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                              {perm.label}
+                            </span>
+                          ))
+                        }
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -531,6 +457,12 @@ export function RoleDetail() {
         onClose={() => setIsEditModalOpen(false)}
         roleData={roleData}
         onSave={handleEditRole}
+      />
+      <EditPermissionsModal
+        isOpen={isEditPermissionsModalOpen}
+        onClose={() => setIsEditPermissionsModalOpen(false)}
+        modules={roleData.modules}
+        onSave={(modules) => console.log('Permisos actualizados:', modules)}
       />
       <DeleteRoleModal
         isOpen={isDeleteModalOpen}

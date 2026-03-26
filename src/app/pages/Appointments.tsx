@@ -153,17 +153,17 @@ export function Appointments() {
       </div>
 
       {/* Stats Bar */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl px-5 py-4 flex items-center justify-between border border-gray-200">
+      <div className="bg-white rounded-xl px-5 py-3 flex items-center justify-between border border-gray-200">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span className="text-xs text-gray-600">Tienes</span>
-            <span className="text-xs font-semibold text-gray-900">{stats.confirmed} citas confirmadas</span>
+            <span className="text-[10px] text-gray-500">Tienes</span>
+            <span className="text-xs font-semibold text-gray-900">{stats.confirmed} confirmadas</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
             <span className="text-xs font-semibold text-gray-900">{stats.pending} pendientes</span>
-            <span className="text-xs text-gray-600">para hoy</span>
+            <span className="text-[10px] text-gray-500">para hoy</span>
           </div>
         </div>
         <DatePickerPopover

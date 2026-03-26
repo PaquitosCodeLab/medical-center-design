@@ -126,9 +126,9 @@ export function PermissionBadge({ moduleName, moduleKey, permissions, color = 'b
 
   const renderPermission = (permission: Permission) => {
     return (
-      <div key={permission.key} className="flex items-center gap-2 py-1.5">
-        <CheckCircle size={14} className="text-green-600 flex-shrink-0" />
-        <span className="text-xs text-gray-900 font-medium">
+      <div key={permission.key} className="flex items-center gap-1.5 py-0.5">
+        <CheckCircle size={10} className="text-blue-600 flex-shrink-0" />
+        <span className="text-[10px] text-gray-900 font-medium">
           {permission.label}
         </span>
       </div>
@@ -142,10 +142,10 @@ export function PermissionBadge({ moduleName, moduleKey, permissions, color = 'b
         onMouseEnter={() => setShowPopover(true)}
         className="transition-all hover:shadow-sm rounded-full"
       >
-        <Badge variant={color as any}>
-          <span>{moduleIcons[moduleKey] || '📦'}</span>
+        <Badge variant="blue" size="sm">
+          <span className="text-[10px]">{moduleIcons[moduleKey] || '📦'}</span>
           <span>{moduleName}</span>
-          <span className="ml-0.5 px-1.5 py-0.5 bg-white rounded-full text-[10px] font-semibold">
+          <span className="ml-0.5 px-1 py-0 bg-white rounded-full text-[9px] font-semibold leading-none">
             {grantedCount}
           </span>
         </Badge>
@@ -154,19 +154,15 @@ export function PermissionBadge({ moduleName, moduleKey, permissions, color = 'b
       {showPopover && linearPermissions.length > 0 && (
         <div
           ref={popoverRef}
-          className="absolute bottom-full left-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-4"
+          className="absolute bottom-full left-0 mb-1.5 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
           onMouseLeave={() => setShowPopover(false)}
         >
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
-            <span className="text-lg">{moduleIcons[moduleKey] || '📦'}</span>
-            <div className="flex-1">
-              <h4 className="text-sm font-semibold text-gray-900">{moduleName}</h4>
-              <p className="text-xs text-gray-500">
-                {grantedCount} {grantedCount === 1 ? 'permiso' : 'permisos'}
-              </p>
-            </div>
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
+            <span className="text-xs">{moduleIcons[moduleKey] || '📦'}</span>
+            <h4 className="text-[10px] font-semibold text-gray-900">{moduleName}</h4>
+            <span className="text-[9px] text-gray-500 bg-white px-1.5 py-0.5 rounded-full ml-auto">{grantedCount}</span>
           </div>
-          <div className="space-y-0.5 max-h-64 overflow-y-auto">
+          <div className="px-3 py-2 space-y-0 max-h-48 overflow-y-auto">
             {linearPermissions.map(permission => renderPermission(permission))}
           </div>
         </div>

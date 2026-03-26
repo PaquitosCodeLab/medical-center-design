@@ -26,14 +26,14 @@ export function UserListItem({ user, onEdit, onUpdate, onDelete }: UserListItemP
       <div className="flex items-center gap-4">
         {/* Avatar */}
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-white group-hover:ring-blue-200 transition-all">
-          <span className="text-sm text-white font-medium">
+          <span className="text-[10px] text-white font-medium">
             {user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
           </span>
         </div>
 
         {/* User Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-gray-900 truncate">{user.name}</h3>
+          <h3 className="text-xs font-medium text-gray-900 truncate">{user.name}</h3>
           <div className="flex items-center gap-2">
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
             {user.lastActivity && (

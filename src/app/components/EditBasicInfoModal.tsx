@@ -1,4 +1,4 @@
-import { X, IdCard, Calendar, User } from 'lucide-react';
+import { X, IdCard, Calendar, User, Users, HelpCircle, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface Identification {
@@ -44,7 +44,6 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
     newIdentifications[index][field] = value;
     setIdentifications(newIdentifications);
 
-    // Clear error for this field
     const newErrors = { ...errors };
     if (newErrors[index]) {
       delete newErrors[index][field];
@@ -90,145 +89,232 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
     }
   };
 
+  const handleCancel = () => {
+    setIdentifications(basicInfoData.identifications);
+    setGender(basicInfoData.gender);
+    setBirthDate(basicInfoData.birthDate);
+    setErrors({});
+    onClose();
+  };
+
+  const getIdTypeIcon = (type: string) => {
+    switch (type) {
+      case 'DNI':
+        return <IdCard size={13} className="text-blue-600" />;
+      case 'NIE':
+        return <IdCard size={13} className="text-blue-600" />;
+      case 'Pasaporte':
+        return <IdCard size={13} className="text-blue-600" />;
+      default:
+        return <HelpCircle size={13} className="text-blue-600" />;
+    }
+  };
+
+  const getIdTypeColor = (_type: string) => {
+    return 'bg-blue-50 border-blue-200 text-blue-700';
+  };
+
+  const getGenderIcon = (option: string) => {
+    switch (option) {
+      case 'Masculino':
+        return <User size={13} className="text-blue-600" />;
+      case 'Femenino':
+        return <User size={13} className="text-blue-600" />;
+      case 'Otro':
+        return <Users size={13} className="text-blue-600" />;
+      default:
+        return <HelpCircle size={13} className="text-blue-600" />;
+    }
+  };
+
+  const getGenderColor = (_option: string) => {
+    return 'bg-blue-50 border-blue-200 text-blue-700';
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <IdCard size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Editar Información Básica</h2>
-                <p className="text-xs text-gray-500">Actualiza la información básica de la persona</p>
-              </div>
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <IdCard size={16} className="text-blue-600" />
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-blue-200 rounded-lg transition-colors"
-            >
-              <X size={20} className="text-gray-600" />
-            </button>
+            <h2 className="text-sm font-semibold text-gray-900">Editar Información Básica</h2>
           </div>
+          <button
+            onClick={handleCancel}
+            className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors"
+          >
+            <X size={16} />
+          </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="grid grid-cols-2 gap-4">
             {/* Identificaciones */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <label className="text-xs font-semibold text-gray-900 flex items-center gap-2">
-                  <IdCard size={14} className="text-blue-600" />
-                  Identificaciones
-                </label>
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-blue-100 rounded">
+                    <IdCard size={12} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Identificaciones</h3>
+                  <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                    {identifications.length}
+                  </span>
+                </div>
                 <button
                   onClick={handleAddIdentification}
-                  className="px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1"
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                  title="Agregar identificación"
                 >
-                  <span className="text-lg leading-none">+</span>
-                  Agregar
+                  <Plus size={13} />
+                  <span>Agregar</span>
                 </button>
               </div>
-              <div className="space-y-3">
+
+              <div className="space-y-2.5">
                 {identifications.map((identification, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-1 space-y-3">
-                        <div>
-                          <label className="block text-[10px] font-medium text-gray-700 mb-1">
-                            Tipo de Identificación
-                          </label>
-                          <select
-                            value={identification.type}
-                            onChange={(e) => handleIdentificationChange(index, 'type', e.target.value)}
-                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          >
-                            {IDENTIFICATION_TYPES.map((type) => (
-                              <option key={type} value={type}>{type}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-medium text-gray-700 mb-1">
-                            Número de Identificación *
-                          </label>
-                          <input
-                            type="text"
-                            value={identification.number}
-                            onChange={(e) => handleIdentificationChange(index, 'number', e.target.value)}
-                            placeholder="Ej: 12345678A"
-                            className={`w-full px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              errors[index]?.number ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                          />
-                          {errors[index]?.number && (
-                            <p className="text-[10px] text-red-600 mt-1">{errors[index].number}</p>
-                          )}
-                        </div>
-                      </div>
-                      {identifications.length > 1 && (
+                  <div
+                    key={index}
+                    className="group relative border rounded-xl p-3 transition-all hover:shadow-md border-gray-200 bg-white hover:border-gray-300"
+                  >
+                    {/* Type Selector */}
+                    <div className="flex items-center gap-1.5 mb-2">
+                      {IDENTIFICATION_TYPES.map((type) => (
                         <button
-                          onClick={() => handleRemoveIdentification(index)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-6"
+                          key={type}
+                          onClick={() => handleIdentificationChange(index, 'type', type)}
+                          className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${
+                            identification.type === type
+                              ? getIdTypeColor(type)
+                              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                          }`}
                         >
-                          <X size={16} />
+                          {getIdTypeIcon(type)}
+                          <span>{type}</span>
                         </button>
+                      ))}
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleRemoveIdentification(index)}
+                        className="ml-auto p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        disabled={identifications.length === 1}
+                        title="Eliminar"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    {/* Number Input */}
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-medium text-gray-600">
+                        Número de identificación
+                      </label>
+                      <input
+                        type="text"
+                        value={identification.number}
+                        onChange={(e) => handleIdentificationChange(index, 'number', e.target.value)}
+                        placeholder="Ej: 12345678A"
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                          errors[index]?.number ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+                        }`}
+                      />
+                      {errors[index]?.number && (
+                        <p className="text-[10px] text-red-600 ml-1">{errors[index].number}</p>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
+
+              {identifications.length === 0 && (
+                <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
+                    <IdCard size={20} className="text-gray-400" />
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">No hay identificaciones agregadas</p>
+                  <button
+                    onClick={handleAddIdentification}
+                    className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                  >
+                    Agregar identificación
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Género */}
+            {/* Información Personal */}
             <div>
-              <label className="block text-xs font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <User size={14} className="text-blue-600" />
-                Género *
-              </label>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {GENDER_OPTIONS.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1 bg-blue-100 rounded">
+                  <User size={12} className="text-blue-600" />
+                </div>
+                <h3 className="text-xs font-semibold text-gray-900">Información Personal</h3>
+              </div>
 
-            {/* Fecha de Nacimiento */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <Calendar size={14} className="text-blue-600" />
-                Fecha de Nacimiento *
-              </label>
-              <input
-                type="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="border rounded-xl p-3 border-gray-200 bg-white space-y-3">
+                {/* Género */}
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1.5">
+                    Género
+                  </label>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {GENDER_OPTIONS.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setGender(option)}
+                        className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${
+                          gender === option
+                            ? getGenderColor(option)
+                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        {getGenderIcon(option)}
+                        <span>{option}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fecha de Nacimiento */}
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1.5">
+                    Fecha de nacimiento
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-blue-50 rounded-lg">
+                      <Calendar size={13} className="text-blue-600" />
+                    </div>
+                    <input
+                      type="date"
+                      value={birthDate}
+                      onChange={(e) => setBirthDate(e.target.value)}
+                      className="flex-1 px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+        <div className="flex items-center justify-end gap-2 px-4 py-2.5 border-t border-gray-200 bg-gray-50">
           <button
-            onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+            onClick={handleCancel}
+            className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
-            Guardar Cambios
+            Guardar
           </button>
         </div>
       </div>

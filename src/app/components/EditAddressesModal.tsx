@@ -88,33 +88,26 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'Casa':
-        return <Home size={13} className="text-orange-600" />;
+        return <Home size={13} className="text-blue-600" />;
       case 'Trabajo':
         return <Briefcase size={13} className="text-blue-600" />;
       default:
-        return <MapPinned size={13} className="text-gray-600" />;
+        return <MapPinned size={13} className="text-blue-600" />;
     }
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Casa':
-        return 'bg-orange-50 border-orange-200 text-orange-700';
-      case 'Trabajo':
-        return 'bg-blue-50 border-blue-200 text-blue-700';
-      default:
-        return 'bg-gray-50 border-gray-200 text-gray-700';
-    }
+  const getTypeColor = (_type: string) => {
+    return 'bg-blue-50 border-blue-200 text-blue-700';
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-white">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-orange-100 rounded-lg">
-              <MapPin size={16} className="text-orange-600" />
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <MapPin size={16} className="text-blue-600" />
             </div>
             <h2 className="text-sm font-semibold text-gray-900">Editar Direcciones</h2>
           </div>
@@ -137,7 +130,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
             </div>
             <button
               onClick={handleAddAddress}
-              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors border border-orange-200"
+              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
             >
               <Plus size={13} />
               <span>Agregar</span>
@@ -149,14 +142,14 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
               <div 
                 key={index} 
                 className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${
-                  address.isPrimary 
-                    ? 'border-orange-300 bg-gradient-to-br from-orange-50 to-white shadow-sm' 
+                  address.isPrimary
+                    ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm'
                     : 'border-gray-200 bg-white hover:border-gray-300'
                 }`}
               >
                 {/* Primary Badge */}
                 {address.isPrimary && (
-                  <div className="absolute -top-2 -right-2 bg-orange-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                  <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
                     Principal
                   </div>
                 )}
@@ -183,12 +176,12 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
                   <div className="flex-1"></div>
 
                   {/* Primary Checkbox */}
-                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-orange-600 transition-colors">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-xs text-gray-600 hover:text-blue-600 transition-colors">
                     <input
                       type="checkbox"
                       checked={address.isPrimary}
                       onChange={(e) => handleAddressChange(index, 'isPrimary', e.target.checked)}
-                      className="w-3.5 h-3.5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                      className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <span className="text-[10px] font-medium">Marcar como principal</span>
                   </label>
@@ -216,7 +209,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
                       value={address.street}
                       onChange={(e) => handleAddressChange(index, 'street', e.target.value)}
                       placeholder="Ej: Av. Principal 123"
-                      className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all ${
+                      className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                         errors[index]?.street ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
                       }`}
                     />
@@ -236,7 +229,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
                         value={address.city}
                         onChange={(e) => handleAddressChange(index, 'city', e.target.value)}
                         placeholder="Ciudad"
-                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all ${
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                           errors[index]?.city ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
                         }`}
                       />
@@ -254,7 +247,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
                         value={address.postalCode}
                         onChange={(e) => handleAddressChange(index, 'postalCode', e.target.value)}
                         placeholder="28001"
-                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all ${
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                           errors[index]?.postalCode ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
                         }`}
                       />
@@ -270,7 +263,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
                       <select
                         value={address.country}
                         onChange={(e) => handleAddressChange(index, 'country', e.target.value)}
-                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all ${
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
                           errors[index]?.country ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
                         }`}
                       >
@@ -315,7 +308,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
               <p className="text-xs text-gray-600">No hay direcciones agregadas</p>
               <button
                 onClick={handleAddAddress}
-                className="mt-3 px-3 py-1.5 text-xs font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors border border-orange-200"
+                className="mt-3 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
               >
                 Agregar primera dirección
               </button>
@@ -333,7 +326,7 @@ export function EditAddressesModal({ isOpen, onClose, addressesData, onSave }: E
           </button>
           <button
             onClick={handleSave}
-            className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors"
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
             Guardar
           </button>

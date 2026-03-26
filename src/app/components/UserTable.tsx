@@ -58,13 +58,13 @@ export function UserTable({ users, onEdit, onUpdate, onDelete }: UserTableProps)
                         {user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900">{user.name}</span>
+                    <span className="text-xs font-medium text-gray-900">{user.name}</span>
                   </div>
                 </td>
 
                 {/* Email */}
                 <td className="px-4 py-3">
-                  <span className="text-sm text-gray-600">{user.email}</span>
+                  <span className="text-xs text-gray-600">{user.email}</span>
                 </td>
 
                 {/* Role */}
@@ -94,7 +94,7 @@ export function UserTable({ users, onEdit, onUpdate, onDelete }: UserTableProps)
                 {/* Last Activity */}
                 <td className="px-4 py-3">
                   {user.lastActivity && (
-                    <span className="text-sm text-gray-500">{user.lastActivity}</span>
+                    <span className="text-xs text-gray-500">{user.lastActivity}</span>
                   )}
                 </td>
 

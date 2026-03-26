@@ -1,12 +1,12 @@
-import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, Lock, CheckCircle, Globe, Monitor, Key, Tag, IdCard, Hash, Cake, Briefcase, Users, XCircle, Smartphone, Home as HomeIcon, User } from 'lucide-react';
+import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, CheckCircle, Globe, Monitor, Briefcase, XCircle, Smartphone, Home as HomeIcon, User, Lock } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Badge } from '../components/Badge';
-import { PermissionBadge } from '../components/PermissionBadge';
-import { ChangePasswordModal, type PasswordData } from '../components/ChangePasswordModal';
-import { EditUserModal, type UserData } from '../components/EditUserModal';
+import {
+  AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
 import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
 import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
-import { DetailCard } from '../components/DetailCard';
 
 // Mock data - en producción vendría de una API o contexto de autenticación
 const currentUser = {
@@ -263,23 +263,38 @@ const currentUser = {
   }
 };
 
+// --- Chart Mock Data ---
+const loginsPorMes = [
+  { mes: 'Oct', logins: 18 },
+  { mes: 'Nov', logins: 24 },
+  { mes: 'Dic', logins: 15 },
+  { mes: 'Ene', logins: 28 },
+  { mes: 'Feb', logins: 22 },
+  { mes: 'Mar', logins: 31 },
+];
+
+function ChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-white px-3 py-2 rounded-lg shadow-lg border border-gray-100">
+      <p className="text-[10px] font-medium text-gray-500 mb-0.5">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <p key={i} className="text-xs font-semibold text-gray-900">{entry.value}</p>
+      ))}
+    </div>
+  );
+}
+
 export function Profile() {
-  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
   const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [showContactsMenu, setShowContactsMenu] = useState(false);
   const [showAddressesMenu, setShowAddressesMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const contactsMenuRef = useRef<HTMLDivElement>(null);
   const addressesMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
       if (contactsMenuRef.current && !contactsMenuRef.current.contains(event.target as Node)) {
         setShowContactsMenu(false);
       }
@@ -288,37 +303,25 @@ export function Profile() {
       }
     };
 
-    if (showMenu || showContactsMenu || showAddressesMenu) {
+    if (showContactsMenu || showAddressesMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu, showContactsMenu, showAddressesMenu]);
+  }, [showContactsMenu, showAddressesMenu]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return (firstName[0] + lastName[0]).toUpperCase();
   };
 
-  const handleEditUser = (updatedUser: UserData) => {
-    console.log('Usuario actualizado:', updatedUser);
-    // Aquí iría la lógica para actualizar el perfil en la API
-  };
-
-  const handleChangePassword = (passwords: PasswordData) => {
-    console.log('Contraseña cambiada:', passwords);
-    // Aquí iría la lógica para cambiar la contraseña en la API
-  };
-
   const handleEditContacts = (contacts: ContactsData) => {
     console.log('Contactos actualizados:', contacts);
-    // Aquí iría la lógica para actualizar los contactos en la API
   };
 
   const handleEditAddresses = (addresses: AddressesData) => {
     console.log('Direcciones actualizadas:', addresses);
-    // Aquí iría la lógica para actualizar las direcciones en la API
   };
 
   const getEventIcon = (event: string) => {
@@ -377,38 +380,6 @@ export function Profile() {
           <h1 className="text-lg font-semibold text-gray-900">Mi Perfil</h1>
           <p className="text-xs text-gray-500">Información personal y configuración de cuenta</p>
         </div>
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <MoreVertical size={20} />
-          </button>
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
-              <button 
-                onClick={() => {
-                  setIsEditModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Edit size={14} />
-                Editar Perfil
-              </button>
-              <button 
-                onClick={() => {
-                  setIsChangePasswordModalOpen(true);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Lock size={14} />
-                Cambiar Contraseña
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Main Info Card */}
@@ -439,10 +410,18 @@ export function Profile() {
                         {currentUser.userType}
                       </Badge>
                       <Badge variant="gray">
+                        <Calendar size={12} />
+                        Creado: {new Date(currentUser.createdAt).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })}
+                      </Badge>
+                      <Badge variant="gray">
                         <Clock size={12} />
-                        Último acceso: {new Date(currentUser.lastLogin).toLocaleString('es-ES', { 
-                          day: '2-digit', 
-                          month: '2-digit', 
+                        Último acceso: {new Date(currentUser.lastLogin).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -508,123 +487,34 @@ export function Profile() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Información Personal */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-blue-100 rounded-lg">
-                    <UserCircle size={14} className="text-blue-600" />
-                  </div>
-                  <h3 className="text-xs font-semibold text-gray-900">Información Personal</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="blue">
-                    <Shield size={10} />
-                    {currentUser.userType}
-                  </Badge>
-                  <Badge variant={currentUser.status === 'Confirmado' ? 'green' : 'yellow'}>
-                    <CheckCircle size={10} />
-                    {currentUser.status}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-            <div className="p-4">
-              <div className="space-y-3">
-                {/* Nombre Completo */}
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
-                    <UserCircle size={14} className="text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Nombre Completo</label>
-                    <p className="text-xs text-gray-900 font-medium">{currentUser.firstName} {currentUser.lastName}</p>
-                  </div>
-                </div>
-
-                {/* Fecha de Creación */}
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100">
-                    <Calendar size={14} className="text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Fecha de Creación</label>
-                    <p className="text-xs text-gray-900 font-medium">
-                      {new Date(currentUser.createdAt).toLocaleString('es-ES', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Roles Asignados */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          {/* Accesos por Mes - Area Chart */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Shield size={14} className="text-blue-600" />
+                  <TrendingUp size={14} className="text-blue-600" />
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Roles Asignados</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  {currentUser.roles.length} {currentUser.roles.length === 1 ? 'rol' : 'roles'}
-                </Badge>
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              {currentUser.roles.map((role) => (
-                <div key={role.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <h4 className="text-xs font-medium text-gray-900 mb-3 flex items-center gap-2">
-                    <Shield size={14} className="text-blue-600" />
-                    {role.name}
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {role.modules.map((module, index) => (
-                      <PermissionBadge
-                        key={index}
-                        moduleName={module.name}
-                        moduleKey={module.key}
-                        permissions={module.permissions}
-                        color={module.color}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Permisos Directos */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <CheckCircle size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Permisos Directos</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  {currentUser.directModules.length} {currentUser.directModules.length === 1 ? 'módulo' : 'módulos'}
-                </Badge>
+                <h3 className="text-xs font-semibold text-gray-900">Accesos por Mes</h3>
+                <Badge variant="gray" size="sm" className="ml-auto">Últimos 6 meses</Badge>
               </div>
             </div>
             <div className="p-4">
-              <div className="flex flex-wrap gap-2">
-                {currentUser.directModules.map((module, index) => (
-                  <PermissionBadge
-                    key={index}
-                    moduleName={module.name}
-                    moduleKey={module.key}
-                    permissions={module.permissions}
-                    color={module.color}
-                  />
-                ))}
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={loginsPorMes} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="profileBlueGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                    <XAxis dataKey="mes" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Area type="monotone" dataKey="logins" stroke="#3b82f6" strokeWidth={2} fill="url(#profileBlueGrad)" />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
@@ -732,7 +622,7 @@ export function Profile() {
                 </button>
                 {showContactsMenu && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
-                    <button 
+                    <button
                       onClick={() => {
                         setIsEditContactsModalOpen(true);
                         setShowContactsMenu(false);
@@ -832,7 +722,7 @@ export function Profile() {
                 </button>
                 {showAddressesMenu && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
-                    <button 
+                    <button
                       onClick={() => {
                         setIsEditAddressesModalOpen(true);
                         setShowAddressesMenu(false);
@@ -876,18 +766,6 @@ export function Profile() {
       </div>
 
       {/* Modals */}
-      <EditUserModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        userData={currentUser}
-        onSave={handleEditUser}
-      />
-      <ChangePasswordModal
-        isOpen={isChangePasswordModalOpen}
-        onClose={() => setIsChangePasswordModalOpen(false)}
-        onChange={handleChangePassword}
-        userName={`${currentUser.firstName} ${currentUser.lastName}`}
-      />
       <EditContactsModal
         isOpen={isEditContactsModalOpen}
         onClose={() => setIsEditContactsModalOpen(false)}
