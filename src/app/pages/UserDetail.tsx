@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Mail, Shield, CheckCircle, XCircle, Clock, MapPin, Globe, Monitor, Calendar, User, Phone, IdCard, Cake, MoreVertical, Edit, Trash2, Settings } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
 import { EditUserModal, type UserData } from '../components/EditUserModal';
@@ -247,6 +248,7 @@ const userData = {
 };
 
 export function UserDetail() {
+  useHeader({ title: 'Detalle del Usuario', subtitle: 'Información completa y actividad del usuario', backTo: '/accounts/users' });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -330,19 +332,6 @@ export function UserDetail() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => navigate('/accounts/users')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-lg font-semibold text-gray-900">Detalle del Usuario</h1>
-          <p className="text-xs text-gray-500">Información completa y actividad del usuario</p>
-        </div>
-      </div>
 
       {/* Main Info Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">

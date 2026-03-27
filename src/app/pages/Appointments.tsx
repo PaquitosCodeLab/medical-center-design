@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, CheckCircle, Clock, XCircle, Filter, Search } from 'lucide-react';
+import { useHeader } from '../components/HeaderContext';
 import { CalendarMonth } from '../components/calendar/CalendarMonth';
 import { DaySchedule } from '../components/calendar/DaySchedule';
 import { FilterPopover } from '../components/FilterPopover';
@@ -45,6 +46,15 @@ const allAppointments: Appointment[] = [
 ];
 
 export function Appointments() {
+  useHeader({
+    title: 'Citas',
+    subtitle: 'Gestión del calendario médico',
+    actions: (
+      <button className="p-1 text-white" title="Nueva Cita">
+        <Plus size={15} />
+      </button>
+    ),
+  });
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [searchQuery, setSearchQuery] = useState('');
@@ -140,17 +150,6 @@ export function Appointments() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Citas</h1>
-          <p className="text-xs text-gray-500">Gestión del calendario médico</p>
-        </div>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium">
-          <Plus size={14} />
-          Nuevo
-        </button>
-      </div>
 
       {/* Stats Bar */}
       <div className="bg-white rounded-xl px-5 py-3 flex items-center justify-between border border-gray-200">

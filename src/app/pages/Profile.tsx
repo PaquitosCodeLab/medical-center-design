@@ -1,5 +1,6 @@
 import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, CheckCircle, Globe, Monitor, Briefcase, XCircle, Smartphone, Home as HomeIcon, User, Lock } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
 import {
   AreaChart, Area,
@@ -286,6 +287,7 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 export function Profile() {
+  useHeader({ title: 'Mi Perfil', subtitle: 'Información personal y configuración de cuenta' });
   const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
   const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
   const [showContactsMenu, setShowContactsMenu] = useState(false);
@@ -374,13 +376,6 @@ export function Profile() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900">Mi Perfil</h1>
-          <p className="text-xs text-gray-500">Información personal y configuración de cuenta</p>
-        </div>
-      </div>
 
       {/* Main Info Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">

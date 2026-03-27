@@ -1,5 +1,6 @@
 import { Settings, Globe, Moon, PanelLeftClose, Lock, Eye, EyeOff, Bell, Mail, Smartphone, X } from 'lucide-react';
 import { useState } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { useSidebar } from '../components/SidebarContext';
 import { useTheme } from '../components/ThemeContext';
 import { Badge } from '../components/Badge';
@@ -144,6 +145,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
 }
 
 export function Preferences() {
+  useHeader({ title: 'Preferencias', subtitle: 'Configuración general del sistema' });
   const { collapsed: compactSidebar, setCollapsed: setCompactSidebar } = useSidebar();
   const { darkMode, setDarkMode } = useTheme();
   const [appColor, setAppColor] = useState('blue');
@@ -155,11 +157,6 @@ export function Preferences() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Preferencias</h1>
-        <p className="text-[10px] text-gray-500">Configuración general del sistema</p>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* General */}

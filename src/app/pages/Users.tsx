@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
+import { useHeader } from '../components/HeaderContext';
 import { UserCard, User } from '../components/UserCard';
 import { UserTable } from '../components/UserTable';
 import { UserListItem } from '../components/UserListItem';
@@ -112,6 +113,15 @@ export function Users() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+  useHeader({
+    title: 'Usuarios',
+    subtitle: 'Gestión de usuarios del sistema',
+    actions: (
+      <button onClick={() => setIsCreateUserModalOpen(true)} className="p-1 text-white" title="Nuevo Usuario">
+        <Plus size={15} />
+      </button>
+    ),
+  });
 
   const handleUserUpdate = (updatedUser: User) => {
     setUsers(users.map(user => user.id === updatedUser.id ? updatedUser : user));
@@ -198,19 +208,6 @@ export function Users() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Usuarios</h1>
-          <p className="text-xs text-gray-500">Gestión de usuarios del sistema</p>
-        </div>
-        <button 
-          onClick={() => setIsCreateUserModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-        >
-          <Plus size={14} />
-          Nuevo Usuario
-        </button>
-      </div>
 
       {/* Search, Filters and View Toggle */}
       <div className="flex items-center gap-2">

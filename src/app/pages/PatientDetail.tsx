@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
 import { DetailCard } from '../components/DetailCard';
 import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
@@ -591,6 +592,7 @@ function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClo
 }
 
 export function PatientDetail() {
+  useHeader({ title: 'Detalle del Paciente', subtitle: 'Información completa e historial médico del paciente', backTo: '/patients' });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -686,16 +688,6 @@ export function PatientDetail() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate('/patients')} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-          <ArrowLeft size={20} />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-lg font-semibold text-gray-900">Detalle del Paciente</h1>
-          <p className="text-xs text-gray-500">Información completa e historial médico del paciente</p>
-        </div>
-      </div>
 
       {/* Main Info Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">

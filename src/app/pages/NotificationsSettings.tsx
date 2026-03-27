@@ -1,5 +1,6 @@
 import { Bell, Calendar, UserPlus, Shield, FileText, AlertCircle, Settings, CheckCheck, Mail as MailIcon, Check, MoreVertical } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
 
 type ModuleFilter = 'all' | 'citas' | 'usuarios' | 'seguridad' | 'sistema';
@@ -37,6 +38,7 @@ const moduleConfig = {
 };
 
 export function NotificationsSettings() {
+  useHeader({ title: 'Notificaciones', subtitle: `Centro de notificaciones` });
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [moduleFilter, setModuleFilter] = useState<ModuleFilter>('all');
   const [readFilter, setReadFilter] = useState<ReadFilter>('all');
@@ -84,15 +86,6 @@ export function NotificationsSettings() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Notificaciones</h1>
-          <p className="text-[10px] text-gray-500">
-            {unreadCount > 0 ? `${unreadCount} sin leer` : 'Todas leídas'}
-          </p>
-        </div>
-      </div>
 
       {/* Filters */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">

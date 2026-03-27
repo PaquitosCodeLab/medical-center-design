@@ -1,14 +1,12 @@
 import { Server, Database, Globe, Clock, Shield, Activity, HardDrive, Cpu } from 'lucide-react';
 import { Badge } from '../components/Badge';
+import { useHeader } from '../components/HeaderContext';
 
 export function SystemConfig() {
+  useHeader({ title: 'Sistema', subtitle: 'Configuración y estado del sistema' });
+
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Sistema</h1>
-        <p className="text-[10px] text-gray-500">Configuración y estado del sistema</p>
-      </div>
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

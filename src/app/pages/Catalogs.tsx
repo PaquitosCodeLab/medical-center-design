@@ -1,5 +1,6 @@
 import { List, Plus, Search, Stethoscope, Droplet, MapPin, Building, Tag, X, Trash2, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
 
 interface CatalogDef {
@@ -98,6 +99,7 @@ function CatalogModal({ catalog, onClose }: { catalog: CatalogDef | null; onClos
 }
 
 export function Catalogs() {
+  useHeader({ title: 'Catálogos', subtitle: 'Gestión de catálogos del sistema' });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatalog, setSelectedCatalog] = useState<CatalogDef | null>(null);
 
@@ -107,11 +109,6 @@ export function Catalogs() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Catálogos</h1>
-        <p className="text-[10px] text-gray-500">Gestión de catálogos del sistema</p>
-      </div>
 
       {/* Search */}
       <div className="relative max-w-md">

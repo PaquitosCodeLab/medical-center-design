@@ -1,5 +1,6 @@
 import { Shield, Users, Plus, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { useNavigate } from 'react-router';
 import { FilterPopover } from '../components/FilterPopover';
 import { ViewToggle } from '../components/ViewToggle';
@@ -14,6 +15,15 @@ export function Roles() {
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [userCountFilter, setUserCountFilter] = useState('all');
   const [isCreateRoleModalOpen, setIsCreateRoleModalOpen] = useState(false);
+  useHeader({
+    title: 'Roles',
+    subtitle: 'Gestión de roles y permisos',
+    actions: (
+      <button onClick={() => setIsCreateRoleModalOpen(true)} className="p-1 text-white" title="Nuevo Rol">
+        <Plus size={15} />
+      </button>
+    ),
+  });
   const [morePermsPopover, setMorePermsPopover] = useState<number | null>(null);
 
   useEffect(() => {
@@ -282,19 +292,6 @@ export function Roles() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Roles</h1>
-          <p className="text-xs text-gray-500">Gestión de roles y permisos</p>
-        </div>
-        <button 
-          onClick={() => setIsCreateRoleModalOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium"
-        >
-          <Plus size={14} />
-          Nuevo Rol
-        </button>
-      </div>
 
       {/* Search, Filters and View Toggle */}
       <div className="flex items-center gap-2">

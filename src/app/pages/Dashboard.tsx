@@ -1,4 +1,5 @@
 import { Users, Calendar, UserCheck, Activity, TrendingUp, TrendingDown, Clock, AlertCircle, UserPlus, FileText, Shield } from 'lucide-react';
+import { useHeader } from '../components/HeaderContext';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -87,15 +88,12 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 export function Dashboard() {
+  useHeader({ title: 'Dashboard', subtitle: 'Resumen general del centro médico' });
   const totalDept = departamentos.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Dashboard</h1>
-        <p className="text-[10px] text-gray-500">Resumen general del centro médico</p>
-      </div>
+
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

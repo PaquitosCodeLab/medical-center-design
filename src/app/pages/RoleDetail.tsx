@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Shield, Users, CheckCircle, MoreVertical, Edit, Trash2, User, Mail, Clock, Calendar, UserPlus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
 import { EditRoleModal, EditPermissionsModal, type RoleData } from '../components/EditRoleModal';
@@ -149,6 +150,7 @@ const roleData = {
 };
 
 export function RoleDetail() {
+  useHeader({ title: 'Detalle del Rol', subtitle: 'Información completa del rol y usuarios asignados', backTo: '/accounts/roles' });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -233,19 +235,6 @@ export function RoleDetail() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => navigate('/accounts/roles')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-lg font-semibold text-gray-900">Detalle del Rol</h1>
-          <p className="text-xs text-gray-500">Información completa del rol y usuarios asignados</p>
-        </div>
-      </div>
 
       {/* Main Info Card */}
       <div className="bg-white rounded-xl border border-gray-200">

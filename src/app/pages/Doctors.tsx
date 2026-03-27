@@ -1,5 +1,6 @@
 import { Search, Plus, Mail, Phone, Calendar, Stethoscope, Users, User, IdCard, X, Trash2, GraduationCap, Award, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useHeader } from '../components/HeaderContext';
 import { Link, useNavigate } from 'react-router';
 import { FilterPopover } from '../components/FilterPopover';
 import { ViewToggle } from '../components/ViewToggle';
@@ -347,6 +348,15 @@ type ViewMode = 'cards' | 'table' | 'list';
 export function Doctors() {
   const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  useHeader({
+    title: 'Doctores',
+    subtitle: 'Gestión de doctores y especialistas',
+    actions: (
+      <button onClick={() => setIsCreateModalOpen(true)} className="p-1 text-white" title="Nuevo Doctor">
+        <Plus size={15} />
+      </button>
+    ),
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
@@ -401,16 +411,6 @@ export function Doctors() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-0.5">Doctores</h1>
-          <p className="text-xs text-gray-500">Gestión de doctores y especialistas</p>
-        </div>
-        <button onClick={() => setIsCreateModalOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium">
-          <Plus size={14} />
-          Nuevo
-        </button>
-      </div>
 
       {/* Search, Filters and View Toggle */}
       <div className="flex items-center gap-2">
