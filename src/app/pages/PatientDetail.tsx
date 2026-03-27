@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
@@ -591,6 +591,135 @@ function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClo
   );
 }
 
+// --- File Preview Modal ---
+function FilePreviewModal({ file, onClose }: { file: { name: string; date: string; size: string; type: string; category: string } | null; onClose: () => void }) {
+  if (!file) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              {file.type === 'PDF' ? <FileText size={16} className="text-blue-600" /> : <Image size={16} className="text-blue-600" />}
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">{file.name}</h2>
+              <p className="text-[10px] text-gray-500">{file.category} · {file.size}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-white rounded-lg transition-colors" title="Descargar">
+              <Download size={14} />
+            </button>
+            <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Preview Content */}
+        <div className="flex-1 overflow-y-auto">
+          {file.type === 'IMG' ? (
+            <div className="p-6 flex items-center justify-center bg-gray-50">
+              <div className="w-full max-w-md aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border border-gray-200 flex flex-col items-center justify-center gap-3">
+                <div className="w-16 h-16 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <Image size={28} className="text-blue-500" />
+                </div>
+                <p className="text-xs font-medium text-gray-700">{file.name}</p>
+                <p className="text-[10px] text-gray-400">Vista previa de imagen</p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 bg-gray-50">
+              {/* Mock PDF preview */}
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                {/* Page header */}
+                <div className="px-8 py-6 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center">
+                        <Stethoscope size={14} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-gray-900">Centro Médico MCH</p>
+                        <p className="text-[8px] text-gray-500">Sistema de Gestión Integral</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] text-gray-500">Fecha: {new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                      <p className="text-[9px] text-gray-500">Ref: MCH-{Math.floor(Math.random() * 9000 + 1000)}</p>
+                    </div>
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900 text-center">{file.name}</h3>
+                </div>
+
+                {/* Mock content */}
+                <div className="px-8 py-5 space-y-4">
+                  <div>
+                    <p className="text-[10px] font-semibold text-gray-700 mb-1">Datos del Paciente</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      <p className="text-[9px] text-gray-500">Nombre: <span className="text-gray-700 font-medium">María García López</span></p>
+                      <p className="text-[9px] text-gray-500">Edad: <span className="text-gray-700 font-medium">38 años</span></p>
+                      <p className="text-[9px] text-gray-500">ID: <span className="text-gray-700 font-medium">DNI 12345678A</span></p>
+                      <p className="text-[9px] text-gray-500">Tipo de sangre: <span className="text-gray-700 font-medium">O+</span></p>
+                    </div>
+                  </div>
+                  <div className="border-t border-gray-100 pt-3">
+                    <p className="text-[10px] font-semibold text-gray-700 mb-1">Resultados</p>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                        <span className="text-gray-600">Parámetro evaluado</span>
+                        <span className="text-gray-900 font-medium">Dentro de rango normal</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                        <span className="text-gray-600">Observaciones clínicas</span>
+                        <span className="text-gray-900 font-medium">Sin hallazgos relevantes</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                        <span className="text-gray-600">Recomendaciones</span>
+                        <span className="text-gray-900 font-medium">Control en 3 meses</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t border-gray-100 pt-3">
+                    <p className="text-[10px] font-semibold text-gray-700 mb-1">Conclusión</p>
+                    <p className="text-[9px] text-gray-600 leading-relaxed">
+                      Los resultados obtenidos se encuentran dentro de los parámetros normales. Se recomienda mantener el seguimiento médico habitual y repetir los estudios en el plazo indicado.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-8 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                  <p className="text-[8px] text-gray-400">Documento generado por MCH · {file.size}</p>
+                  <p className="text-[8px] text-gray-400">Página 1 de 1</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer info */}
+        <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className={`inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 rounded-full ${file.type === 'PDF' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+              {file.type === 'PDF' ? <FileText size={9} /> : <Image size={9} />}
+              {file.type}
+            </span>
+            <span className="text-[9px] text-gray-500">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+          </div>
+          <button className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[10px] font-medium">
+            <Download size={11} />
+            Descargar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PatientDetail() {
   useHeader({ title: 'Detalle del Paciente', subtitle: 'Información completa e historial médico del paciente', backTo: '/patients' });
   const { id } = useParams();
@@ -603,6 +732,8 @@ export function PatientDetail() {
   const [isEditAllergiesModalOpen, setIsEditAllergiesModalOpen] = useState(false);
   const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
   const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
+  const [filesCategory, setFilesCategory] = useState<'examenes' | 'informes' | 'constancias' | 'otros'>('examenes');
+  const [previewFile, setPreviewFile] = useState<{ name: string; date: string; size: string; type: string; category: string } | null>(null);
   const [citasFilter, setCitasFilter] = useState<'proximas' | 'historial'>('proximas');
   const [citasYear, setCitasYear] = useState(2026);
   const [allergies, setAllergies] = useState<Allergy[]>([
@@ -791,6 +922,84 @@ export function PatientDetail() {
             </div>
           </div>
 
+          {/* Archivos */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 rounded-lg">
+                    <FolderOpen size={14} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Archivos</h3>
+                </div>
+                <Badge variant="gray" size="sm">11 archivos</Badge>
+              </div>
+            </div>
+
+            {/* Category Tabs */}
+            <div className="px-4 py-2.5 border-b border-gray-100 flex items-center gap-1">
+              {([
+                { value: 'examenes' as const, label: 'Exámenes', count: 4, icon: ClipboardList },
+                { value: 'informes' as const, label: 'Informes', count: 3, icon: FileText },
+                { value: 'constancias' as const, label: 'Constancias', count: 2, icon: File },
+                { value: 'otros' as const, label: 'Otros', count: 2, icon: FolderOpen },
+              ]).map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setFilesCategory(tab.value)}
+                  className={`flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-all ${
+                    filesCategory === tab.value
+                      ? 'bg-blue-50 border border-blue-200 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {tab.label}
+                  <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                    filesCategory === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                  }`}>{tab.count}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* File List */}
+            <div>
+              {({
+                examenes: [
+                  { name: 'Hemograma completo', date: '2026-03-15', size: '245 KB', type: 'PDF' },
+                  { name: 'Perfil lipídico', date: '2026-03-15', size: '180 KB', type: 'PDF' },
+                  { name: 'Electrocardiograma', date: '2026-02-20', size: '1.2 MB', type: 'IMG' },
+                  { name: 'Radiografía de tórax', date: '2026-01-10', size: '3.4 MB', type: 'IMG' },
+                ],
+                informes: [
+                  { name: 'Informe cardiológico', date: '2026-03-10', size: '520 KB', type: 'PDF' },
+                  { name: 'Evaluación nutricional', date: '2026-02-15', size: '310 KB', type: 'PDF' },
+                  { name: 'Informe de alta', date: '2026-01-20', size: '280 KB', type: 'PDF' },
+                ],
+                constancias: [
+                  { name: 'Constancia de atención', date: '2026-03-15', size: '150 KB', type: 'PDF' },
+                  { name: 'Certificado médico', date: '2026-02-10', size: '120 KB', type: 'PDF' },
+                ],
+                otros: [
+                  { name: 'Consentimiento informado', date: '2026-01-15', size: '95 KB', type: 'PDF' },
+                  { name: 'Foto de identificación', date: '2026-01-15', size: '850 KB', type: 'IMG' },
+                ],
+              })[filesCategory].map((file, i) => (
+                <div key={i} onClick={() => setPreviewFile({ ...file, category: filesCategory.charAt(0).toUpperCase() + filesCategory.slice(1) })} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${file.type === 'PDF' ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'}`}>
+                    {file.type === 'PDF' ? <FileText size={14} /> : <Image size={14} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-semibold text-gray-900 truncate">{file.name}</p>
+                    <p className="text-[9px] text-gray-500 mt-0.5">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })} · {file.size}</p>
+                  </div>
+                  <button onClick={(e) => { e.stopPropagation(); }} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex-shrink-0">
+                    <Download size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Citas */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
@@ -864,7 +1073,7 @@ export function PatientDetail() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-semibold text-gray-900">{appointment.type}</p>
                         <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <Stethoscope size={10} />{appointment.doctor}
+                          <Stethoscope size={10} /><span onClick={() => navigate(`/doctors/${appointment.id}`)} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{appointment.doctor}</span>
                         </p>
                       </div>
 
@@ -902,7 +1111,7 @@ export function PatientDetail() {
                       <div className="flex-1 min-w-0">
                         <p className="text-[10px] font-semibold text-gray-900">{record.type}</p>
                         <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <Stethoscope size={10} />{record.doctor}
+                          <Stethoscope size={10} /><span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${record.id}`); }} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{record.doctor}</span>
                         </p>
                       </div>
 
@@ -1095,6 +1304,7 @@ export function PatientDetail() {
         addressesData={{ addresses: patient.addresses.map(a => ({ street: a.street, city: a.city, postalCode: a.postalCode, country: 'España', type: a.type, isPrimary: a.isPrimary })) }}
         onSave={(data: AddressesData) => console.log('Direcciones actualizadas:', data)}
       />
+      <FilePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
     </div>
   );
 }

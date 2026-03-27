@@ -1,4 +1,4 @@
-import { List, Plus, Search, Stethoscope, Droplet, MapPin, Building, Tag, X, Trash2, ChevronRight } from 'lucide-react';
+import { List, Plus, Search, Stethoscope, Droplet, MapPin, Building, Tag, X, Trash2, ChevronRight, FolderOpen } from 'lucide-react';
 import { useState } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
@@ -17,6 +17,7 @@ const catalogs: CatalogDef[] = [
   { id: 2, name: 'Tipos de Identificación', icon: Tag, description: 'Tipos de documentos de identidad', lastModified: '2026-02-28', values: ['DNI', 'NIE', 'Pasaporte', 'Otro'] },
   { id: 3, name: 'Género', icon: List, description: 'Opciones de género disponibles', lastModified: '2026-01-15', values: ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'] },
   { id: 5, name: 'Tipos de Cita', icon: List, description: 'Consulta, Control, Seguimiento, etc.', lastModified: '2026-03-18', values: ['Consulta General', 'Control', 'Seguimiento', 'Primera Consulta', 'Urgencia', 'Segunda Opinión'] },
+  { id: 6, name: 'Categorías de Archivo del Paciente', icon: FolderOpen, description: 'Categorías para clasificar archivos del paciente', lastModified: '2026-03-25', values: ['Exámenes', 'Informes', 'Constancias', 'Recetas', 'Imágenes Diagnósticas', 'Consentimientos', 'Otros'] },
 ];
 
 function CatalogModal({ catalog, onClose }: { catalog: CatalogDef | null; onClose: () => void }) {
