@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useLayoutEffect, useRef, type ReactNode } from 'react';
 
 interface HeaderConfig {
   title: string;
@@ -33,9 +33,11 @@ export function useHeaderConfig() {
 
 export function useHeader(config: HeaderConfig) {
   const { setConfig } = useHeaderConfig();
+  const configRef = useRef(config);
+  configRef.current = config;
 
-  useEffect(() => {
-    setConfig(config);
+  useLayoutEffect(() => {
+    setConfig(configRef.current);
     return () => setConfig({ title: '', subtitle: '' });
-  });
+  }, [config.title, config.subtitle, config.backTo, setConfig]);
 }
