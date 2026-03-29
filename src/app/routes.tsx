@@ -1,7 +1,7 @@
 import { createHashRouter } from "react-router";
 import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
-import { Appointments } from "./pages/Appointments";
+import { Appointments2 as Appointments } from "./pages/Appointments2";
 import { Doctors } from "./pages/Doctors";
 import { DoctorDetail } from "./pages/DoctorDetail";
 import { Patients } from "./pages/Patients";

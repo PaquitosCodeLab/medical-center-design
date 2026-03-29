@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File, Upload, Plus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
+import { WeekDatePicker, MonthCalendarBadge } from '../components/WeekDatePicker';
 import { DetailCard } from '../components/DetailCard';
 import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
 import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
@@ -505,19 +506,10 @@ function EditAllergiesModal({ isOpen, onClose, allergies: initialAllergies, onSa
 }
 
 // --- Cita Detail Modal ---
-interface CitaRecord {
-  id: number;
-  date: string;
-  time: string;
-  type: string;
-  doctor: string;
-  status: 'Completada' | 'Cancelada';
-  notes: string;
-  observation: string;
-}
-
-function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClose: () => void }) {
+function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: number; date: string; time: string; type: string; specialty: string; duration: string; color: string; avatar: string; doctor: string; status: string; notes: string; observation: string } | null; onClose: () => void; onNavigateDoctor?: (id: number) => void }) {
   if (!record) return null;
+
+  const statusColor = record.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -525,7 +517,7 @@ function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClo
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-100 rounded-lg">
-              <FileText size={16} className="text-blue-600" />
+              <Calendar size={16} className="text-blue-600" />
             </div>
             <h2 className="text-sm font-semibold text-gray-900">Detalle de Cita</h2>
           </div>
@@ -535,39 +527,37 @@ function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClo
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {/* Unified Info Row */}
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-              <span className="text-sm font-bold text-gray-900 leading-none">
-                {new Date(record.date).getDate()}
-              </span>
-              <span className="text-[9px] text-gray-500 uppercase">
-                {new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}
-              </span>
+            <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+              <span className="text-sm font-bold text-blue-700 leading-none">{new Date(record.date).getDate()}</span>
+              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
             </div>
-            <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
+            <div className="flex-shrink-0 text-center">
+              <p className="text-[10px] font-bold text-gray-900">{record.time}</p>
+              <p className="text-[9px] text-gray-400">{record.duration}</p>
+            </div>
+            <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
+              {record.avatar}
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold text-gray-900">{record.type} · {record.notes}</p>
-              <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                <Stethoscope size={10} />{record.doctor}
+              <div className="flex items-center gap-2">
+                <span onClick={() => { onClose(); onNavigateDoctor?.(record.id); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{record.doctor}</span>
+                <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
+              </div>
+              <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                <span>{record.type}</span>
+                <span>·</span>
+                <span>{record.specialty}</span>
               </p>
-            </div>
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">{record.time}</span>
-              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
-                record.status === 'Completada'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              }`}>{record.status}</span>
             </div>
           </div>
 
-          {/* Observación */}
           {record.observation ? (
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1 bg-blue-100 rounded">
-                  <MessageSquare size={12} className="text-blue-600" />
+                  <FileText size={12} className="text-blue-600" />
                 </div>
                 <h3 className="text-xs font-semibold text-gray-900">Observación de la Cita</h3>
               </div>
@@ -577,14 +567,14 @@ function CitaDetailModal({ record, onClose }: { record: CitaRecord | null; onClo
             </div>
           ) : (
             <div className="text-center py-4 border border-dashed border-gray-300 rounded-xl">
-              <MessageSquare size={16} className="text-gray-400 mx-auto mb-1" />
+              <FileText size={16} className="text-gray-400 mx-auto mb-1" />
               <p className="text-[10px] text-gray-500">Sin observaciones registradas</p>
             </div>
           )}
         </div>
 
         <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50">
-          <button onClick={onClose} className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors">Cerrar</button>
+          <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">Cerrar</button>
         </div>
       </div>
     </div>
@@ -720,6 +710,120 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
   );
 }
 
+// --- Upload File Modal ---
+function UploadFileModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [dragOver, setDragOver] = useState(false);
+  const [files, setFiles] = useState<{ name: string; size: string; type: string; category: string }[]>([]);
+  const [category, setCategory] = useState('examenes');
+
+  if (!isOpen) return null;
+
+  const addMockFile = () => {
+    setFiles(prev => [...prev, {
+      name: `archivo_${prev.length + 1}.pdf`,
+      size: `${Math.floor(Math.random() * 900 + 100)} KB`,
+      type: 'PDF',
+      category,
+    }]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg">
+              <Upload size={16} className="text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Agregar Archivo</h2>
+              <p className="text-[10px] text-gray-500">Sube archivos al expediente del paciente</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-4">
+          {/* Category selector */}
+          <div>
+            <label className="text-[10px] font-medium text-gray-700 mb-1.5 block">Categoría</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            >
+              <option value="examenes">Exámenes</option>
+              <option value="informes">Informes</option>
+              <option value="constancias">Constancias</option>
+              <option value="otros">Otros</option>
+            </select>
+          </div>
+
+          {/* Drop zone */}
+          <div
+            onClick={addMockFile}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setDragOver(false); addMockFile(); }}
+            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+              dragOver
+                ? 'border-blue-400 bg-blue-50'
+                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            }`}
+          >
+            <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Upload size={20} className="text-blue-500" />
+            </div>
+            <p className="text-xs font-medium text-gray-700">Arrastra archivos aquí o haz clic para seleccionar</p>
+            <p className="text-[10px] text-gray-400 mt-1">PDF, JPG, PNG hasta 10 MB</p>
+          </div>
+
+          {/* File list */}
+          {files.length > 0 && (
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-medium text-gray-700">Archivos seleccionados ({files.length})</label>
+              <div className="max-h-[140px] overflow-y-auto space-y-1">
+                {files.map((file, i) => (
+                  <div key={i} className="flex items-center gap-2.5 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-50 text-red-500">
+                      <FileText size={12} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-medium text-gray-900 truncate">{file.name}</p>
+                      <p className="text-[9px] text-gray-400">{file.size} · {({ examenes: 'Exámenes', informes: 'Informes', constancias: 'Constancias', otros: 'Otros' } as Record<string, string>)[file.category]}</p>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); removeFile(i); }} className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors flex-shrink-0">
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-2">
+          <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+            Cancelar
+          </button>
+          <button onClick={onClose} className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[10px] font-medium">
+            <Upload size={11} />
+            Subir {files.length > 0 ? `(${files.length})` : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function PatientDetail() {
   useHeader({ title: 'Detalle del Paciente', subtitle: 'Información completa e historial médico del paciente', backTo: '/patients' });
   const { id } = useParams();
@@ -734,8 +838,10 @@ export function PatientDetail() {
   const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
   const [filesCategory, setFilesCategory] = useState<'examenes' | 'informes' | 'constancias' | 'otros'>('examenes');
   const [previewFile, setPreviewFile] = useState<{ name: string; date: string; size: string; type: string; category: string } | null>(null);
-  const [citasFilter, setCitasFilter] = useState<'proximas' | 'historial'>('proximas');
-  const [citasYear, setCitasYear] = useState(2026);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [showFilesMenu, setShowFilesMenu] = useState(false);
+  const filesMenuRef = useRef<HTMLDivElement>(null);
+  const [citasDate, setCitasDate] = useState(new Date(2026, 2, 25));
   const [allergies, setAllergies] = useState<Allergy[]>([
     { name: 'Penicilina', severity: 'Severa' },
     { name: 'Aspirina', severity: 'Moderada' },
@@ -803,19 +909,21 @@ export function PatientDetail() {
     ],
   };
 
-  const [selectedRecord, setSelectedRecord] = useState<typeof medicalHistory[0] | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<typeof allPatientAppointments[0] | null>(null);
 
-  const medicalHistory = [
-    { id: 1, date: '2026-03-15', time: '09:30 AM', type: 'Consulta General', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses. Se recomienda continuar con dieta baja en sodio y actividad física regular.' },
-    { id: 2, date: '2026-02-10', time: '11:00 AM', type: 'Seguimiento', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Revisión de tratamiento', observation: 'Revisión de resultados de laboratorio. Valores de colesterol dentro del rango normal. Se ajusta dosis de Losartán de 25mg a 50mg por leve elevación de presión en monitoreo ambulatorio.' },
-    { id: 3, date: '2026-01-20', time: '03:00 PM', type: 'Urgencia', doctor: 'Dra. Martínez', status: 'Completada' as const, notes: 'Episodio de mareo', observation: 'Paciente acudió por episodio de mareo severo. Se realizó electrocardiograma sin hallazgos patológicos. Se atribuye a deshidratación. Se indicó hidratación oral y reposo por 24 horas.' },
-    { id: 4, date: '2026-01-05', time: '10:00 AM', type: 'Primera Consulta', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1. Se solicitan exámenes de laboratorio completos. Se inicia tratamiento con Losartán 25mg/día.' },
-    { id: 5, date: '2025-12-15', time: '02:00 PM', type: 'Control', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '' },
+  const allPatientAppointments = [
+    { id: 1, date: '2026-03-25', time: '10:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Confirmada' as const, notes: 'Control de rutina', observation: '' },
+    { id: 2, date: '2026-03-25', time: '14:00', type: 'Seguimiento', specialty: 'Pediatría', duration: '45 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Pendiente' as const, notes: 'Revisión', observation: '' },
+    { id: 3, date: '2026-03-26', time: '09:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Confirmada' as const, notes: '', observation: '' },
+    { id: 4, date: '2026-03-27', time: '11:00', type: 'Primera Consulta', specialty: 'Cardiología', duration: '45 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Confirmada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1.' },
+    { id: 5, date: '2026-03-28', time: '14:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '' },
+    { id: 6, date: '2026-03-29', time: '10:30', type: 'Urgencia', specialty: 'Pediatría', duration: '30 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Confirmada' as const, notes: 'Episodio de mareo', observation: 'Paciente acudió por episodio de mareo severo.' },
   ];
 
-  const upcomingAppointments = [
-    { id: 1, date: '2026-03-25', time: '10:00 AM', type: 'Control', doctor: 'Dr. López' },
-  ];
+  const citasDateStr = `${citasDate.getFullYear()}-${String(citasDate.getMonth() + 1).padStart(2, '0')}-${String(citasDate.getDate()).padStart(2, '0')}`;
+  const dayCitas = allPatientAppointments.filter(a => a.date === citasDateStr).sort((a, b) => a.time.localeCompare(b.time));
+  const citasCounts: Record<string, number> = {};
+  allPatientAppointments.forEach(a => { citasCounts[a.date] = (citasCounts[a.date] || 0) + 1; });
 
   return (
     <div className="space-y-5">
@@ -932,7 +1040,22 @@ export function PatientDetail() {
                   </div>
                   <h3 className="text-xs font-semibold text-gray-900">Archivos</h3>
                 </div>
-                <Badge variant="gray" size="sm">11 archivos</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="gray" size="sm">11 archivos</Badge>
+                  <div className="relative" ref={filesMenuRef}>
+                    <button onClick={() => setShowFilesMenu(!showFilesMenu)} className="p-1 text-gray-500 hover:text-gray-700 hover:bg-white rounded transition-colors">
+                      <MoreVertical size={14} />
+                    </button>
+                    {showFilesMenu && (
+                      <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                        <button onClick={() => { setIsUploadModalOpen(true); setShowFilesMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                          <Upload size={12} />
+                          Agregar archivo
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1001,8 +1124,8 @@ export function PatientDetail() {
           </div>
 
           {/* Citas */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-100 rounded-lg">
@@ -1010,131 +1133,55 @@ export function PatientDetail() {
                   </div>
                   <h3 className="text-xs font-semibold text-gray-900">Citas</h3>
                 </div>
-                <Badge variant="gray" size="sm">
-                  {citasFilter === 'proximas' ? `${upcomingAppointments.length} próximas` : `${medicalHistory.length} registros`}
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="gray" size="sm">{dayCitas.length} citas</Badge>
+                  <MonthCalendarBadge selectedDate={citasDate} onDateChange={setCitasDate} />
+                </div>
               </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                {([
-                  { value: 'proximas' as const, label: 'Próximas', count: upcomingAppointments.length },
-                  { value: 'historial' as const, label: 'Historial', count: medicalHistory.length },
-                ]).map((tab) => (
-                  <button
-                    key={tab.value}
-                    onClick={() => setCitasFilter(tab.value)}
-                    className={`flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-all ${
-                      citasFilter === tab.value
-                        ? 'bg-blue-50 border border-blue-200 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {tab.label}
-                    <span className={`text-[9px] px-1 py-0.5 rounded-full ${
-                      citasFilter === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {tab.count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {citasFilter === 'historial' && <select
-                value={citasYear}
-                onChange={(e) => setCitasYear(Number(e.target.value))}
-                className="px-2 py-1 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all cursor-pointer"
-              >
-                <option value={2026}>2026</option>
-                <option value={2025}>2025</option>
-                <option value={2024}>2024</option>
-              </select>}
-            </div>
+            {/* Week Date Picker */}
+            <WeekDatePicker selectedDate={citasDate} onDateChange={setCitasDate} appointmentCounts={citasCounts} />
 
             {/* Content */}
             <div>
-              {citasFilter === 'proximas' ? (
-                upcomingAppointments.length > 0 ? (
-                  upcomingAppointments.map((appointment) => (
-                    <div key={appointment.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0">
-                      {/* Date Block */}
-                      <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-                        <span className="text-sm font-bold text-gray-900 leading-none">
-                          {new Date(appointment.date).getDate()}
-                        </span>
-                        <span className="text-[9px] text-gray-500 uppercase">
-                          {new Date(appointment.date).toLocaleDateString('es-ES', { month: 'short' })}
-                        </span>
-                      </div>
-
-                      <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold text-gray-900">{appointment.type}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <Stethoscope size={10} /><span onClick={() => navigate(`/doctors/${appointment.id}`)} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{appointment.doctor}</span>
-                        </p>
-                      </div>
-
-                      <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full flex-shrink-0">{appointment.time}</span>
+              {dayCitas.length > 0 ? (
+                dayCitas.map((apt) => (
+                  <div key={apt.id} onClick={() => setSelectedRecord(apt)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
+                    <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+                      <span className="text-sm font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
+                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
-                      <Calendar size={16} className="text-gray-400" />
+                    <div className="flex-shrink-0 text-center">
+                      <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
+                      <p className="text-[9px] text-gray-400">{apt.duration}</p>
                     </div>
-                    <p className="text-[10px] text-gray-500">No hay citas programadas</p>
+                    <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
+                      {apt.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.doctor}</span>
+                        <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                          apt.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
+                        }`}>{apt.status}</span>
+                      </div>
+                      <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                        <span>{apt.type}</span>
+                        <span>·</span>
+                        <span>{apt.specialty}</span>
+                      </p>
+                    </div>
                   </div>
-                )
+                ))
               ) : (
-                medicalHistory.length > 0 ? (
-                  medicalHistory.map((record) => (
-                    <div
-                      key={record.id}
-                      onClick={() => setSelectedRecord(record)}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer"
-                    >
-                      {/* Date Block */}
-                      <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-                        <span className="text-sm font-bold text-gray-900 leading-none">
-                          {new Date(record.date).getDate()}
-                        </span>
-                        <span className="text-[9px] text-gray-500 uppercase">
-                          {new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}
-                        </span>
-                      </div>
-
-                      <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold text-gray-900">{record.type}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <Stethoscope size={10} /><span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${record.id}`); }} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{record.doctor}</span>
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">{record.time}</span>
-                        <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
-                          record.status === 'Completada'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {record.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
-                      <FileText size={16} className="text-gray-400" />
-                    </div>
-                    <p className="text-[10px] text-gray-500">No hay historial médico</p>
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
+                    <Calendar size={16} className="text-gray-400" />
                   </div>
-                )
+                  <p className="text-[10px] text-gray-500">No hay citas para este día</p>
+                </div>
               )}
             </div>
           </div>
@@ -1274,7 +1321,7 @@ export function PatientDetail() {
       </div>
 
       {/* Modals */}
-      <CitaDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} />
+      <CitaDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} onNavigateDoctor={(id) => navigate(`/doctors/${id}`)} />
       <ObservacionesModal
         isOpen={isObservacionesModalOpen}
         onClose={() => setIsObservacionesModalOpen(false)}
@@ -1305,6 +1352,7 @@ export function PatientDetail() {
         onSave={(data: AddressesData) => console.log('Direcciones actualizadas:', data)}
       />
       <FilePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
+      <UploadFileModal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
     </div>
   );
 }

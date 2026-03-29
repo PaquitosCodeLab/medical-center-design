@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Phone, Calendar, Clock, MoreVertical, Edit, Trash2, Sh
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
+import { WeekDatePicker, MonthCalendarBadge } from '../components/WeekDatePicker';
 import {
   LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -12,8 +13,10 @@ import { EditAddressesModal, type AddressesData } from '../components/EditAddres
 import { Modal, ModalButton } from '../components/Modal';
 
 // --- Cita Detail Modal ---
-function CitaDetailModal({ record, onClose }: { record: { id: number; patient: string; time: string; date: string; type: string; status: string; notes: string; observation: string } | null; onClose: () => void }) {
+function CitaDetailModal({ record, onClose, onNavigatePatient }: { record: { id: number; patient: string; time: string; date: string; type: string; specialty: string; duration: string; color: string; avatar: string; status: string; notes: string; observation: string } | null; onClose: () => void; onNavigatePatient?: (id: number) => void }) {
   if (!record) return null;
+
+  const statusColor = record.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -21,7 +24,7 @@ function CitaDetailModal({ record, onClose }: { record: { id: number; patient: s
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-100 rounded-lg">
-              <FileText size={16} className="text-blue-600" />
+              <Calendar size={16} className="text-blue-600" />
             </div>
             <h2 className="text-sm font-semibold text-gray-900">Detalle de Cita</h2>
           </div>
@@ -31,24 +34,32 @@ function CitaDetailModal({ record, onClose }: { record: { id: number; patient: s
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {/* Unified Info Row */}
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-              <span className="text-sm font-bold text-gray-900 leading-none">{new Date(record.date).getDate()}</span>
-              <span className="text-[9px] text-gray-500 uppercase">{new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+            <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+              <span className="text-sm font-bold text-blue-700 leading-none">{new Date(record.date).getDate()}</span>
+              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
             </div>
-            <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
+            <div className="flex-shrink-0 text-center">
+              <p className="text-[10px] font-bold text-gray-900">{record.time}</p>
+              <p className="text-[9px] text-gray-400">{record.duration}</p>
+            </div>
+            <div className="w-0.5 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: record.color }} />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0" style={{ backgroundColor: record.color }}>
+              {record.avatar}
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-semibold text-gray-900">{record.type} · {record.notes}</p>
-              <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1"><User size={10} />{record.patient}</p>
-            </div>
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">{record.time}</span>
-              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${record.status === 'Completada' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{record.status}</span>
+              <div className="flex items-center gap-2">
+                <span onClick={() => { onClose(); onNavigatePatient?.(record.id); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{record.patient}</span>
+                <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
+              </div>
+              <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                <span>{record.type}</span>
+                <span>·</span>
+                <span>{record.specialty}</span>
+              </p>
             </div>
           </div>
 
-          {/* Observación */}
           {record.observation ? (
             <div>
               <div className="flex items-center gap-2 mb-2">
@@ -70,7 +81,7 @@ function CitaDetailModal({ record, onClose }: { record: { id: number; patient: s
         </div>
 
         <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50">
-          <button onClick={onClose} className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors">Cerrar</button>
+          <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">Cerrar</button>
         </div>
       </div>
     </div>
@@ -403,23 +414,23 @@ export function DoctorDetail() {
     ],
   };
 
-  const [citasFilter, setCitasFilter] = useState<'proximas' | 'historial'>('proximas');
-  const [citasYear, setCitasYear] = useState(2026);
-  const [selectedRecord, setSelectedRecord] = useState<typeof appointmentHistory[0] | null>(null);
+  const [citasDate, setCitasDate] = useState(new Date(2026, 2, 25));
+  const [selectedRecord, setSelectedRecord] = useState<typeof allDoctorAppointments[0] | null>(null);
 
-  const upcomingAppointments = [
-    { id: 1, patient: 'María García', time: '09:00 AM', date: '2026-03-25', type: 'Consulta General', isProblematic: false },
-    { id: 2, patient: 'Juan Pérez', time: '10:30 AM', date: '2026-03-25', type: 'Seguimiento', isProblematic: true },
-    { id: 3, patient: 'Laura Fernández', time: '09:30 AM', date: '2026-03-26', type: 'Control', isProblematic: false },
+  const allDoctorAppointments = [
+    { id: 1, patient: 'María García', time: '09:00', date: '2026-03-25', type: 'Consulta General', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'MG', status: 'Confirmada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual.', isProblematic: false },
+    { id: 2, patient: 'Juan Pérez', time: '10:30', date: '2026-03-25', type: 'Seguimiento', specialty: 'Cardiología', duration: '45 min', color: '#8B5CF6', avatar: 'JP', status: 'Pendiente' as const, notes: 'Revisión de tratamiento', observation: '', isProblematic: true },
+    { id: 3, patient: 'Laura Fernández', time: '09:30', date: '2026-03-26', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'LF', status: 'Confirmada' as const, notes: 'Evaluación inicial', observation: '', isProblematic: false },
+    { id: 4, patient: 'Ana Rodríguez', time: '11:00', date: '2026-03-26', type: 'Primera Vez', specialty: 'Cardiología', duration: '45 min', color: '#EC4899', avatar: 'AR', status: 'Confirmada' as const, notes: 'Evaluación integral', observation: '', isProblematic: false },
+    { id: 5, patient: 'Carlos Díaz', time: '10:00', date: '2026-03-27', type: 'Consulta', specialty: 'Cardiología', duration: '30 min', color: '#F59E0B', avatar: 'CD', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '', isProblematic: true },
+    { id: 6, patient: 'Sofía Gómez', time: '09:00', date: '2026-03-28', type: 'Seguimiento', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'SG', status: 'Confirmada' as const, notes: '', observation: '', isProblematic: false },
+    { id: 7, patient: 'Pedro Martínez', time: '14:00', date: '2026-03-29', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#8B5CF6', avatar: 'PM', status: 'Pendiente' as const, notes: '', observation: '', isProblematic: false },
   ];
 
-  const appointmentHistory = [
-    { id: 1, patient: 'María García', time: '09:00 AM', date: '2026-03-15', type: 'Consulta General', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.', isProblematic: false },
-    { id: 2, patient: 'Juan Pérez', time: '11:00 AM', date: '2026-03-10', type: 'Seguimiento', status: 'Completada' as const, notes: 'Revisión de tratamiento', observation: 'Revisión de resultados de laboratorio. Valores de colesterol dentro del rango normal. Se ajusta dosis de medicación.', isProblematic: true },
-    { id: 3, patient: 'Ana Rodríguez', time: '03:00 PM', date: '2026-02-28', type: 'Urgencia', status: 'Completada' as const, notes: 'Episodio de mareo', observation: 'Paciente acudió por episodio de mareo severo. Electrocardiograma sin hallazgos patológicos. Se indicó hidratación oral y reposo.', isProblematic: false },
-    { id: 4, patient: 'Carlos Díaz', time: '10:00 AM', date: '2026-02-20', type: 'Control', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '', isProblematic: true },
-    { id: 5, patient: 'Laura Fernández', time: '09:30 AM', date: '2026-02-15', type: 'Primera Consulta', status: 'Completada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se solicitan exámenes de laboratorio completos. Se inicia plan de tratamiento preventivo.', isProblematic: false },
-  ];
+  const citasDateStr = `${citasDate.getFullYear()}-${String(citasDate.getMonth() + 1).padStart(2, '0')}-${String(citasDate.getDate()).padStart(2, '0')}`;
+  const dayCitas = allDoctorAppointments.filter(a => a.date === citasDateStr).sort((a, b) => a.time.localeCompare(b.time));
+  const citasCounts: Record<string, number> = {};
+  allDoctorAppointments.forEach(a => { citasCounts[a.date] = (citasCounts[a.date] || 0) + 1; });
 
   return (
     <div className="space-y-5">
@@ -611,8 +622,8 @@ export function DoctorDetail() {
           </div>
 
           {/* Citas */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-100 rounded-lg">
@@ -620,107 +631,56 @@ export function DoctorDetail() {
                   </div>
                   <h3 className="text-xs font-semibold text-gray-900">Citas</h3>
                 </div>
-                <Badge variant="gray" size="sm">
-                  {citasFilter === 'proximas' ? `${upcomingAppointments.length} próximas` : `${appointmentHistory.length} registros`}
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="gray" size="sm">{dayCitas.length} citas</Badge>
+                  <MonthCalendarBadge selectedDate={citasDate} onDateChange={setCitasDate} />
+                </div>
               </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                {([
-                  { value: 'proximas' as const, label: 'Próximas', count: upcomingAppointments.length },
-                  { value: 'historial' as const, label: 'Historial', count: appointmentHistory.length },
-                ]).map((tab) => (
-                  <button
-                    key={tab.value}
-                    onClick={() => setCitasFilter(tab.value)}
-                    className={`flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-all ${
-                      citasFilter === tab.value
-                        ? 'bg-blue-50 border border-blue-200 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {tab.label}
-                    <span className={`text-[9px] px-1 py-0.5 rounded-full ${
-                      citasFilter === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
-                    }`}>{tab.count}</span>
-                  </button>
-                ))}
-              </div>
-              {citasFilter === 'historial' && <select
-                value={citasYear}
-                onChange={(e) => setCitasYear(Number(e.target.value))}
-                className="px-2 py-1 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all cursor-pointer"
-              >
-                <option value={2026}>2026</option>
-                <option value={2025}>2025</option>
-                <option value={2024}>2024</option>
-              </select>}
-            </div>
+            {/* Week Date Picker */}
+            <WeekDatePicker selectedDate={citasDate} onDateChange={setCitasDate} appointmentCounts={citasCounts} />
 
             {/* Content */}
             <div>
-              {citasFilter === 'proximas' ? (
-                upcomingAppointments.length > 0 ? (
-                  upcomingAppointments.map((apt) => (
-                    <div key={apt.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0">
-                      <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-                        <span className="text-sm font-bold text-gray-900 leading-none">{new Date(apt.date).getDate()}</span>
-                        <span className="text-[9px] text-gray-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
-                      </div>
-                      <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold text-gray-900">{apt.type}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <User size={10} /><span onClick={() => navigate(`/patients/${apt.id}`)} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{apt.patient}</span>
-                          {apt.isProblematic && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 ml-1">Problemático</span>}
-                        </p>
-                      </div>
-                      <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full flex-shrink-0">{apt.time}</span>
+              {dayCitas.length > 0 ? (
+                dayCitas.map((apt) => (
+                  <div key={apt.id} onClick={() => setSelectedRecord(apt)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
+                    <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+                      <span className="text-sm font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
+                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
-                      <Calendar size={16} className="text-gray-400" />
+                    <div className="flex-shrink-0 text-center">
+                      <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
+                      <p className="text-[9px] text-gray-400">{apt.duration}</p>
                     </div>
-                    <p className="text-[10px] text-gray-500">No hay citas programadas</p>
+                    <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
+                      {apt.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span onClick={(e) => { e.stopPropagation(); navigate(`/patients/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.patient}</span>
+                        <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                          apt.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
+                        }`}>{apt.status}</span>
+                        {apt.isProblematic && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
+                      </div>
+                      <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                        <span>{apt.type}</span>
+                        <span>·</span>
+                        <span>{apt.specialty}</span>
+                      </p>
+                    </div>
                   </div>
-                )
+                ))
               ) : (
-                appointmentHistory.length > 0 ? (
-                  appointmentHistory.map((record) => (
-                    <div key={record.id} onClick={() => setSelectedRecord(record)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
-                      <div className="flex flex-col items-center justify-center w-10 flex-shrink-0">
-                        <span className="text-sm font-bold text-gray-900 leading-none">{new Date(record.date).getDate()}</span>
-                        <span className="text-[9px] text-gray-500 uppercase">{new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
-                      </div>
-                      <div className="w-px h-8 bg-gray-200 flex-shrink-0"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold text-gray-900">{record.type}</p>
-                        <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-1">
-                          <User size={10} /><span onClick={(e) => { e.stopPropagation(); navigate(`/patients/${record.id}`); }} className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer">{record.patient}</span>
-                          {record.isProblematic && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 ml-1">Problemático</span>}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">{record.time}</span>
-                        <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
-                          record.status === 'Completada' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}>{record.status}</span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
-                      <FileText size={16} className="text-gray-400" />
-                    </div>
-                    <p className="text-[10px] text-gray-500">No hay historial de citas</p>
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
+                    <Calendar size={16} className="text-gray-400" />
                   </div>
-                )
+                  <p className="text-[10px] text-gray-500">No hay citas para este día</p>
+                </div>
               )}
             </div>
           </div>
@@ -857,7 +817,7 @@ export function DoctorDetail() {
       </div>
 
       {/* Modal */}
-      <CitaDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} />
+      <CitaDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} onNavigatePatient={(id) => navigate(`/patients/${id}`)} />
       <EditDoctorModal isOpen={isEditDoctorModalOpen} onClose={() => setIsEditDoctorModalOpen(false)} doctor={doctor} />
       <EditStudiesModal isOpen={isEditStudiesModalOpen} onClose={() => setIsEditStudiesModalOpen(false)} studies={studies} onSave={setStudies} />
       <EditContactsModal
