@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File, Upload, Plus } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File, Upload, Plus, CheckCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
@@ -9,15 +9,8 @@ import { EditContactsModal, type ContactsData } from '../components/EditContacts
 import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
 import { Modal, ModalButton } from '../components/Modal';
 
-// --- Observaciones Modal ---
-interface ObservacionesModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialContent: string;
-  onSave: (content: string) => void;
-}
-
-function ObservacionesModal({ isOpen, onClose, initialContent, onSave }: ObservacionesModalProps) {
+// --- Rich Text Edit Modal (reusable for Antecedentes, Bio) ---
+function RichTextEditModal({ isOpen, onClose, title, placeholder, initialContent, onSave }: { isOpen: boolean; onClose: () => void; title: string; placeholder: string; initialContent: string; onSave: (content: string) => void }) {
   const [content, setContent] = useState(initialContent);
 
   useEffect(() => {
@@ -26,69 +19,43 @@ function ObservacionesModal({ isOpen, onClose, initialContent, onSave }: Observa
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
-    onSave(content);
-    onClose();
-  };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-blue-100 rounded-lg">
               <MessageSquare size={16} className="text-blue-600" />
             </div>
-            <h2 className="text-sm font-semibold text-gray-900">Editar Observaciones</h2>
+            <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
           </div>
           <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors">
             <X size={16} />
           </button>
         </div>
 
-        {/* Rich Text Toolbar */}
         <div className="px-4 py-2 border-b border-gray-100 flex items-center gap-1">
-          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <Bold size={14} />
-          </button>
-          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <Italic size={14} />
-          </button>
-          <div className="w-px h-4 bg-gray-200 mx-1"></div>
-          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <List size={14} />
-          </button>
-          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <ListOrdered size={14} />
-          </button>
-          <div className="w-px h-4 bg-gray-200 mx-1"></div>
-          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-            <AlignLeft size={14} />
-          </button>
+          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Bold size={14} /></button>
+          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><Italic size={14} /></button>
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><List size={14} /></button>
+          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><ListOrdered size={14} /></button>
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><AlignLeft size={14} /></button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Escribe las observaciones del paciente..."
+            placeholder={placeholder}
             className="w-full h-56 px-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none leading-relaxed"
           />
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
-          <p className="text-[10px] text-gray-400">Última edición: hace 2 días</p>
-          <div className="flex items-center gap-2">
-            <button onClick={onClose} className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors">
-              Cancelar
-            </button>
-            <button onClick={handleSave} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-              Guardar
-            </button>
-          </div>
+        <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50 gap-2">
+          <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">Cancelar</button>
+          <button onClick={() => { onSave(content); onClose(); }} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Guardar</button>
         </div>
       </div>
     </div>
@@ -507,9 +474,12 @@ function EditAllergiesModal({ isOpen, onClose, allergies: initialAllergies, onSa
 
 // --- Cita Detail Modal ---
 function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: number; date: string; time: string; type: string; specialty: string; duration: string; color: string; avatar: string; doctor: string; status: string; notes: string; observation: string } | null; onClose: () => void; onNavigateDoctor?: (id: number) => void }) {
+  const [subModal, setSubModal] = useState<'cancel' | 'complete' | null>(null);
+  const [subModalText, setSubModalText] = useState('');
+
   if (!record) return null;
 
-  const statusColor = record.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
+  const statusColor = record.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : record.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -573,10 +543,50 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
           )}
         </div>
 
-        <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
           <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">Cerrar</button>
+          <div className="flex items-center gap-2">
+            {record.status === 'Pendiente' && (
+              <>
+                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
+                <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Confirmar</button>
+              </>
+            )}
+            {record.status === 'Confirmada' && (
+              <>
+                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
+                <button onClick={() => { setSubModal('complete'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Completar</button>
+              </>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Sub-modal */}
+      {subModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className={`flex items-center justify-between px-4 py-2.5 border-b border-gray-200 ${subModal === 'cancel' ? 'bg-gradient-to-r from-red-50 to-red-100' : 'bg-gradient-to-r from-green-50 to-green-100'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`p-1.5 rounded-lg ${subModal === 'cancel' ? 'bg-red-100' : 'bg-green-100'}`}>
+                  {subModal === 'cancel' ? <X size={16} className="text-red-600" /> : <CheckCircle size={16} className="text-green-600" />}
+                </div>
+                <h2 className="text-sm font-semibold text-gray-900">{subModal === 'cancel' ? 'Motivo de Cancelación' : 'Resultado de la Cita'}</h2>
+              </div>
+              <button onClick={() => setSubModal(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"><X size={16} /></button>
+            </div>
+            <div className="p-4">
+              <textarea value={subModalText} onChange={(e) => setSubModalText(e.target.value)} placeholder={subModal === 'cancel' ? 'Describe el motivo de la cancelación...' : 'Describe el resultado de la cita...'} className="w-full h-32 px-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none leading-relaxed" />
+            </div>
+            <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50 gap-2">
+              <button onClick={() => setSubModal(null)} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">Volver</button>
+              <button onClick={() => { setSubModal(null); onClose(); }} className={`px-3 py-1.5 text-[10px] font-medium text-white rounded-lg transition-colors ${subModal === 'cancel' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}>
+                {subModal === 'cancel' ? 'Confirmar Cancelación' : 'Confirmar Resultado'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -831,7 +841,8 @@ export function PatientDetail() {
   const [showMenu, setShowMenu] = useState(false);
   const [showObsMenu, setShowObsMenu] = useState(false);
   const [showInfoMenu, setShowInfoMenu] = useState(false);
-  const [isObservacionesModalOpen, setIsObservacionesModalOpen] = useState(false);
+  const [isAntecedentesModalOpen, setIsAntecedentesModalOpen] = useState(false);
+  const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [isEditPatientModalOpen, setIsEditPatientModalOpen] = useState(false);
   const [isEditAllergiesModalOpen, setIsEditAllergiesModalOpen] = useState(false);
   const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
@@ -839,6 +850,10 @@ export function PatientDetail() {
   const [filesCategory, setFilesCategory] = useState<'examenes' | 'informes' | 'constancias' | 'otros'>('examenes');
   const [previewFile, setPreviewFile] = useState<{ name: string; date: string; size: string; type: string; category: string } | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [obsTab, setObsTab] = useState<'citas' | 'antecedentes' | 'bio'>('citas');
+  const [obsDoctorFilter, setObsDoctorFilter] = useState('all');
+  const [antecedentes, setAntecedentes] = useState('Hipertensión arterial diagnosticada en enero 2026. Antecedentes familiares de diabetes tipo 2 (madre). Sin cirugías previas. Alergia conocida a Penicilina (severa) y Aspirina (moderada).');
+  const [bio, setBio] = useState('Paciente femenina de 45 años, casada, trabaja como contadora. Estilo de vida sedentario. No fuma. Consumo ocasional de alcohol. Dieta regular con tendencia alta en sodio. Se recomienda actividad física regular y dieta controlada.');
   const [showFilesMenu, setShowFilesMenu] = useState(false);
   const filesMenuRef = useRef<HTMLDivElement>(null);
   const [citasDate, setCitasDate] = useState(new Date(2026, 2, 25));
@@ -847,7 +862,6 @@ export function PatientDetail() {
     { name: 'Aspirina', severity: 'Moderada' },
     { name: 'Látex', severity: 'Leve' },
   ]);
-  const [observaciones, setObservaciones] = useState('Paciente con antecedentes de hipertensión controlada. Se recomienda seguimiento trimestral y control de presión arterial semanal.\n\nÚltimo control: valores dentro del rango normal. Mantener medicación actual (Losartán 50mg/día).\n\nNota: Paciente refiere episodios de mareo ocasional por las mañanas. Evaluar en próxima consulta.');
   const menuRef = useRef<HTMLDivElement>(null);
   const obsMenuRef = useRef<HTMLDivElement>(null);
   const infoMenuRef = useRef<HTMLDivElement>(null);
@@ -912,16 +926,18 @@ export function PatientDetail() {
   const [selectedRecord, setSelectedRecord] = useState<typeof allPatientAppointments[0] | null>(null);
 
   const allPatientAppointments = [
-    { id: 1, date: '2026-03-25', time: '10:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Confirmada' as const, notes: 'Control de rutina', observation: '' },
-    { id: 2, date: '2026-03-25', time: '14:00', type: 'Seguimiento', specialty: 'Pediatría', duration: '45 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Pendiente' as const, notes: 'Revisión', observation: '' },
-    { id: 3, date: '2026-03-26', time: '09:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Confirmada' as const, notes: '', observation: '' },
-    { id: 4, date: '2026-03-27', time: '11:00', type: 'Primera Consulta', specialty: 'Cardiología', duration: '45 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Confirmada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1.' },
-    { id: 5, date: '2026-03-28', time: '14:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '' },
-    { id: 6, date: '2026-03-29', time: '10:30', type: 'Urgencia', specialty: 'Pediatría', duration: '30 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Confirmada' as const, notes: 'Episodio de mareo', observation: 'Paciente acudió por episodio de mareo severo.' },
+    { id: 1, date: '2026-03-25', time: '09:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.' },
+    { id: 2, date: '2026-03-25', time: '11:00', type: 'Seguimiento', specialty: 'Pediatría', duration: '45 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Pendiente' as const, notes: 'Revisión', observation: '' },
+    { id: 3, date: '2026-03-25', time: '14:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Confirmada' as const, notes: 'Evaluación', observation: '' },
+    { id: 4, date: '2026-03-25', time: '16:00', type: 'Urgencia', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente canceló', observation: '' },
+    { id: 5, date: '2026-03-26', time: '09:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Completada' as const, notes: '', observation: 'Evaluación neurológica sin hallazgos patológicos. Reflejos normales. Se descarta origen neurológico de los mareos.' },
+    { id: 6, date: '2026-03-27', time: '11:00', type: 'Primera Consulta', specialty: 'Cardiología', duration: '45 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1. Se solicitan exámenes de laboratorio completos. Se inicia tratamiento con Losartán 25mg/día.' },
+    { id: 7, date: '2026-03-28', time: '14:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '' },
+    { id: 8, date: '2026-03-29', time: '10:30', type: 'Urgencia', specialty: 'Pediatría', duration: '30 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Confirmada' as const, notes: 'Episodio de mareo', observation: '' },
   ];
 
   const citasDateStr = `${citasDate.getFullYear()}-${String(citasDate.getMonth() + 1).padStart(2, '0')}-${String(citasDate.getDate()).padStart(2, '0')}`;
-  const dayCitas = allPatientAppointments.filter(a => a.date === citasDateStr).sort((a, b) => a.time.localeCompare(b.time));
+  const dayCitas = allPatientAppointments.filter(a => a.date === citasDateStr).sort((a, b) => b.time.localeCompare(a.time));
   const citasCounts: Record<string, number> = {};
   allPatientAppointments.forEach(a => { citasCounts[a.date] = (citasCounts[a.date] || 0) + 1; });
 
@@ -977,7 +993,7 @@ export function PatientDetail() {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-5">
           {/* Observaciones */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between rounded-t-xl">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
@@ -995,36 +1011,156 @@ export function PatientDetail() {
                 {showObsMenu && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
                     <button
-                      onClick={() => {
-                        setIsObservacionesModalOpen(true);
-                        setShowObsMenu(false);
-                      }}
+                      onClick={() => { setIsAntecedentesModalOpen(true); setShowObsMenu(false); }}
                       className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
                       <Edit size={12} />
-                      Editar Observaciones
+                      Editar Antecedentes
+                    </button>
+                    <button
+                      onClick={() => { setIsBioModalOpen(true); setShowObsMenu(false); }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Edit size={12} />
+                      Editar Bio
                     </button>
                   </div>
                 )}
               </div>
             </div>
-            <div className="p-4">
-              {observaciones ? (
-                <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
-                  {observaciones}
-                </div>
-              ) : (
-                <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
-                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full mb-2">
-                    <MessageSquare size={16} className="text-gray-400" />
-                  </div>
-                  <p className="text-[10px] text-gray-500 mb-2">Sin observaciones registradas</p>
+
+            {/* Tabs */}
+            <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                {([
+                  { value: 'citas' as const, label: 'Citas', count: allPatientAppointments.filter(a => a.status === 'Completada' && a.observation && (obsDoctorFilter === 'all' || a.doctor === obsDoctorFilter)).length },
+                  { value: 'antecedentes' as const, label: 'Antecedentes' },
+                  { value: 'bio' as const, label: 'Bio' },
+                ]).map((tab) => (
                   <button
-                    onClick={() => setIsObservacionesModalOpen(true)}
-                    className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    key={tab.value}
+                    onClick={() => setObsTab(tab.value)}
+                    className={`flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-lg transition-all ${
+                      obsTab === tab.value
+                        ? 'bg-blue-50 border border-blue-200 text-blue-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                   >
-                    Agregar Observación
+                    {tab.label}
+                    {'count' in tab && tab.count !== undefined && (
+                      <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                        obsTab === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                      }`}>{tab.count}</span>
+                    )}
                   </button>
+                ))}
+              </div>
+              {obsTab === 'citas' && (
+                <select
+                  value={obsDoctorFilter}
+                  onChange={(e) => setObsDoctorFilter(e.target.value)}
+                  className="px-2 py-0.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white transition-all cursor-pointer"
+                >
+                  <option value="all">Todos los doctores</option>
+                  {Array.from(new Set(allPatientAppointments.filter(a => a.observation).map(a => a.doctor))).map(doc => (
+                    <option key={doc} value={doc}>{doc}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            {/* Tab Content */}
+            <div>
+              {obsTab === 'citas' && (() => {
+                const filtered = allPatientAppointments
+                  .filter(a => a.status === 'Completada' && a.observation && (obsDoctorFilter === 'all' || a.doctor === obsDoctorFilter))
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || b.time.localeCompare(a.time));
+
+                if (filtered.length === 0) return (
+                  <div className="text-center py-6">
+                    <MessageSquare size={16} className="text-gray-400 mx-auto mb-1" />
+                    <p className="text-[10px] text-gray-500">Sin observaciones de citas</p>
+                  </div>
+                );
+
+                // Group by doctor
+                const grouped: { doctor: string; items: typeof filtered }[] = [];
+                filtered.forEach(apt => {
+                  const existing = grouped.find(g => g.doctor === apt.doctor);
+                  if (existing) existing.items.push(apt);
+                  else grouped.push({ doctor: apt.doctor, items: [apt] });
+                });
+
+                const groupColors = [
+                  { bg: 'bg-blue-50/50', border: 'border-blue-100', text: 'text-blue-600' },
+                  { bg: 'bg-purple-50/50', border: 'border-purple-100', text: 'text-purple-600' },
+                  { bg: 'bg-emerald-50/50', border: 'border-emerald-100', text: 'text-emerald-600' },
+                  { bg: 'bg-amber-50/50', border: 'border-amber-100', text: 'text-amber-600' },
+                  { bg: 'bg-rose-50/50', border: 'border-rose-100', text: 'text-rose-600' },
+                  { bg: 'bg-cyan-50/50', border: 'border-cyan-100', text: 'text-cyan-600' },
+                ];
+
+                return grouped.map((group, gi) => {
+                  const color = groupColors[gi % groupColors.length];
+                  return (
+                    <div key={gi} className="flex border-b border-gray-100 last:border-0">
+                      {/* Doctor lateral label */}
+                      <div className={`flex-shrink-0 w-7 relative ${color.bg} border-r ${color.border}`} title={group.doctor}>
+                        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                          <span className={`text-[8px] font-semibold ${color.text} max-h-full overflow-hidden text-ellipsis`} style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: 'calc(100% - 8px)' }}>
+                            {group.doctor}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Items */}
+                      <div className="flex-1 min-w-0">
+                        {group.items.map((apt) => (
+                          <div
+                            key={apt.id}
+                            onClick={() => setSelectedRecord(apt)}
+                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-all border-b border-gray-50 last:border-0 cursor-pointer min-w-0"
+                          >
+                            <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-1.5 py-0.5">
+                              <span className="text-xs font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
+                              <span className="text-[7px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+                            </div>
+                            <div className="flex-shrink-0 text-center">
+                              <p className="text-[9px] font-bold text-gray-900">{apt.time}</p>
+                              <p className="text-[8px] text-gray-400">{apt.duration}</p>
+                            </div>
+                            <div className="w-px h-6 bg-gray-200 flex-shrink-0" />
+                            <p className="flex-1 text-[10px] text-gray-600 truncate">{apt.observation}</p>
+                          </div>
+                        ))}
+                      </div>
+                  </div>
+                  );
+                });
+              })()}
+
+              {obsTab === 'antecedentes' && (
+                <div className="p-4">
+                  {antecedentes ? (
+                    <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{antecedentes}</div>
+                  ) : (
+                    <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
+                      <MessageSquare size={16} className="text-gray-400 mx-auto mb-1" />
+                      <p className="text-[10px] text-gray-500">Sin antecedentes registrados</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {obsTab === 'bio' && (
+                <div className="p-4">
+                  {bio ? (
+                    <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{bio}</div>
+                  ) : (
+                    <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
+                      <MessageSquare size={16} className="text-gray-400 mx-auto mb-1" />
+                      <p className="text-[10px] text-gray-500">Sin biografía registrada</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -1164,7 +1300,7 @@ export function PatientDetail() {
                       <div className="flex items-center gap-2">
                         <span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.doctor}</span>
                         <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
-                          apt.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
+                          apt.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : apt.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
                         }`}>{apt.status}</span>
                       </div>
                       <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
@@ -1322,11 +1458,21 @@ export function PatientDetail() {
 
       {/* Modals */}
       <CitaDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} onNavigateDoctor={(id) => navigate(`/doctors/${id}`)} />
-      <ObservacionesModal
-        isOpen={isObservacionesModalOpen}
-        onClose={() => setIsObservacionesModalOpen(false)}
-        initialContent={observaciones}
-        onSave={setObservaciones}
+      <RichTextEditModal
+        isOpen={isAntecedentesModalOpen}
+        onClose={() => setIsAntecedentesModalOpen(false)}
+        title="Editar Antecedentes"
+        placeholder="Escribe los antecedentes médicos del paciente..."
+        initialContent={antecedentes}
+        onSave={setAntecedentes}
+      />
+      <RichTextEditModal
+        isOpen={isBioModalOpen}
+        onClose={() => setIsBioModalOpen(false)}
+        title="Editar Bio"
+        placeholder="Escribe la biografía del paciente..."
+        initialContent={bio}
+        onSave={setBio}
       />
       <EditPatientModal
         isOpen={isEditPatientModalOpen}

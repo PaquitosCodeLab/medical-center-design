@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Mail, Phone, Calendar, Clock, MoreVertical, Edit, Trash2, Shield, GraduationCap, Award, Stethoscope, Building, MapPin, User, IdCard, Cake, FileText, X, Plus, Search } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Calendar, Clock, MoreVertical, Edit, Trash2, Shield, GraduationCap, Award, Stethoscope, Building, MapPin, User, IdCard, Cake, FileText, X, Plus, Search, CheckCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
@@ -14,9 +14,12 @@ import { Modal, ModalButton } from '../components/Modal';
 
 // --- Cita Detail Modal ---
 function CitaDetailModal({ record, onClose, onNavigatePatient }: { record: { id: number; patient: string; time: string; date: string; type: string; specialty: string; duration: string; color: string; avatar: string; status: string; notes: string; observation: string } | null; onClose: () => void; onNavigatePatient?: (id: number) => void }) {
+  const [subModal, setSubModal] = useState<'cancel' | 'complete' | null>(null);
+  const [subModalText, setSubModalText] = useState('');
+
   if (!record) return null;
 
-  const statusColor = record.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
+  const statusColor = record.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : record.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : record.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -80,10 +83,50 @@ function CitaDetailModal({ record, onClose, onNavigatePatient }: { record: { id:
           )}
         </div>
 
-        <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
           <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">Cerrar</button>
+          <div className="flex items-center gap-2">
+            {record.status === 'Pendiente' && (
+              <>
+                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
+                <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Confirmar</button>
+              </>
+            )}
+            {record.status === 'Confirmada' && (
+              <>
+                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
+                <button onClick={() => { setSubModal('complete'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Completar</button>
+              </>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Sub-modal */}
+      {subModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className={`flex items-center justify-between px-4 py-2.5 border-b border-gray-200 ${subModal === 'cancel' ? 'bg-gradient-to-r from-red-50 to-red-100' : 'bg-gradient-to-r from-green-50 to-green-100'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`p-1.5 rounded-lg ${subModal === 'cancel' ? 'bg-red-100' : 'bg-green-100'}`}>
+                  {subModal === 'cancel' ? <X size={16} className="text-red-600" /> : <CheckCircle size={16} className="text-green-600" />}
+                </div>
+                <h2 className="text-sm font-semibold text-gray-900">{subModal === 'cancel' ? 'Motivo de Cancelación' : 'Resultado de la Cita'}</h2>
+              </div>
+              <button onClick={() => setSubModal(null)} className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"><X size={16} /></button>
+            </div>
+            <div className="p-4">
+              <textarea value={subModalText} onChange={(e) => setSubModalText(e.target.value)} placeholder={subModal === 'cancel' ? 'Describe el motivo de la cancelación...' : 'Describe el resultado de la cita...'} className="w-full h-32 px-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none leading-relaxed" />
+            </div>
+            <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50 gap-2">
+              <button onClick={() => setSubModal(null)} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">Volver</button>
+              <button onClick={() => { setSubModal(null); onClose(); }} className={`px-3 py-1.5 text-[10px] font-medium text-white rounded-lg transition-colors ${subModal === 'cancel' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}>
+                {subModal === 'cancel' ? 'Confirmar Cancelación' : 'Confirmar Resultado'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -418,17 +461,19 @@ export function DoctorDetail() {
   const [selectedRecord, setSelectedRecord] = useState<typeof allDoctorAppointments[0] | null>(null);
 
   const allDoctorAppointments = [
-    { id: 1, patient: 'María García', time: '09:00', date: '2026-03-25', type: 'Consulta General', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'MG', status: 'Confirmada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual.', isProblematic: false },
+    { id: 1, patient: 'María García', time: '09:00', date: '2026-03-25', type: 'Consulta General', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'MG', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual.', isProblematic: false },
     { id: 2, patient: 'Juan Pérez', time: '10:30', date: '2026-03-25', type: 'Seguimiento', specialty: 'Cardiología', duration: '45 min', color: '#8B5CF6', avatar: 'JP', status: 'Pendiente' as const, notes: 'Revisión de tratamiento', observation: '', isProblematic: true },
-    { id: 3, patient: 'Laura Fernández', time: '09:30', date: '2026-03-26', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'LF', status: 'Confirmada' as const, notes: 'Evaluación inicial', observation: '', isProblematic: false },
-    { id: 4, patient: 'Ana Rodríguez', time: '11:00', date: '2026-03-26', type: 'Primera Vez', specialty: 'Cardiología', duration: '45 min', color: '#EC4899', avatar: 'AR', status: 'Confirmada' as const, notes: 'Evaluación integral', observation: '', isProblematic: false },
-    { id: 5, patient: 'Carlos Díaz', time: '10:00', date: '2026-03-27', type: 'Consulta', specialty: 'Cardiología', duration: '30 min', color: '#F59E0B', avatar: 'CD', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '', isProblematic: true },
-    { id: 6, patient: 'Sofía Gómez', time: '09:00', date: '2026-03-28', type: 'Seguimiento', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'SG', status: 'Confirmada' as const, notes: '', observation: '', isProblematic: false },
-    { id: 7, patient: 'Pedro Martínez', time: '14:00', date: '2026-03-29', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#8B5CF6', avatar: 'PM', status: 'Pendiente' as const, notes: '', observation: '', isProblematic: false },
+    { id: 3, patient: 'Laura Fernández', time: '14:00', date: '2026-03-25', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'LF', status: 'Confirmada' as const, notes: 'Evaluación inicial', observation: '', isProblematic: false },
+    { id: 4, patient: 'Carlos Díaz', time: '16:00', date: '2026-03-25', type: 'Consulta', specialty: 'Cardiología', duration: '30 min', color: '#F59E0B', avatar: 'CD', status: 'Cancelada' as const, notes: 'Paciente canceló', observation: '', isProblematic: true },
+    { id: 5, patient: 'Ana Rodríguez', time: '09:30', date: '2026-03-26', type: 'Primera Vez', specialty: 'Cardiología', duration: '45 min', color: '#EC4899', avatar: 'AR', status: 'Confirmada' as const, notes: 'Evaluación integral', observation: '', isProblematic: false },
+    { id: 6, patient: 'Sofía Gómez', time: '11:00', date: '2026-03-26', type: 'Seguimiento', specialty: 'Cardiología', duration: '30 min', color: '#10B981', avatar: 'SG', status: 'Completada' as const, notes: '', observation: 'Control post-operatorio satisfactorio.', isProblematic: false },
+    { id: 7, patient: 'Pedro Martínez', time: '14:00', date: '2026-03-27', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#8B5CF6', avatar: 'PM', status: 'Pendiente' as const, notes: '', observation: '', isProblematic: false },
+    { id: 8, patient: 'Isabel Ruiz', time: '10:00', date: '2026-03-28', type: 'Urgencia', specialty: 'Cardiología', duration: '45 min', color: '#EF4444', avatar: 'IR', status: 'Completada' as const, notes: 'Dolor torácico', observation: 'Electrocardiograma normal. Se descarta evento cardíaco agudo.', isProblematic: false },
+    { id: 9, patient: 'Roberto Silva', time: '09:00', date: '2026-03-29', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'RS', status: 'Confirmada' as const, notes: '', observation: '', isProblematic: false },
   ];
 
   const citasDateStr = `${citasDate.getFullYear()}-${String(citasDate.getMonth() + 1).padStart(2, '0')}-${String(citasDate.getDate()).padStart(2, '0')}`;
-  const dayCitas = allDoctorAppointments.filter(a => a.date === citasDateStr).sort((a, b) => a.time.localeCompare(b.time));
+  const dayCitas = allDoctorAppointments.filter(a => a.date === citasDateStr).sort((a, b) => b.time.localeCompare(a.time));
   const citasCounts: Record<string, number> = {};
   allDoctorAppointments.forEach(a => { citasCounts[a.date] = (citasCounts[a.date] || 0) + 1; });
 
@@ -662,7 +707,7 @@ export function DoctorDetail() {
                       <div className="flex items-center gap-2">
                         <span onClick={(e) => { e.stopPropagation(); navigate(`/patients/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.patient}</span>
                         <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
-                          apt.status === 'Confirmada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
+                          apt.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : apt.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
                         }`}>{apt.status}</span>
                         {apt.isProblematic && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
                       </div>

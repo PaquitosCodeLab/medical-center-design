@@ -12,7 +12,7 @@ interface Appointment {
   date: string;
   time: string;
   duration: string;
-  status: 'Confirmada' | 'Pendiente' | 'Cancelada';
+  status: 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelada';
   type: string;
   specialty: string;
   color: string;
@@ -22,9 +22,9 @@ interface Appointment {
 const allAppointments: Appointment[] = [
   { id: 1, patient: 'María García', doctor: 'Dr. López', date: '2026-03-29', time: '09:00', duration: '30 min', status: 'Confirmada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'MG' },
   { id: 2, patient: 'Juan Pérez', doctor: 'Dra. Martínez', date: '2026-03-29', time: '09:30', duration: '45 min', status: 'Pendiente', type: 'Seguimiento', specialty: 'Pediatría', color: '#8B5CF6', avatar: 'JP' },
-  { id: 3, patient: 'Ana Rodríguez', doctor: 'Dr. Sánchez', date: '2026-03-29', time: '10:00', duration: '30 min', status: 'Confirmada', type: 'Primera Vez', specialty: 'Neurología', color: '#10B981', avatar: 'AR' },
+  { id: 3, patient: 'Ana Rodríguez', doctor: 'Dr. Sánchez', date: '2026-03-29', time: '10:00', duration: '30 min', status: 'Completada', type: 'Primera Vez', specialty: 'Neurología', color: '#10B981', avatar: 'AR' },
   { id: 4, patient: 'Carlos Díaz', doctor: 'Dra. Torres', date: '2026-03-29', time: '11:00', duration: '30 min', status: 'Cancelada', type: 'Consulta', specialty: 'Dermatología', color: '#F59E0B', avatar: 'CD' },
-  { id: 5, patient: 'Laura Fernández', doctor: 'Dr. López', date: '2026-03-29', time: '11:30', duration: '45 min', status: 'Confirmada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'LF' },
+  { id: 5, patient: 'Laura Fernández', doctor: 'Dr. López', date: '2026-03-29', time: '11:30', duration: '45 min', status: 'Completada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'LF' },
   { id: 6, patient: 'Pedro Martínez', doctor: 'Dra. Martínez', date: '2026-03-29', time: '14:00', duration: '30 min', status: 'Pendiente', type: 'Consulta', specialty: 'Pediatría', color: '#8B5CF6', avatar: 'PM' },
   { id: 7, patient: 'Sofía Gómez', doctor: 'Dr. Sánchez', date: '2026-03-30', time: '10:00', duration: '30 min', status: 'Confirmada', type: 'Seguimiento', specialty: 'Neurología', color: '#10B981', avatar: 'SG' },
   { id: 8, patient: 'Miguel Ángel', doctor: 'Dra. Torres', date: '2026-03-30', time: '15:00', duration: '45 min', status: 'Confirmada', type: 'Primera Vez', specialty: 'Dermatología', color: '#F59E0B', avatar: 'MA' },
@@ -45,8 +45,9 @@ const weekChartData = [
 ];
 
 const statusConfig = {
-  Confirmada: { icon: CheckCircle, color: 'text-green-600 bg-green-50 border-green-100', dot: 'bg-green-500' },
   Pendiente: { icon: AlertCircle, color: 'text-yellow-600 bg-yellow-50 border-yellow-100', dot: 'bg-yellow-500' },
+  Confirmada: { icon: CheckCircle, color: 'text-blue-600 bg-blue-50 border-blue-100', dot: 'bg-blue-500' },
+  Completada: { icon: CheckCircle, color: 'text-green-600 bg-green-50 border-green-100', dot: 'bg-green-500' },
   Cancelada: { icon: XCircle, color: 'text-red-600 bg-red-50 border-red-100', dot: 'bg-red-500' },
 };
 
@@ -63,9 +64,11 @@ export function Appointments2() {
 
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date(2026, 2, 29));
-  const [statusFilter, setStatusFilter] = useState<'all' | 'Confirmada' | 'Pendiente' | 'Cancelada'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelada'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [subModal, setSubModal] = useState<{ type: 'cancel' | 'complete'; aptId: number } | null>(null);
+  const [subModalText, setSubModalText] = useState('');
 
   // Week navigation
   const getWeekDays = (date: Date) => {
@@ -105,11 +108,12 @@ export function Appointments2() {
       a.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.specialty.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .sort((a, b) => a.time.localeCompare(b.time));
+    .sort((a, b) => b.time.localeCompare(a.time));
 
   const totalToday = allAppointments.filter(a => a.date === selectedDateStr).length;
   const confirmedToday = allAppointments.filter(a => a.date === selectedDateStr && a.status === 'Confirmada').length;
   const pendingToday = allAppointments.filter(a => a.date === selectedDateStr && a.status === 'Pendiente').length;
+  const completedToday = allAppointments.filter(a => a.date === selectedDateStr && a.status === 'Completada').length;
   const cancelledToday = allAppointments.filter(a => a.date === selectedDateStr && a.status === 'Cancelada').length;
 
   return (
@@ -196,8 +200,9 @@ export function Appointments2() {
             <div className="px-4 py-2.5 border-b border-gray-100 flex items-center gap-1">
               {([
                 { value: 'all' as const, label: 'Todas', count: totalToday },
-                { value: 'Confirmada' as const, label: 'Confirmadas', count: confirmedToday },
                 { value: 'Pendiente' as const, label: 'Pendientes', count: pendingToday },
+                { value: 'Confirmada' as const, label: 'Confirmadas', count: confirmedToday },
+                { value: 'Completada' as const, label: 'Completadas', count: completedToday },
                 { value: 'Cancelada' as const, label: 'Canceladas', count: cancelledToday },
               ]).map((tab) => (
                 <button
@@ -411,10 +416,74 @@ export function Appointments2() {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
+            {/* Footer with action buttons */}
+            <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
               <button onClick={() => setSelectedAppointment(null)} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">
                 Cerrar
+              </button>
+              <div className="flex items-center gap-2">
+                {selectedAppointment.status === 'Pendiente' && (
+                  <>
+                    <button onClick={() => { setSubModal({ type: 'cancel', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+                      Cancelar
+                    </button>
+                    <button onClick={() => setSelectedAppointment(null)} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                      Confirmar
+                    </button>
+                  </>
+                )}
+                {selectedAppointment.status === 'Confirmada' && (
+                  <>
+                    <button onClick={() => { setSubModal({ type: 'cancel', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
+                      Cancelar
+                    </button>
+                    <button onClick={() => { setSubModal({ type: 'complete', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                      Completar
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sub-modal: Cancel / Complete reason */}
+      {subModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[60] p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className={`flex items-center justify-between px-4 py-2.5 border-b border-gray-200 ${subModal.type === 'cancel' ? 'bg-gradient-to-r from-red-50 to-red-100' : 'bg-gradient-to-r from-green-50 to-green-100'}`}>
+              <div className="flex items-center gap-2">
+                <div className={`p-1.5 rounded-lg ${subModal.type === 'cancel' ? 'bg-red-100' : 'bg-green-100'}`}>
+                  {subModal.type === 'cancel' ? <XCircle size={16} className="text-red-600" /> : <CheckCircle size={16} className="text-green-600" />}
+                </div>
+                <h2 className="text-sm font-semibold text-gray-900">
+                  {subModal.type === 'cancel' ? 'Motivo de Cancelación' : 'Resultado de la Cita'}
+                </h2>
+              </div>
+              <button onClick={() => setSubModal(null)} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-4">
+              <textarea
+                value={subModalText}
+                onChange={(e) => setSubModalText(e.target.value)}
+                placeholder={subModal.type === 'cancel' ? 'Describe el motivo de la cancelación...' : 'Describe el resultado de la cita...'}
+                className="w-full h-32 px-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none leading-relaxed"
+              />
+            </div>
+
+            <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50 gap-2">
+              <button onClick={() => setSubModal(null)} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                Volver
+              </button>
+              <button
+                onClick={() => { setSubModal(null); setSelectedAppointment(null); }}
+                className={`px-3 py-1.5 text-[10px] font-medium text-white rounded-lg transition-colors ${subModal.type === 'cancel' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+              >
+                {subModal.type === 'cancel' ? 'Confirmar Cancelación' : 'Confirmar Resultado'}
               </button>
             </div>
           </div>
