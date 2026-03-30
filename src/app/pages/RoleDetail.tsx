@@ -305,63 +305,50 @@ export function RoleDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Usuarios Asignados */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between">
+          {/* Usuarios */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Users size={14} className="text-blue-600" />
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Usuarios Asignados</h3>
+                <h3 className="text-xs font-semibold text-gray-900">Usuarios</h3>
               </div>
               <div className="flex items-center gap-1.5">
                 <Badge variant="gray" size="sm">
                   {roleData.assignedUsers.length} usuarios
                 </Badge>
-              <div className="relative" ref={usersMenuRef}>
-                <button onClick={() => setShowUsersMenu(!showUsersMenu)} className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors">
-                  <MoreVertical size={14} />
-                </button>
-                {showUsersMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
-                    <button
-                      onClick={() => { setIsAssignUserModalOpen(true); setShowUsersMenu(false); }}
-                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <UserPlus size={12} />
-                      Asignar Usuario
-                    </button>
-                  </div>
-                )}
-              </div>
+                <div className="relative" ref={usersMenuRef}>
+                  <button onClick={() => setShowUsersMenu(!showUsersMenu)} className="p-1 text-gray-500 hover:text-gray-700 hover:bg-white rounded transition-colors">
+                    <MoreVertical size={14} />
+                  </button>
+                  {showUsersMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-[100]">
+                      <button onClick={() => { setIsAssignUserModalOpen(true); setShowUsersMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                        <UserPlus size={12} />
+                        Asignar Usuario
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="p-4 space-y-2">
+            <div>
               {roleData.assignedUsers.map((user) => (
-                <div 
-                  key={user.id} 
+                <div
+                  key={user.id}
                   onClick={() => handleUserClick(user.id)}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-semibold">
-                      {getInitials(user.firstName, user.lastName)}
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-gray-900">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-[10px] text-gray-500">{user.email}</p>
-                        <span className="text-gray-300">•</span>
-                        <p className="text-[10px] text-gray-500">{user.userType}</p>
-                      </div>
-                    </div>
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                    {getInitials(user.firstName, user.lastName)}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={user.status === 'Confirmado' ? 'green' : 'yellow'} size="sm">
-                      {user.status}
-                    </Badge>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-gray-900">{user.firstName} {user.lastName}</span>
+                      <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{user.userType}</span>
+                    </div>
+                    <p className="text-[9px] text-gray-500 mt-0.5 truncate">{user.email}</p>
                   </div>
                 </div>
               ))}
@@ -372,8 +359,8 @@ export function RoleDetail() {
         {/* Right Column */}
         <div className="space-y-5">
           {/* Permisos */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Shield size={14} className="text-blue-600" />
@@ -384,54 +371,48 @@ export function RoleDetail() {
                 <Badge variant="gray" size="sm">
                   {roleData.modules.length} módulos
                 </Badge>
-              <div className="relative" ref={permsMenuRef}>
-                <button onClick={() => setShowPermsMenu(!showPermsMenu)} className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors">
-                  <MoreVertical size={14} />
-                </button>
-                {showPermsMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
-                    <button
-                      onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermsMenu(false); }}
-                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <Shield size={12} />
-                      Editar Permisos
-                    </button>
-                  </div>
-                )}
-              </div>
+                <div className="relative" ref={permsMenuRef}>
+                  <button onClick={() => setShowPermsMenu(!showPermsMenu)} className="p-1 text-gray-500 hover:text-gray-700 hover:bg-white rounded transition-colors">
+                    <MoreVertical size={14} />
+                  </button>
+                  {showPermsMenu && (
+                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-[100]">
+                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermsMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Shield size={12} />
+                        Editar Permisos
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="p-3 space-y-2">
+            <div>
               {roleData.modules.map((module, index) => {
-                const moduleIcons: Record<string, string> = { user: '👤', role: '🛡️', person: '🧑‍🤝‍🧑', appointments: '📦' };
                 const fullPerm = module.permissions.find(p => p.key === 'full');
                 const allGranted = fullPerm?.granted && module.permissions.filter(p => p.key !== 'full').every(p => p.granted);
+                const grantedPerms = module.permissions.filter(p => p.key !== 'full' && p.granted);
 
                 return (
-                  <div key={index} className="border border-gray-200 rounded-xl p-2.5 hover:border-gray-300 transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px]">{moduleIcons[module.key] || '📦'}</span>
-                      <span className="text-[10px] font-semibold text-gray-900">{module.name}</span>
+                  <div key={index} className="flex items-center gap-2.5 px-4 py-2.5 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <Shield size={11} className="text-blue-600" />
                     </div>
-
-                    {allGranted ? (
-                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 inline-flex items-center gap-1">
-                        <CheckCircle size={9} />Todos los permisos
-                      </span>
-                    ) : (
-                      <div className="flex flex-wrap gap-1">
-                        {module.permissions
-                          .filter(p => p.key !== 'full')
-                          .filter(p => p.granted)
-                          .map((perm) => (
-                            <span key={perm.key} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{module.name}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {allGranted ? (
+                          <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100 inline-flex items-center gap-0.5">
+                            <CheckCircle size={8} />Completo
+                          </span>
+                        ) : (
+                          grantedPerms.map((perm) => (
+                            <span key={perm.key} className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
                               {perm.label}
                             </span>
                           ))
-                        }
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}

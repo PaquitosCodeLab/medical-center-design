@@ -182,7 +182,7 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
 
               <div className="border rounded-xl p-3 border-gray-200 bg-white space-y-3">
                 {/* Nombre, Apellido y Tipo */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className={`grid gap-2 ${userType ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   <div>
                     <label className="block text-[10px] font-medium text-gray-600 mb-1">Nombre</label>
                     <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Nombre" className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />

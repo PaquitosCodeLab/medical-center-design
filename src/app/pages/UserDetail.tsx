@@ -436,23 +436,25 @@ export function UserDetail() {
                 </div>
               </div>
             </div>
-            <div className="p-4 space-y-4">
+            <div>
               {userData.roles.map((role) => (
-                <div key={role.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <h4 className="text-xs font-medium text-gray-900 mb-3 flex items-center gap-2">
-                    <Shield size={14} className="text-blue-600" />
-                    {role.name}
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {role.modules.map((module, index) => (
-                      <PermissionBadge
-                        key={index}
-                        moduleName={module.name}
-                        moduleKey={module.key}
-                        permissions={module.permissions}
-                        color={module.color}
-                      />
-                    ))}
+                <div key={role.id} className="flex items-center gap-2.5 px-4 py-2.5 border-b border-gray-100 last:border-0">
+                  <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Shield size={11} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-semibold text-gray-900">{role.name}</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {role.modules.map((module, index) => (
+                        <PermissionBadge
+                          key={index}
+                          moduleName={module.name}
+                          moduleKey={module.key}
+                          permissions={module.permissions}
+                          color={module.color}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -489,16 +491,24 @@ export function UserDetail() {
                 </div>
               </div>
             </div>
-            <div className="p-4">
-              <div className="flex flex-wrap gap-2">
+            <div>
+              <div>
                 {userData.directModules.map((module, index) => (
-                  <PermissionBadge
-                    key={index}
-                    moduleName={module.name}
-                    moduleKey={module.key}
-                    permissions={module.permissions}
-                    color={module.color}
-                  />
+                  <div key={index} className="flex items-center gap-2.5 px-4 py-2.5 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <Shield size={11} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{module.name}</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {module.permissions.filter(p => p.granted).map((perm) => (
+                          <span key={perm.key} className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                            {perm.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -506,45 +516,41 @@ export function UserDetail() {
 
           {/* Historial de Actividad */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Clock size={14} className="text-blue-600" />
                 </div>
                 <h3 className="text-xs font-semibold text-gray-900">Historial de Actividad</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  Últimas {userData.activityHistory.length} actividades
-                </Badge>
               </div>
+              <Badge variant="gray" size="sm">{userData.activityHistory.length} actividades</Badge>
             </div>
-            <div className="p-4 space-y-3">
-              {userData.activityHistory.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 pb-3 border-b border-gray-100 last:border-0">
-                  <div className="mt-0.5">
-                    {getEventIcon(activity.event)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-medium text-gray-900">{activity.event}</p>
-                      <span className="text-[10px] text-gray-500 whitespace-nowrap">{activity.timestamp}</span>
+            <div>
+              {userData.activityHistory.map((activity) => {
+                const date = new Date(activity.timestamp.replace(' ', 'T'));
+                const day = date.getDate();
+                const month = date.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase();
+                const time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                return (
+                  <div key={activity.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 last:border-0">
+                    <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+                      <span className="text-sm font-bold text-blue-700 leading-none">{day}</span>
+                      <span className="text-[8px] font-medium text-blue-500">{month}</span>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-[10px] text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Globe size={12} />
-                        <span>{activity.ip}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Monitor size={12} />
-                        <span>{activity.userAgent}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={12} />
-                        <span>{activity.location}</span>
+                    <div className="flex-shrink-0 text-center">
+                      <p className="text-[10px] font-bold text-gray-900">{time}</p>
+                    </div>
+                    <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{activity.event}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={8} />{activity.ip}</span>
+                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={8} />{activity.location}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

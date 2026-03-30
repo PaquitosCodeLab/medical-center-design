@@ -1,4 +1,4 @@
-import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, CheckCircle, Globe, Monitor, Briefcase, XCircle, Smartphone, Home as HomeIcon, User, Lock } from 'lucide-react';
+import { UserCircle, Mail, Phone, MapPin, Calendar, Shield, MoreVertical, Edit, TrendingUp, Activity, Clock, CheckCircle, Globe, Monitor, Briefcase, XCircle, Smartphone, Home as HomeIcon, User, Lock, IdCard } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
@@ -8,6 +8,7 @@ import {
 } from 'recharts';
 import { EditContactsModal, type ContactsData } from '../components/EditContactsModal';
 import { EditAddressesModal, type AddressesData } from '../components/EditAddressesModal';
+import { EditBasicInfoModal, type BasicInfoData } from '../components/EditBasicInfoModal';
 
 // Mock data - en producción vendría de una API o contexto de autenticación
 const currentUser = {
@@ -290,6 +291,7 @@ export function Profile() {
   useHeader({ title: 'Mi Perfil', subtitle: 'Información personal y configuración de cuenta' });
   const [isEditContactsModalOpen, setIsEditContactsModalOpen] = useState(false);
   const [isEditAddressesModalOpen, setIsEditAddressesModalOpen] = useState(false);
+  const [isEditBasicInfoModalOpen, setIsEditBasicInfoModalOpen] = useState(false);
   const [showContactsMenu, setShowContactsMenu] = useState(false);
   const [showAddressesMenu, setShowAddressesMenu] = useState(false);
   const contactsMenuRef = useRef<HTMLDivElement>(null);
@@ -397,9 +399,6 @@ export function Profile() {
                       <span className="text-sm">{currentUser.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={currentUser.status === 'Confirmado' ? 'green' : 'yellow'}>
-                        {currentUser.status}
-                      </Badge>
                       <Badge variant="blue">
                         <Shield size={12} />
                         {currentUser.userType}
@@ -432,51 +431,28 @@ export function Profile() {
       </div>
 
       {/* Dashboard de Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <TrendingUp size={20} className="text-blue-600" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { label: 'Total de Accesos', value: currentUser.stats.totalLogins, icon: TrendingUp },
+          { label: 'Sesiones del Mes', value: currentUser.stats.sessionsThisMonth, icon: Activity },
+          { label: 'Roles Asignados', value: currentUser.roles.length, icon: Shield },
+          { label: 'Días de Antigüedad', value: currentUser.stats.accountAge, icon: Calendar },
+        ].map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div key={stat.label} className="bg-white rounded-xl border border-gray-200 shadow-sm">
+              <div className="flex items-center gap-2.5 px-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <Icon size={15} className="text-blue-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-semibold text-gray-900">{stat.value}</p>
+                  <p className="text-[9px] text-gray-500">{stat.label}</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] text-gray-500">Total de Accesos</p>
-              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.totalLogins}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <Activity size={20} className="text-green-600" />
-            </div>
-            <div>
-              <p className="text-[10px] text-gray-500">Sesiones del Mes</p>
-              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.sessionsThisMonth}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-              <Shield size={20} className="text-purple-600" />
-            </div>
-            <div>
-              <p className="text-[10px] text-gray-500">Roles Asignados</p>
-              <p className="text-sm font-semibold text-gray-900">{currentUser.roles.length}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
-              <Calendar size={20} className="text-orange-600" />
-            </div>
-            <div>
-              <p className="text-[10px] text-gray-500">Días de Antigüedad</p>
-              <p className="text-sm font-semibold text-gray-900">{currentUser.stats.accountAge}</p>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -516,245 +492,183 @@ export function Profile() {
 
           {/* Historial de Actividad */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Clock size={14} className="text-blue-600" />
                 </div>
                 <h3 className="text-xs font-semibold text-gray-900">Historial de Actividad</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  Últimas {currentUser.activityHistory.length} actividades
-                </Badge>
               </div>
+              <Badge variant="gray" size="sm">{currentUser.activityHistory.length} actividades</Badge>
             </div>
-            <div className="p-4 space-y-3">
-              {currentUser.activityHistory.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 pb-3 border-b border-gray-100 last:border-0">
-                  <div className="mt-0.5">
-                    {getEventIcon(activity.event)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-medium text-gray-900">{activity.event}</p>
-                      <span className="text-[10px] text-gray-500 whitespace-nowrap">{activity.timestamp}</span>
+            <div>
+              {currentUser.activityHistory.map((activity) => {
+                const date = new Date(activity.timestamp.replace(' ', 'T'));
+                const day = date.getDate();
+                const month = date.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase();
+                const time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                return (
+                  <div key={activity.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 last:border-0">
+                    <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+                      <span className="text-sm font-bold text-blue-700 leading-none">{day}</span>
+                      <span className="text-[8px] font-medium text-blue-500">{month}</span>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-[10px] text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Globe size={10} />
-                        <span>{activity.ip}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Monitor size={10} />
-                        <span>{activity.userAgent}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={10} />
-                        <span>{activity.location}</span>
+                    <div className="flex-shrink-0 text-center">
+                      <p className="text-[10px] font-bold text-gray-900">{time}</p>
+                    </div>
+                    <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{activity.event}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={8} />{activity.ip}</span>
+                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={8} />{activity.location}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Resumen Rápido */}
+          {/* Información Personal */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
+            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Activity size={14} className="text-blue-600" />
+                  <User size={14} className="text-blue-600" />
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Resumen de Cuenta</h3>
-              </div>
-            </div>
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Shield size={14} className="text-blue-600" />
-                  <span className="text-[10px] text-gray-700">Roles</span>
-                </div>
-                <span className="text-xs font-semibold text-gray-900">{currentUser.roles.length}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <CheckCircle size={14} className="text-green-600" />
-                  <span className="text-[10px] text-gray-700">Permisos</span>
-                </div>
-                <span className="text-xs font-semibold text-gray-900">{totalPermissions}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Activity size={14} className="text-purple-600" />
-                  <span className="text-[10px] text-gray-700">Sesiones</span>
-                </div>
-                <span className="text-xs font-semibold text-gray-900">{currentUser.stats.sessionsThisMonth}/mes</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Contactos */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Mail size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Contactos</h3>
-                <Badge variant="gray" size="sm">
-                  {currentUser.emails.length + currentUser.phones.length}
-                </Badge>
+                <h3 className="text-xs font-semibold text-gray-900">Información Personal</h3>
               </div>
               <div className="relative" ref={contactsMenuRef}>
                 <button
                   onClick={() => setShowContactsMenu(!showContactsMenu)}
-                  className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors"
+                  className="p-1.5 text-gray-600 hover:bg-blue-200 rounded-lg transition-colors"
                 >
-                  <MoreVertical size={14} />
+                  <MoreVertical size={16} />
                 </button>
                 {showContactsMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
                     <button
-                      onClick={() => {
-                        setIsEditContactsModalOpen(true);
-                        setShowContactsMenu(false);
-                      }}
+                      onClick={() => { setIsEditBasicInfoModalOpen(true); setShowContactsMenu(false); }}
                       className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
-                      <Edit size={12} />
+                      <User size={14} />
+                      Editar Información Personal
+                    </button>
+                    <button
+                      onClick={() => { setIsEditContactsModalOpen(true); setShowContactsMenu(false); }}
+                      className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <Phone size={14} />
                       Editar Contactos
                     </button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="p-4 space-y-4">
-              {/* Correos Electrónicos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
-                  <Mail size={10} />
-                  Correos Electrónicos
-                </label>
-                <div className="space-y-2">
-                  {currentUser.emails.map((email, index) => (
-                    <div 
-                      key={index} 
-                      className={`relative rounded-lg p-3 transition-all ${
-                        email.isPrimary 
-                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      {email.isPrimary && (
-                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          Principal
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {getEmailTypeIcon(email.type)}
-                        <span className="text-[10px] font-medium text-gray-600">{email.type}</span>
-                      </div>
-                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Teléfonos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
-                  <Phone size={10} />
-                  Teléfonos
-                </label>
-                <div className="space-y-2">
-                  {currentUser.phones.map((phone, index) => (
-                    <div 
-                      key={index} 
-                      className={`relative rounded-lg p-3 transition-all ${
-                        phone.isPrimary 
-                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      {phone.isPrimary && (
-                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          Principal
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {getPhoneTypeIcon(phone.type)}
-                        <span className="text-[10px] font-medium text-gray-600">{phone.type}</span>
-                      </div>
-                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Direcciones */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-between rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <MapPin size={14} className="text-blue-600" />
-                </div>
-                <h3 className="text-xs font-semibold text-gray-900">Direcciones</h3>
-                <Badge variant="gray" size="sm">
-                  {currentUser.addresses.length}
-                </Badge>
-              </div>
-              <div className="relative" ref={addressesMenuRef}>
-                <button
-                  onClick={() => setShowAddressesMenu(!showAddressesMenu)}
-                  className="p-1.5 text-gray-600 hover:bg-white rounded-lg transition-colors"
-                >
-                  <MoreVertical size={14} />
-                </button>
-                {showAddressesMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
                     <button
-                      onClick={() => {
-                        setIsEditAddressesModalOpen(true);
-                        setShowAddressesMenu(false);
-                      }}
+                      onClick={() => { setIsEditAddressesModalOpen(true); setShowContactsMenu(false); }}
                       className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                     >
-                      <Edit size={12} />
+                      <MapPin size={14} />
                       Editar Direcciones
                     </button>
                   </div>
                 )}
               </div>
             </div>
-            <div className="p-4 space-y-2.5">
-              {currentUser.addresses.map((address, index) => (
-                <div 
-                  key={index} 
-                  className={`relative rounded-lg p-3 transition-all ${
-                    address.isPrimary 
-                      ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                      : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                  }`}
-                >
-                  {address.isPrimary && (
-                    <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                      Principal
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 mb-2">
-                    {getAddressTypeIcon(address.type)}
-                    <span className="text-[10px] font-medium text-gray-600">{address.type}</span>
-                  </div>
-                  <p className="text-xs text-gray-900 font-medium">{address.street}</p>
-                  <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
-                  <p className="text-[10px] text-gray-600">{address.country}</p>
+            <div className="p-4 space-y-3">
+              {/* Info unificada */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  {getInitials(currentUser.firstName, currentUser.lastName)}
                 </div>
-              ))}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-gray-900">{currentUser.firstName} {currentUser.lastName}</span>
+                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{currentUser.userType}</span>
+                  </div>
+                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                    <span>Masculino</span>
+                    <span>·</span>
+                    <span>40 años</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Identificaciones */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <IdCard size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
+                </div>
+                {[
+                  { type: 'DNI', number: '12345678A', isPrimary: true },
+                  { type: 'Pasaporte', number: 'ES9876543', isPrimary: false },
+                ].map((id, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
+                      <p className="text-[9px] text-gray-500">{id.type}</p>
+                    </div>
+                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Teléfonos */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Phone size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
+                </div>
+                {currentUser.phones.map((phone, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
+                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                    </div>
+                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Correos */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Mail size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                </div>
+                {currentUser.emails.map((email, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
+                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                    </div>
+                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Direcciones */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <MapPin size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
+                </div>
+                {currentUser.addresses.map((address, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
+                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                    </div>
+                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -772,6 +686,21 @@ export function Profile() {
         onClose={() => setIsEditAddressesModalOpen(false)}
         addressesData={currentUser}
         onSave={handleEditAddresses}
+      />
+      <EditBasicInfoModal
+        isOpen={isEditBasicInfoModalOpen}
+        onClose={() => setIsEditBasicInfoModalOpen(false)}
+        basicInfoData={{
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          identifications: [
+            { type: 'DNI', number: '12345678A' },
+            { type: 'Pasaporte', number: 'ES9876543' },
+          ],
+          gender: 'Masculino',
+          birthDate: '1985-06-15',
+        }}
+        onSave={(data: BasicInfoData) => console.log('Identificaciones actualizadas:', data)}
       />
     </div>
   );
