@@ -145,7 +145,7 @@ export function PermissionBadge({ moduleName, moduleKey, permissions, color = 'b
         <Badge variant="blue" size="sm">
           <span className="text-[10px]">{moduleIcons[moduleKey] || '📦'}</span>
           <span>{moduleName}</span>
-          <span className="ml-0.5 px-1 py-0 bg-white rounded-full text-[9px] font-semibold leading-none">
+          <span className="ml-0.5 px-1 py-0 bg-white rounded-full text-[10px] font-semibold leading-none">
             {grantedCount}
           </span>
         </Badge>
@@ -160,7 +160,7 @@ export function PermissionBadge({ moduleName, moduleKey, permissions, color = 'b
           <div className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
             <span className="text-xs">{moduleIcons[moduleKey] || '📦'}</span>
             <h4 className="text-[10px] font-semibold text-gray-900">{moduleName}</h4>
-            <span className="text-[9px] text-gray-500 bg-white px-1.5 py-0.5 rounded-full ml-auto">{grantedCount}</span>
+            <span className="text-[10px] text-gray-500 bg-white px-1.5 py-0.5 rounded-full ml-auto">{grantedCount}</span>
           </div>
           <div className="px-3 py-2 space-y-0 max-h-48 overflow-y-auto">
             {linearPermissions.map(permission => renderPermission(permission))}

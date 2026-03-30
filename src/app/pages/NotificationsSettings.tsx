@@ -109,7 +109,7 @@ export function NotificationsSettings() {
                   <MoreVertical size={14} />
                 </button>
                 {showMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-52 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
                     <button onClick={() => { markAllRead(); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                       <CheckCheck size={12} />Marcar todas como leídas
                     </button>
@@ -135,7 +135,7 @@ export function NotificationsSettings() {
                 }`}
               >
                 {f.label}
-                <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                <span className={`text-[10px] px-1 py-0.5 rounded-full ${
                   readFilter === f.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                 }`}>
                   {f.count}
@@ -189,14 +189,14 @@ export function NotificationsSettings() {
                       <p className={`text-[10px] leading-relaxed ${!notif.isRead ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>
                         {notif.title}
                       </p>
-                      <span className="text-[9px] text-gray-400 flex-shrink-0 mt-0.5">{notif.time}</span>
+                      <span className="text-[10px] text-gray-400 flex-shrink-0 mt-0.5">{notif.time}</span>
                     </div>
                     <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-1">{notif.description}</p>
                   </div>
 
                   {/* Module Badge + Read Action */}
                   <div className="flex items-center gap-1.5 flex-shrink-0 mt-0.5">
-                    <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">
                       {config.label}
                     </span>
                     <button

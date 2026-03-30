@@ -28,7 +28,7 @@ export function SystemConfig() {
                     <span className="text-[10px] font-semibold text-gray-900">{stat.value}</span>
                     <div className={`w-1.5 h-1.5 rounded-full ${stat.dot}`} />
                   </div>
-                  <p className="text-[9px] text-gray-500">{stat.label}</p>
+                  <p className="text-[10px] text-gray-500">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -61,7 +61,7 @@ export function SystemConfig() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-semibold text-gray-900">{item.value}</p>
-                  <p className="text-[9px] text-gray-500">{item.label}</p>
+                  <p className="text-[10px] text-gray-500">{item.label}</p>
                 </div>
               </div>
             ))}
@@ -84,7 +84,7 @@ export function SystemConfig() {
             <div className="bg-gray-50 border-b border-gray-100">
               <div className="px-4 py-1.5 flex items-center gap-1.5">
                 <Server size={10} className="text-gray-400" />
-                <span className="text-[9px] font-semibold text-gray-500 uppercase">Microservicios</span>
+                <span className="text-[10px] font-semibold text-gray-500 uppercase">Microservicios</span>
               </div>
             </div>
             {[
@@ -98,9 +98,9 @@ export function SystemConfig() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-semibold text-gray-900">{svc.name}</p>
-                  <p className="text-[9px] text-gray-500">{svc.version}</p>
+                  <p className="text-[10px] text-gray-500">{svc.version}</p>
                 </div>
-                <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 inline-flex items-center gap-0.5">
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 inline-flex items-center gap-0.5">
                   <CheckCircle size={8} />Activo
                 </span>
               </div>
@@ -110,7 +110,7 @@ export function SystemConfig() {
             <div className="bg-gray-50 border-b border-gray-100">
               <div className="px-4 py-1.5 flex items-center gap-1.5">
                 <Database size={10} className="text-gray-400" />
-                <span className="text-[9px] font-semibold text-gray-500 uppercase">Bases de Datos</span>
+                <span className="text-[10px] font-semibold text-gray-500 uppercase">Bases de Datos</span>
               </div>
             </div>
             {[
@@ -123,9 +123,9 @@ export function SystemConfig() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-semibold text-gray-900">{svc.name}</p>
-                  <p className="text-[9px] text-gray-500">{svc.version}</p>
+                  <p className="text-[10px] text-gray-500">{svc.version}</p>
                 </div>
-                <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 inline-flex items-center gap-0.5">
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 inline-flex items-center gap-0.5">
                   <CheckCircle size={8} />Activo
                 </span>
               </div>

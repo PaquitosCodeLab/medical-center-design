@@ -86,7 +86,7 @@ export function NotificationsPopover({ darkMode }: NotificationsPopoverProps) {
               </div>
               <span className={`text-xs font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>Notificaciones</span>
               {unreadCount > 0 && (
-                <span className="text-[9px] font-semibold text-white bg-blue-600 px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                <span className="text-[10px] font-semibold text-white bg-blue-600 px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                   {unreadCount}
                 </span>
               )}
@@ -124,7 +124,7 @@ export function NotificationsPopover({ darkMode }: NotificationsPopoverProps) {
                       <span className={`text-[10px] truncate ${!notification.isRead ? `font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}` : `font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}`}>
                         {notification.title}
                       </span>
-                      <span className={`text-[9px] flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      <span className={`text-[10px] flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                         {notification.time}
                       </span>
                     </div>

@@ -354,7 +354,7 @@ export function Roles() {
                         <div className="relative ml-auto">
                           <button
                             onClick={(e) => { e.stopPropagation(); setMorePermsPopover(morePermsPopover === role.id ? null : role.id); }}
-                            className="text-[9px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                            className="text-[10px] font-medium text-blue-600 hover:text-blue-700 transition-colors"
                           >
                             +{role.modules.length - 2} más
                           </button>
@@ -385,9 +385,9 @@ export function Roles() {
                   <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between rounded-b-xl">
                     <div className="flex items-center gap-1.5">
                       <Users size={10} className="text-gray-400" />
-                      <span className="text-[9px] text-gray-500">Usuarios</span>
+                      <span className="text-[10px] text-gray-500">Usuarios</span>
                     </div>
-                    <span className="text-[9px] font-medium text-gray-700">{role.users} asignados</span>
+                    <span className="text-[10px] font-medium text-gray-700">{role.users} asignados</span>
                   </div>
                 </div>
               ))}

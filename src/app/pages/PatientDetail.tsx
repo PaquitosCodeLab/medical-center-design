@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Mail, Phone, Calendar, User, FileText, MoreVertical, Edit, Trash2, Clock, Heart, MapPin, Droplet, AlertCircle, Stethoscope, IdCard, Cake, MessageSquare, X, Bold, Italic, List, ListOrdered, AlignLeft, FolderOpen, Download, Image, ClipboardList, File, Upload, Plus, CheckCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
+import { DetailHeaderMenu } from '../components/DetailHeaderMenu';
 import { Badge } from '../components/Badge';
 import { WeekDatePicker, MonthCalendarBadge } from '../components/WeekDatePicker';
 import { DetailCard } from '../components/DetailCard';
@@ -218,7 +219,7 @@ function EditPatientModal({ isOpen, onClose, patient }: EditPatientModalProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-medium text-gray-600">Paciente Problemático</p>
-                    <p className="text-[9px] text-gray-400">Marcar si el paciente presenta comportamiento problemático</p>
+                    <p className="text-[10px] text-gray-400">Marcar si el paciente presenta comportamiento problemático</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
                     <input type="checkbox" className="sr-only peer" checked={isProblematic} onChange={() => setIsProblematic(!isProblematic)} />
@@ -500,11 +501,11 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
             <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
               <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(record.date.split('-')[2])}</span>
-              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+              <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(record.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
             </div>
             <div className="flex-shrink-0 text-center">
               <p className="text-[10px] font-bold text-gray-900">{record.time}</p>
-              <p className="text-[9px] text-gray-400">{record.duration}</p>
+              <p className="text-[10px] text-gray-400">{record.duration}</p>
             </div>
             <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
@@ -513,9 +514,9 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span onClick={() => { onClose(); onNavigateDoctor?.(record.id); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{record.doctor}</span>
-                <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
+                <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
               </div>
-              <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+              <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                 <span>{record.type}</span>
                 <span>·</span>
                 <span>{record.specialty}</span>
@@ -675,12 +676,12 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-gray-900">Centro Médico MCH</p>
-                        <p className="text-[8px] text-gray-500">Sistema de Gestión Integral</p>
+                        <p className="text-[10px] text-gray-500">Sistema de Gestión Integral</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-[9px] text-gray-500">Fecha: {new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                      <p className="text-[9px] text-gray-500">Ref: MCH-{Math.floor(Math.random() * 9000 + 1000)}</p>
+                      <p className="text-[10px] text-gray-500">Fecha: {new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                      <p className="text-[10px] text-gray-500">Ref: MCH-{Math.floor(Math.random() * 9000 + 1000)}</p>
                     </div>
                   </div>
                   <h3 className="text-sm font-bold text-gray-900 text-center">{file.name}</h3>
@@ -691,24 +692,24 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
                   <div>
                     <p className="text-[10px] font-semibold text-gray-700 mb-1">Datos del Paciente</p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                      <p className="text-[9px] text-gray-500">Nombre: <span className="text-gray-700 font-medium">María García López</span></p>
-                      <p className="text-[9px] text-gray-500">Edad: <span className="text-gray-700 font-medium">38 años</span></p>
-                      <p className="text-[9px] text-gray-500">ID: <span className="text-gray-700 font-medium">DNI 12345678A</span></p>
-                      <p className="text-[9px] text-gray-500">Tipo de sangre: <span className="text-gray-700 font-medium">O+</span></p>
+                      <p className="text-[10px] text-gray-500">Nombre: <span className="text-gray-700 font-medium">María García López</span></p>
+                      <p className="text-[10px] text-gray-500">Edad: <span className="text-gray-700 font-medium">38 años</span></p>
+                      <p className="text-[10px] text-gray-500">ID: <span className="text-gray-700 font-medium">DNI 12345678A</span></p>
+                      <p className="text-[10px] text-gray-500">Tipo de sangre: <span className="text-gray-700 font-medium">O+</span></p>
                     </div>
                   </div>
                   <div className="border-t border-gray-100 pt-3">
                     <p className="text-[10px] font-semibold text-gray-700 mb-1">Resultados</p>
                     <div className="space-y-1.5">
-                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                      <div className="flex justify-between text-[10px] py-1 border-b border-gray-50">
                         <span className="text-gray-600">Parámetro evaluado</span>
                         <span className="text-gray-900 font-medium">Dentro de rango normal</span>
                       </div>
-                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                      <div className="flex justify-between text-[10px] py-1 border-b border-gray-50">
                         <span className="text-gray-600">Observaciones clínicas</span>
                         <span className="text-gray-900 font-medium">Sin hallazgos relevantes</span>
                       </div>
-                      <div className="flex justify-between text-[9px] py-1 border-b border-gray-50">
+                      <div className="flex justify-between text-[10px] py-1 border-b border-gray-50">
                         <span className="text-gray-600">Recomendaciones</span>
                         <span className="text-gray-900 font-medium">Control en 3 meses</span>
                       </div>
@@ -716,7 +717,7 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
                   </div>
                   <div className="border-t border-gray-100 pt-3">
                     <p className="text-[10px] font-semibold text-gray-700 mb-1">Conclusión</p>
-                    <p className="text-[9px] text-gray-600 leading-relaxed">
+                    <p className="text-[10px] text-gray-600 leading-relaxed">
                       Los resultados obtenidos se encuentran dentro de los parámetros normales. Se recomienda mantener el seguimiento médico habitual y repetir los estudios en el plazo indicado.
                     </p>
                   </div>
@@ -724,8 +725,8 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
 
                 {/* Footer */}
                 <div className="px-8 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-                  <p className="text-[8px] text-gray-400">Documento generado por MCH · {file.size}</p>
-                  <p className="text-[8px] text-gray-400">Página 1 de 1</p>
+                  <p className="text-[10px] text-gray-400">Documento generado por MCH · {file.size}</p>
+                  <p className="text-[10px] text-gray-400">Página 1 de 1</p>
                 </div>
               </div>
             </div>
@@ -735,11 +736,11 @@ function FilePreviewModal({ file, onClose }: { file: { name: string; date: strin
         {/* Footer info */}
         <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className={`inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 rounded-full ${file.type === 'PDF' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+            <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${file.type === 'PDF' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
               {file.type === 'PDF' ? <FileText size={9} /> : <Image size={9} />}
               {file.type}
             </span>
-            <span className="text-[9px] text-gray-500">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+            <span className="text-[10px] text-gray-500">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
           </div>
           <button className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-[10px] font-medium">
             <Download size={11} />
@@ -838,7 +839,7 @@ function UploadFileModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-medium text-gray-900 truncate">{file.name}</p>
-                      <p className="text-[9px] text-gray-400">{file.size} · {({ examenes: 'Exámenes', informes: 'Informes', constancias: 'Constancias', otros: 'Otros' } as Record<string, string>)[file.category]}</p>
+                      <p className="text-[10px] text-gray-400">{file.size} · {({ examenes: 'Exámenes', informes: 'Informes', constancias: 'Constancias', otros: 'Otros' } as Record<string, string>)[file.category]}</p>
                     </div>
                     <button onClick={(e) => { e.stopPropagation(); removeFile(i); }} className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors flex-shrink-0">
                       <Trash2 size={11} />
@@ -866,7 +867,12 @@ function UploadFileModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
 }
 
 export function PatientDetail() {
-  useHeader({ title: 'Detalle del Paciente', subtitle: 'Información completa e historial médico del paciente', backTo: '/patients' });
+  useHeader({
+    title: 'Detalle del Paciente',
+    subtitle: 'Información completa e historial médico del paciente',
+    backTo: '/patients',
+    actions: <DetailHeaderMenu editTitle="Editar Paciente" deleteTitle="Eliminar Paciente" onEdit={() => setIsEditPatientModalOpen(true)} onDelete={() => console.log('Eliminar paciente')} />,
+  });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -1002,18 +1008,6 @@ export function PatientDetail() {
                     </Badge>
                   </div>
                 </div>
-                <div className="relative flex-shrink-0" ref={menuRef}>
-                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
-                    <MoreVertical size={18} />
-                  </button>
-                  {showMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                      <button onClick={() => { setIsEditPatientModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Paciente</button>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button onClick={() => { console.log('Eliminar paciente'); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Paciente</button>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -1040,7 +1034,7 @@ export function PatientDetail() {
                   <MoreVertical size={14} />
                 </button>
                 {showObsMenu && (
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
                     <button
                       onClick={() => { setIsAntecedentesModalOpen(true); setShowObsMenu(false); }}
                       className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"
@@ -1079,7 +1073,7 @@ export function PatientDetail() {
                   >
                     {tab.label}
                     {'count' in tab && tab.count !== undefined && (
-                      <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                      <span className={`text-[10px] px-1 py-0.5 rounded-full ${
                         obsTab === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                       }`}>{tab.count}</span>
                     )}
@@ -1138,7 +1132,7 @@ export function PatientDetail() {
                       {/* Doctor lateral label */}
                       <div className={`flex-shrink-0 w-7 relative ${color.bg} border-r ${color.border}`} title={group.doctor}>
                         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                          <span className={`text-[8px] font-semibold ${color.text} max-h-full overflow-hidden text-ellipsis`} style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: 'calc(100% - 8px)' }}>
+                          <span className={`text-[10px] font-semibold ${color.text} max-h-full overflow-hidden text-ellipsis`} style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', maxHeight: 'calc(100% - 8px)' }}>
                             {group.doctor}
                           </span>
                         </div>
@@ -1153,11 +1147,11 @@ export function PatientDetail() {
                           >
                             <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-1.5 py-0.5">
                               <span className="text-xs font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
-                              <span className="text-[7px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                              <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                             </div>
                             <div className="flex-shrink-0 text-center">
-                              <p className="text-[9px] font-bold text-gray-900">{apt.time}</p>
-                              <p className="text-[8px] text-gray-400">{apt.duration}</p>
+                              <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
+                              <p className="text-[10px] text-gray-400">{apt.duration}</p>
                             </div>
                             <div className="w-px h-6 bg-gray-200 flex-shrink-0" />
                             <p className="flex-1 text-[10px] text-gray-600 truncate">{apt.observation}</p>
@@ -1215,7 +1209,7 @@ export function PatientDetail() {
                     </button>
                     {showFilesMenu && (
                       <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
-                        <button onClick={() => { setIsUploadModalOpen(true); setShowFilesMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                        <button onClick={() => { setIsUploadModalOpen(true); setShowFilesMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                           <Upload size={12} />
                           Agregar archivo
                         </button>
@@ -1244,7 +1238,7 @@ export function PatientDetail() {
                   }`}
                 >
                   {tab.label}
-                  <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                  <span className={`text-[10px] px-1 py-0.5 rounded-full ${
                     filesCategory === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                   }`}>{tab.count}</span>
                 </button>
@@ -1280,7 +1274,7 @@ export function PatientDetail() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-semibold text-gray-900 truncate">{file.name}</p>
-                    <p className="text-[9px] text-gray-500 mt-0.5">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })} · {file.size}</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">{new Date(file.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })} · {file.size}</p>
                   </div>
                   <button onClick={(e) => { e.stopPropagation(); }} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex-shrink-0">
                     <Download size={12} />
@@ -1317,11 +1311,11 @@ export function PatientDetail() {
                   <div key={apt.id} onClick={() => setSelectedRecord(apt)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                       <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
-                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                      <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                     </div>
                     <div className="flex-shrink-0 text-center">
                       <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
-                      <p className="text-[9px] text-gray-400">{apt.duration}</p>
+                      <p className="text-[10px] text-gray-400">{apt.duration}</p>
                     </div>
                     <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
@@ -1330,11 +1324,11 @@ export function PatientDetail() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.doctor}</span>
-                        <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
                           apt.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : apt.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
                         }`}>{apt.status}</span>
                       </div>
-                      <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                      <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                         <span>{apt.type}</span>
                         <span>·</span>
                         <span>{apt.specialty}</span>
@@ -1414,9 +1408,9 @@ export function PatientDetail() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-semibold text-gray-900">{patient.name}</span>
-                    {patient.isProblematic && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
+                    {patient.isProblematic && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
                   </div>
-                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                     <span>{patient.gender}</span>
                     <span>·</span>
                     <span>{patient.age} años</span>
@@ -1430,7 +1424,7 @@ export function PatientDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <AlertCircle size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Alergias</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Alergias</span>
                 </div>
                 {allergies.length > 0 ? allergies.map((allergy, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
@@ -1438,13 +1432,13 @@ export function PatientDetail() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{allergy.name}</p>
                     </div>
-                    <span className={`text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
                       allergy.severity === 'Severa' ? 'bg-red-50 text-red-600 border-red-100' : allergy.severity === 'Moderada' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' : 'bg-green-50 text-green-600 border-green-100'
                     }`}>{allergy.severity}</span>
                   </div>
                 )) : (
                   <div className="px-3 py-3 text-center">
-                    <p className="text-[9px] text-gray-400">Sin alergias registradas</p>
+                    <p className="text-[10px] text-gray-400">Sin alergias registradas</p>
                   </div>
                 )}
               </div>
@@ -1453,7 +1447,7 @@ export function PatientDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <IdCard size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Identificaciones</span>
                 </div>
                 {[
                   { type: 'DNI', number: '12345678A', isPrimary: true },
@@ -1463,9 +1457,9 @@ export function PatientDetail() {
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
-                      <p className="text-[9px] text-gray-500">{id.type}</p>
+                      <p className="text-[10px] text-gray-500">{id.type}</p>
                     </div>
-                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {id.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -1474,16 +1468,16 @@ export function PatientDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Phone size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
                 {patient.phones.map((phone, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
-                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                      <p className="text-[10px] text-gray-500">{phone.type}</p>
                     </div>
-                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {phone.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -1492,16 +1486,16 @@ export function PatientDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Mail size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Correos</span>
                 </div>
                 {patient.emails.map((email, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
-                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                      <p className="text-[10px] text-gray-500">{email.type}</p>
                     </div>
-                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {email.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -1510,16 +1504,16 @@ export function PatientDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <MapPin size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
                 {patient.addresses.map((address, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
-                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                      <p className="text-[10px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
                     </div>
-                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {address.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>

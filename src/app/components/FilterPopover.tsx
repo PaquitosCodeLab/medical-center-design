@@ -50,7 +50,7 @@ export function FilterPopover({ filters, onFilterChange, onClearAll, hasActiveFi
         <Filter size={14} />
         Filtros
         {hasActiveFilters && (
-          <span className="w-4 h-4 bg-blue-600 text-white text-[9px] rounded-full flex items-center justify-center font-semibold">
+          <span className="w-4 h-4 bg-blue-600 text-white text-[10px] rounded-full flex items-center justify-center font-semibold">
             {filters.filter(f => 
               (f.type === 'select' && f.selectedValue && f.selectedValue !== 'all') ||
               (f.type === 'multiselect' && f.selectedValues && f.selectedValues.length > 0)

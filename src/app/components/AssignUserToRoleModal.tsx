@@ -346,10 +346,10 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                       <p className="text-[10px] text-gray-500 truncate">{selectedUser.email}</p>
                     </div>
                     <div className="flex items-center gap-1">
-                      <span className="text-[9px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
+                      <span className="text-[10px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
                         {selectedUser.roles.length} roles
                       </span>
-                      <span className="text-[9px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
+                      <span className="text-[10px] font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">
                         {selectedUser.directModules.length} permisos
                       </span>
                     </div>
@@ -383,7 +383,7 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                             <Shield size={10} className="text-blue-600" />
                           </div>
                           <h5 className="text-[10px] font-semibold text-gray-700">Roles</h5>
-                          <span className="text-[9px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
                             {selectedUser.roles.length}
                           </span>
                         </div>
@@ -421,7 +421,7 @@ export function AssignUserToRoleModal({ isOpen, onClose, onAssign, roleName }: A
                             <CheckCircle size={10} className="text-blue-600" />
                           </div>
                           <h5 className="text-[10px] font-semibold text-gray-700">Permisos Directos</h5>
-                          <span className="text-[9px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full ml-auto">
                             {selectedUser.directModules.length}
                           </span>
                         </div>

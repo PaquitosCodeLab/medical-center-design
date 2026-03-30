@@ -39,7 +39,7 @@ export function UserMenu({ onEdit, onDelete, onToggleFavorite, isFavorite }: Use
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+        <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
           <button
             onClick={() => {
               onToggleFavorite();
@@ -66,7 +66,7 @@ export function UserMenu({ onEdit, onDelete, onToggleFavorite, isFavorite }: Use
               onDelete();
               setIsOpen(false);
             }}
-            className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-gray-50 flex items-center gap-2"
           >
             <Trash2 size={14} />
             Delete

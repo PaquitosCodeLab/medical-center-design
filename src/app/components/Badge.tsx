@@ -24,7 +24,7 @@ export function Badge({ children, variant = 'gray', size = 'md', className = '' 
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full font-medium ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full font-medium whitespace-nowrap ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
     >
       {children}
     </span>

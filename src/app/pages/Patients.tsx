@@ -184,7 +184,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                   <div className="space-y-2.5">
                     {phones.map((phone, index) => (
                       <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${phone.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                        {phone.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                        {phone.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                         <div className="flex items-center gap-1.5 mb-2">
                           {['Móvil', 'Trabajo', 'Casa', 'Otro'].map((type) => (
                             <button key={type} onClick={() => { const u = [...phones]; u[index].type = type; setPhones(u); }} className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${phone.type === type ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
@@ -224,7 +224,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                   <div className="space-y-2.5">
                     {emails.map((email, index) => (
                       <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${email.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                        {email.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                        {email.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                         <div className="flex items-center gap-1.5 mb-2">
                           {['Trabajo', 'Personal', 'Otro'].map((type) => (
                             <button key={type} onClick={() => { const u = [...emails]; u[index].type = type; setEmails(u); }} className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${email.type === type ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
@@ -268,7 +268,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               <div className="space-y-2.5">
                 {addresses.map((addr, index) => (
                   <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${addr.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                    {addr.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                    {addr.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                     <div className="flex items-center gap-2 mb-2.5">
                       <div className="flex gap-1">
                         {['Casa', 'Trabajo', 'Otro'].map((type) => (
@@ -331,7 +331,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[10px] font-medium text-gray-600">Paciente Problemático</p>
-                      <p className="text-[9px] text-gray-400">Comportamiento problemático</p>
+                      <p className="text-[10px] text-gray-400">Comportamiento problemático</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
                       <input type="checkbox" className="sr-only peer" checked={isProblematic} onChange={() => setIsProblematic(!isProblematic)} />
@@ -389,10 +389,10 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                 <div className="flex-1">
                   <p className="text-xs font-semibold text-gray-900">{firstName} {lastName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    {gender && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{gender}</span>}
-                    {birthDate && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{new Date(birthDate).toLocaleDateString('es-ES')}</span>}
-                    {bloodType && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">{bloodType}</span>}
-                    {isProblematic && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>}
+                    {gender && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{gender}</span>}
+                    {birthDate && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{new Date(birthDate).toLocaleDateString('es-ES')}</span>}
+                    {bloodType && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">{bloodType}</span>}
+                    {isProblematic && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>}
                   </div>
                 </div>
               </div>
@@ -400,7 +400,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               <div className="grid grid-cols-2 gap-3">
                 {/* Identificaciones */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Identificaciones</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Identificaciones</p>
                   {identifications.filter(id => id.number).length > 0 ? (
                     <div className="space-y-1">
                       {identifications.filter(id => id.number).map((id, i) => (
@@ -412,14 +412,14 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
                 {/* Teléfonos */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Teléfonos</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Teléfonos</p>
                   {phones.filter(p => p.number).length > 0 ? (
                     <div className="space-y-1">
                       {phones.filter(p => p.number).map((p, i) => (
                         <div key={i} className="flex items-center gap-1.5">
                           <p className="text-[10px] font-medium text-gray-900">{p.number}</p>
-                          <span className="text-[9px] text-gray-400">{p.type}</span>
-                          {p.isPrimary && <span className="text-[8px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded">Principal</span>}
+                          <span className="text-[10px] text-gray-400">{p.type}</span>
+                          {p.isPrimary && <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded">Principal</span>}
                         </div>
                       ))}
                     </div>
@@ -428,14 +428,14 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
                 {/* Correos */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Correos</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Correos</p>
                   {emails.filter(e => e.address).length > 0 ? (
                     <div className="space-y-1">
                       {emails.filter(e => e.address).map((e, i) => (
                         <div key={i} className="flex items-center gap-1.5">
                           <p className="text-[10px] font-medium text-gray-900 truncate">{e.address}</p>
-                          <span className="text-[9px] text-gray-400 flex-shrink-0">{e.type}</span>
-                          {e.isPrimary && <span className="text-[8px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded flex-shrink-0">Principal</span>}
+                          <span className="text-[10px] text-gray-400 flex-shrink-0">{e.type}</span>
+                          {e.isPrimary && <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded flex-shrink-0">Principal</span>}
                         </div>
                       ))}
                     </div>
@@ -444,13 +444,13 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
                 {/* Direcciones */}
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Direcciones</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Direcciones</p>
                   {addresses.filter(a => a.street).length > 0 ? (
                     <div className="space-y-1">
                       {addresses.filter(a => a.street).map((a, i) => (
                         <div key={i}>
                           <p className="text-[10px] font-medium text-gray-900">{a.street}</p>
-                          <p className="text-[9px] text-gray-500">{a.city} {a.postalCode} · {a.type} {a.isPrimary && '(Principal)'}</p>
+                          <p className="text-[10px] text-gray-500">{a.city} {a.postalCode} · {a.type} {a.isPrimary && '(Principal)'}</p>
                         </div>
                       ))}
                     </div>
@@ -461,10 +461,10 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               {/* Alergias */}
               {allergies.filter(a => a.name).length > 0 && (
                 <div className="p-2.5 bg-gradient-to-br from-red-50 to-white rounded-lg border border-red-200">
-                  <p className="text-[9px] text-red-600 font-medium mb-1">Alergias</p>
+                  <p className="text-[10px] text-red-600 font-medium mb-1">Alergias</p>
                   <div className="flex flex-wrap gap-1">
                     {allergies.filter(a => a.name).map((a, i) => (
-                      <span key={i} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">{a.name} · {a.severity}</span>
+                      <span key={i} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">{a.name} · {a.severity}</span>
                     ))}
                   </div>
                 </div>
@@ -475,7 +475,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
         {/* Footer */}
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
-          <span className="text-[9px] text-gray-400">Paso {step + 1} de {STEPS.length}</span>
+          <span className="text-[10px] text-gray-400">Paso {step + 1} de {STEPS.length}</span>
           <div className="flex items-center gap-2">
             {step > 0 && (
               <button onClick={() => setStep(step - 1)} className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors">Atrás</button>
@@ -629,9 +629,9 @@ export function Patients() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-xs font-semibold text-gray-900 truncate">{patient.name}</h3>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{patient.age} años</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{patient.age} años</span>
                         {patient.isProblematic && (
-                          <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
                         )}
                       </div>
                     </div>
@@ -647,7 +647,7 @@ export function Patients() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); setMorePopover(morePopover?.id === patient.id && morePopover?.type === 'phones' ? null : { id: patient.id, type: 'phones' }); }}
-                            className="text-[9px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
+                            className="text-[10px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
                           >
                             +{patient.phones.filter(p => !p.isPrimary).length} más
                           </button>
@@ -677,7 +677,7 @@ export function Patients() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); setMorePopover(morePopover?.id === patient.id && morePopover?.type === 'emails' ? null : { id: patient.id, type: 'emails' }); }}
-                            className="text-[9px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
+                            className="text-[10px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
                           >
                             +{patient.emails.filter(e => !e.isPrimary).length} más
                           </button>
@@ -705,9 +705,9 @@ export function Patients() {
                   <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between rounded-b-xl">
                     <div className="flex items-center gap-1.5">
                       <Calendar size={10} className="text-gray-400" />
-                      <span className="text-[9px] text-gray-500">Última visita</span>
+                      <span className="text-[10px] text-gray-500">Última visita</span>
                     </div>
-                    <span className="text-[9px] font-medium text-gray-700">
+                    <span className="text-[10px] font-medium text-gray-700">
                       {new Date(patient.lastVisit).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                   </div>
@@ -737,7 +737,7 @@ export function Patients() {
 
                   <div className="flex items-center gap-3">
                     {patient.isProblematic && (
-                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
                     )}
                     <div className="text-xs text-gray-600">{patient.age} años</div>
                     <div className="text-xs text-gray-500">{new Date(patient.lastVisit).toLocaleDateString('es-ES')}</div>
@@ -796,7 +796,7 @@ export function Patients() {
                       </td>
                       <td className="px-4 py-3">
                         {patient.isProblematic ? (
-                          <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">Problemático</span>
                         ) : (
                           <span className="text-xs text-gray-400">—</span>
                         )}

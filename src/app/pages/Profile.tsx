@@ -447,7 +447,7 @@ export function Profile() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-semibold text-gray-900">{stat.value}</p>
-                  <p className="text-[9px] text-gray-500">{stat.label}</p>
+                  <p className="text-[10px] text-gray-500">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -511,7 +511,7 @@ export function Profile() {
                   <div key={activity.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 last:border-0">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                       <span className="text-sm font-bold text-blue-700 leading-none">{day}</span>
-                      <span className="text-[8px] font-medium text-blue-500">{month}</span>
+                      <span className="text-[10px] font-medium text-blue-500">{month}</span>
                     </div>
                     <div className="flex-shrink-0 text-center">
                       <p className="text-[10px] font-bold text-gray-900">{time}</p>
@@ -520,8 +520,8 @@ export function Profile() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{activity.event}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={8} />{activity.ip}</span>
-                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={8} />{activity.location}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={9} />{activity.ip}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={9} />{activity.location}</span>
                       </div>
                     </div>
                   </div>
@@ -585,9 +585,9 @@ export function Profile() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-semibold text-gray-900">{currentUser.firstName} {currentUser.lastName}</span>
-                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{currentUser.userType}</span>
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{currentUser.userType}</span>
                   </div>
-                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                     <span>Masculino</span>
                     <span>·</span>
                     <span>40 años</span>
@@ -599,7 +599,7 @@ export function Profile() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <IdCard size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Identificaciones</span>
                 </div>
                 {[
                   { type: 'DNI', number: '12345678A', isPrimary: true },
@@ -609,9 +609,9 @@ export function Profile() {
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
-                      <p className="text-[9px] text-gray-500">{id.type}</p>
+                      <p className="text-[10px] text-gray-500">{id.type}</p>
                     </div>
-                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {id.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -620,16 +620,16 @@ export function Profile() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Phone size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
                 {currentUser.phones.map((phone, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
-                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                      <p className="text-[10px] text-gray-500">{phone.type}</p>
                     </div>
-                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {phone.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -638,16 +638,16 @@ export function Profile() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Mail size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Correos</span>
                 </div>
                 {currentUser.emails.map((email, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
-                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                      <p className="text-[10px] text-gray-500">{email.type}</p>
                     </div>
-                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {email.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -656,16 +656,16 @@ export function Profile() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <MapPin size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
                 {currentUser.addresses.map((address, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
-                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                      <p className="text-[10px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
                     </div>
-                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {address.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>

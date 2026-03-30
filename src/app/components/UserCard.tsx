@@ -40,9 +40,9 @@ export function UserCard({ user, onEdit, onUpdate, onDelete }: UserCardProps) {
         <div className="flex-1 min-w-0">
           <h3 className="text-xs font-semibold text-gray-900 truncate">{user.name}</h3>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{user.role}</span>
+            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{user.role}</span>
             {user.status && (
-              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                 user.status === 'Confirmado' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
               }`}>{user.status}</span>
             )}
@@ -70,12 +70,12 @@ export function UserCard({ user, onEdit, onUpdate, onDelete }: UserCardProps) {
           {user.lastActivity === 'en línea' ? (
             <>
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <span className="text-[9px] text-green-600 font-medium">En línea</span>
+              <span className="text-[10px] text-green-600 font-medium">En línea</span>
             </>
           ) : (
             <>
               <Clock size={10} className="text-gray-400" />
-              <span className="text-[9px] text-gray-500">Activo {user.lastActivity}</span>
+              <span className="text-[10px] text-gray-500">Activo {user.lastActivity}</span>
             </>
           )}
         </div>

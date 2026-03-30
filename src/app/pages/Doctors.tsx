@@ -173,7 +173,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 </div>
                 {phones.length > 0 ? <div className="space-y-2.5">{phones.map((phone, index) => (
                   <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${phone.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                    {phone.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                    {phone.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                     <div className="flex items-center gap-1.5 mb-2">
                       {['Móvil', 'Oficina', 'Casa', 'Otro'].map((type) => (<button key={type} onClick={() => { const u = [...phones]; u[index].type = type; setPhones(u); }} className={`px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${phone.type === type ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>{type}</button>))}
                       <button onClick={() => setPhones(phones.filter((_, i) => i !== index))} className="ml-auto p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={13} /></button>
@@ -190,7 +190,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 </div>
                 {emails.length > 0 ? <div className="space-y-2.5">{emails.map((email, index) => (
                   <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${email.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                    {email.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                    {email.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                     <div className="flex items-center gap-1.5 mb-2">
                       {['Trabajo', 'Personal', 'Otro'].map((type) => (<button key={type} onClick={() => { const u = [...emails]; u[index].type = type; setEmails(u); }} className={`px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${email.type === type ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>{type}</button>))}
                       <button onClick={() => setEmails(emails.filter((_, i) => i !== index))} className="ml-auto p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={13} /></button>
@@ -212,7 +212,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               </div>
               {addresses.length > 0 ? <div className="space-y-2.5">{addresses.map((addr, index) => (
                 <div key={index} className={`group relative border rounded-xl p-3 transition-all hover:shadow-md ${addr.isPrimary ? 'border-blue-300 bg-gradient-to-br from-blue-50 to-white shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
-                  {addr.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
+                  {addr.isPrimary && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
                   <div className="flex items-center gap-2 mb-2.5">
                     <div className="flex gap-1">{['Consultorio', 'Hospital', 'Casa', 'Otro'].map((type) => (<button key={type} onClick={() => { const u = [...addresses]; u[index].type = type; setAddresses(u); }} className={`px-2 py-1 text-xs font-medium rounded-lg border transition-all ${addr.type === type ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>{type}</button>))}</div>
                     <div className="flex-1"></div>
@@ -240,7 +240,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               </div>
               {studies.length > 0 ? <div className="space-y-2">{studies.map((study, index) => (
                 <div key={index} className={`group relative border rounded-xl transition-all hover:shadow-md hover:border-gray-300 ${study.inProgress ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white' : 'border-gray-200 bg-white'}`}>
-                  {study.inProgress && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">En curso</div>}
+                  {study.inProgress && <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">En curso</div>}
                   <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
                     <label className="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" checked={study.inProgress} onChange={() => { const u = [...studies]; u[index] = { ...u[index], inProgress: !u[index].inProgress, endDate: !u[index].inProgress ? '' : u[index].endDate }; setStudies(u); }} className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-1 focus:ring-blue-500" /><span className={`text-[10px] font-medium ${study.inProgress ? 'text-blue-600' : 'text-gray-500'}`}>En curso</span></label>
                     <button onClick={() => setStudies(studies.filter((_, i) => i !== index))} className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={13} /></button>
@@ -268,53 +268,53 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <div className="flex-1">
                   <p className="text-xs font-semibold text-gray-900">Dr. {firstName} {lastName}</p>
                   <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                    {gender && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{gender}</span>}
-                    {birthDate && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{new Date(birthDate).toLocaleDateString('es-ES')}</span>}
-                    {selectedSpecialties.map(s => <span key={s} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{s}</span>)}
-                    {experience && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{experience} años exp.</span>}
+                    {gender && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">{gender}</span>}
+                    {birthDate && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{new Date(birthDate).toLocaleDateString('es-ES')}</span>}
+                    {selectedSpecialties.map(s => <span key={s} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{s}</span>)}
+                    {experience && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{experience} años exp.</span>}
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Licencia</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Licencia</p>
                   <p className="text-[10px] font-medium text-gray-900">{licenseNumber || '—'}</p>
                 </div>
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Teléfonos</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Teléfonos</p>
                   {phones.filter(p => p.number).length > 0 ? phones.filter(p => p.number).map((p, i) => (
-                    <div key={i} className="flex items-center gap-1.5"><p className="text-[10px] font-medium text-gray-900">{p.number}</p><span className="text-[9px] text-gray-400">{p.type}</span>{p.isPrimary && <span className="text-[8px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded">Principal</span>}</div>
+                    <div key={i} className="flex items-center gap-1.5"><p className="text-[10px] font-medium text-gray-900">{p.number}</p><span className="text-[10px] text-gray-400">{p.type}</span>{p.isPrimary && <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded">Principal</span>}</div>
                   )) : <p className="text-[10px] text-gray-400">—</p>}
                 </div>
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Correos</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Correos</p>
                   {emails.filter(e => e.address).length > 0 ? emails.filter(e => e.address).map((e, i) => (
-                    <div key={i} className="flex items-center gap-1.5"><p className="text-[10px] font-medium text-gray-900 truncate">{e.address}</p><span className="text-[9px] text-gray-400 flex-shrink-0">{e.type}</span>{e.isPrimary && <span className="text-[8px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded flex-shrink-0">Principal</span>}</div>
+                    <div key={i} className="flex items-center gap-1.5"><p className="text-[10px] font-medium text-gray-900 truncate">{e.address}</p><span className="text-[10px] text-gray-400 flex-shrink-0">{e.type}</span>{e.isPrimary && <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1 py-0.5 rounded flex-shrink-0">Principal</span>}</div>
                   )) : <p className="text-[10px] text-gray-400">—</p>}
                 </div>
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Direcciones</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Direcciones</p>
                   {addresses.filter(a => a.street).length > 0 ? addresses.filter(a => a.street).map((a, i) => (
-                    <div key={i}><p className="text-[10px] font-medium text-gray-900">{a.street}</p><p className="text-[9px] text-gray-500">{a.city} {a.postalCode} · {a.type} {a.isPrimary && '(Principal)'}</p></div>
+                    <div key={i}><p className="text-[10px] font-medium text-gray-900">{a.street}</p><p className="text-[10px] text-gray-500">{a.city} {a.postalCode} · {a.type} {a.isPrimary && '(Principal)'}</p></div>
                   )) : <p className="text-[10px] text-gray-400">—</p>}
                 </div>
               </div>
 
               {studies.filter(s => s.institution).length > 0 && (
                 <div className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-[9px] text-gray-500 mb-1">Estudios</p>
+                  <p className="text-[10px] text-gray-500 mb-1">Estudios</p>
                   <div className="space-y-1.5">
                     {studies.filter(s => s.institution).map((s, i) => (
                       <div key={i} className="flex items-center justify-between">
                         <div>
                           <p className="text-[10px] font-medium text-gray-900">{s.title}</p>
-                          <p className="text-[9px] text-gray-500">{s.institution}</p>
+                          <p className="text-[10px] text-gray-500">{s.institution}</p>
                         </div>
                         {s.inProgress ? (
-                          <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">En curso</span>
+                          <span className="text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">En curso</span>
                         ) : (
-                          <span className="text-[9px] font-medium text-gray-500 bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] font-medium text-gray-500 bg-gray-100 border border-gray-200 px-1.5 py-0.5 rounded-full">
                             {s.startDate && new Date(s.startDate).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })} — {s.endDate && new Date(s.endDate).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}
                           </span>
                         )}
@@ -328,7 +328,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         </div>
 
         <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
-          <span className="text-[9px] text-gray-400">Paso {step + 1} de {DOC_STEPS.length}</span>
+          <span className="text-[10px] text-gray-400">Paso {step + 1} de {DOC_STEPS.length}</span>
           <div className="flex items-center gap-2">
             {step > 0 && <button onClick={() => setStep(step - 1)} className="px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 rounded transition-colors">Atrás</button>}
             {step < DOC_STEPS.length - 1 ? (
@@ -454,8 +454,8 @@ export function Doctors() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-xs font-semibold text-gray-900 truncate">{doctor.name}</h3>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.specialty}</span>
-                        <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.specialty}</span>
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                           doctor.status === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                         }`}>{doctor.status}</span>
                       </div>
@@ -472,7 +472,7 @@ export function Doctors() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); setMorePopover(morePopover?.id === doctor.id && morePopover?.type === 'phones' ? null : { id: doctor.id, type: 'phones' }); }}
-                            className="text-[9px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
+                            className="text-[10px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
                           >
                             +{doctor.phones.filter(p => !p.isPrimary).length} más
                           </button>
@@ -502,7 +502,7 @@ export function Doctors() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); setMorePopover(morePopover?.id === doctor.id && morePopover?.type === 'emails' ? null : { id: doctor.id, type: 'emails' }); }}
-                            className="text-[9px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
+                            className="text-[10px] font-medium text-blue-600 hover:text-blue-700 transition-colors flex-shrink-0"
                           >
                             +{doctor.emails.filter(e => !e.isPrimary).length} más
                           </button>
@@ -530,9 +530,9 @@ export function Doctors() {
                   <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between rounded-b-xl">
                     <div className="flex items-center gap-1.5">
                       <Users size={10} className="text-gray-400" />
-                      <span className="text-[9px] text-gray-500">Pacientes</span>
+                      <span className="text-[10px] text-gray-500">Pacientes</span>
                     </div>
-                    <span className="text-[9px] font-medium text-gray-700">{doctor.patients} activos</span>
+                    <span className="text-[10px] font-medium text-gray-700">{doctor.patients} activos</span>
                   </div>
                 </div>
               ))}
@@ -559,8 +559,8 @@ export function Doctors() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.patients} pacientes</span>
-                    <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.patients} pacientes</span>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                       doctor.status === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                     }`}>{doctor.status}</span>
                   </div>
@@ -608,7 +608,7 @@ export function Doctors() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.specialty}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700">{doctor.specialty}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-xs text-gray-600">{doctor.phones.find(p => p.isPrimary)?.number}</span>
@@ -620,7 +620,7 @@ export function Doctors() {
                         <span className="text-xs text-gray-900">{doctor.patients}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                           doctor.status === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
                         }`}>{doctor.status}</span>
                       </td>

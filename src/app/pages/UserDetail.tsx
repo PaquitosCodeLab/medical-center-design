@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Mail, Shield, CheckCircle, XCircle, Clock, MapPin, Globe, Monitor, Calendar, User, Phone, IdCard, Cake, MoreVertical, Edit, Trash2, Settings } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
+import { DetailHeaderMenu } from '../components/DetailHeaderMenu';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
 import { EditUserModal, type UserData } from '../components/EditUserModal';
@@ -248,7 +249,12 @@ const userData = {
 };
 
 export function UserDetail() {
-  useHeader({ title: 'Detalle del Usuario', subtitle: 'Información completa y actividad del usuario', backTo: '/accounts/users' });
+  useHeader({
+    title: 'Detalle del Usuario',
+    subtitle: 'Información completa y actividad del usuario',
+    backTo: '/accounts/users',
+    actions: <DetailHeaderMenu editTitle="Editar Usuario" deleteTitle="Eliminar Usuario" onEdit={() => setIsEditModalOpen(true)} onDelete={() => setIsDeleteModalOpen(true)} />,
+  });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -385,18 +391,6 @@ export function UserDetail() {
                     </div>
                   </div>
                 </div>
-                <div className="relative flex-shrink-0" ref={menuRef}>
-                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
-                    <MoreVertical size={18} />
-                  </button>
-                  {showMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                      <button onClick={() => { setIsEditModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Usuario</button>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button onClick={() => { setIsDeleteModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Usuario</button>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -426,7 +420,7 @@ export function UserDetail() {
                   </button>
                   {showRolesMenu && (
                     <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
-                      <button onClick={() => { setIsEditRolesModalOpen(true); setShowRolesMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                      <button onClick={() => { setIsEditRolesModalOpen(true); setShowRolesMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                         <Edit size={12} />
                         Editar Roles
                       </button>
@@ -481,7 +475,7 @@ export function UserDetail() {
                   </button>
                   {showPermissionsMenu && (
                     <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
-                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermissionsMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermissionsMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                         <Edit size={12} />
                         Editar Permisos
                       </button>
@@ -502,7 +496,7 @@ export function UserDetail() {
                       <p className="text-[10px] font-semibold text-gray-900">{module.name}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {module.permissions.filter(p => p.granted).map((perm) => (
-                          <span key={perm.key} className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                          <span key={perm.key} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
                             {perm.label}
                           </span>
                         ))}
@@ -535,7 +529,7 @@ export function UserDetail() {
                   <div key={activity.id} className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 last:border-0">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                       <span className="text-sm font-bold text-blue-700 leading-none">{day}</span>
-                      <span className="text-[8px] font-medium text-blue-500">{month}</span>
+                      <span className="text-[10px] font-medium text-blue-500">{month}</span>
                     </div>
                     <div className="flex-shrink-0 text-center">
                       <p className="text-[10px] font-bold text-gray-900">{time}</p>
@@ -544,8 +538,8 @@ export function UserDetail() {
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{activity.event}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={8} />{activity.ip}</span>
-                        <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={8} />{activity.location}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><Globe size={9} />{activity.ip}</span>
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 inline-flex items-center gap-0.5"><MapPin size={9} />{activity.location}</span>
                       </div>
                     </div>
                   </div>
@@ -620,14 +614,14 @@ export function UserDetail() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-semibold text-gray-900">{userData.linkedPerson.firstName} {userData.linkedPerson.lastName}</span>
-                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{userData.userType}</span>
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{userData.userType}</span>
                   </div>
-                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                     <span>{userData.linkedPerson.gender}</span>
                     <span>·</span>
                     <span>{userData.linkedPerson.age} años</span>
                     <span>·</span>
-                    <span className={`text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${userData.status === 'Confirmado' ? 'text-green-600 bg-green-50 border-green-100' : 'text-yellow-600 bg-yellow-50 border-yellow-100'}`}>{userData.status}</span>
+                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${userData.status === 'Confirmado' ? 'text-green-600 bg-green-50 border-green-100' : 'text-yellow-600 bg-yellow-50 border-yellow-100'}`}>{userData.status}</span>
                   </p>
                 </div>
               </div>
@@ -636,7 +630,7 @@ export function UserDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <IdCard size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Identificaciones</span>
                 </div>
                 {[
                   { type: userData.linkedPerson.identificationType, number: userData.linkedPerson.identificationNumber, isPrimary: true },
@@ -646,9 +640,9 @@ export function UserDetail() {
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
-                      <p className="text-[9px] text-gray-500">{id.type}</p>
+                      <p className="text-[10px] text-gray-500">{id.type}</p>
                     </div>
-                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {id.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -657,16 +651,16 @@ export function UserDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Phone size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
                 {userData.linkedPerson.phones.map((phone, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
-                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                      <p className="text-[10px] text-gray-500">{phone.type}</p>
                     </div>
-                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {phone.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -675,16 +669,16 @@ export function UserDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Mail size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Correos</span>
                 </div>
                 {userData.linkedPerson.emails.map((email, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
-                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                      <p className="text-[10px] text-gray-500">{email.type}</p>
                     </div>
-                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {email.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -693,16 +687,16 @@ export function UserDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <MapPin size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
                 {userData.linkedPerson.addresses.map((address, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
-                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                      <p className="text-[10px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
                     </div>
-                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {address.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>

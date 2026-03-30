@@ -199,7 +199,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                   >
                     {/* Primary Badge */}
                     {email.isPrimary && (
-                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
                         Principal
                       </div>
                     )}
@@ -315,7 +315,7 @@ export function EditContactsModal({ isOpen, onClose, contactsData, onSave }: Edi
                   >
                     {/* Primary Badge */}
                     {phone.isPrimary && (
-                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
                         Principal
                       </div>
                     )}

@@ -210,7 +210,7 @@ export function Dashboard() {
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-lg font-bold text-gray-900">{totalDept}</span>
-                <span className="text-[9px] text-gray-500">Total</span>
+                <span className="text-[10px] text-gray-500">Total</span>
               </div>
             </div>
             <div className="w-full mt-3 space-y-1.5">
@@ -289,7 +289,7 @@ export function Dashboard() {
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="text-[9px] text-gray-400 flex-shrink-0">{doc.especialidad}</span>
+                      <span className="text-[10px] text-gray-400 flex-shrink-0">{doc.especialidad}</span>
                     </div>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export function Dashboard() {
                       <p className="text-[10px] font-medium text-gray-900">{item.text}</p>
                       <p className="text-[10px] text-gray-500 truncate">{item.detail}</p>
                     </div>
-                    <span className="text-[9px] text-gray-400 flex-shrink-0 mt-0.5">{item.time}</span>
+                    <span className="text-[10px] text-gray-400 flex-shrink-0 mt-0.5">{item.time}</span>
                   </div>
                 );
               })}

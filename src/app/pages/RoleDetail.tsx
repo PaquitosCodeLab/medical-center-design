@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Shield, Users, CheckCircle, MoreVertical, Edit, Trash2, User, Mail, Clock, Calendar, UserPlus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
+import { DetailHeaderMenu } from '../components/DetailHeaderMenu';
 import { PermissionBadge } from '../components/PermissionBadge';
 import { Badge } from '../components/Badge';
 import { EditRoleModal, EditPermissionsModal, type RoleData } from '../components/EditRoleModal';
@@ -150,25 +151,26 @@ const roleData = {
 };
 
 export function RoleDetail() {
-  useHeader({ title: 'Detalle del Rol', subtitle: 'Información completa del rol y usuarios asignados', backTo: '/accounts/roles' });
   const { id } = useParams();
   const navigate = useNavigate();
-  const [showMenu, setShowMenu] = useState(false);
   const [showPermsMenu, setShowPermsMenu] = useState(false);
   const [showUsersMenu, setShowUsersMenu] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isEditPermissionsModalOpen, setIsEditPermissionsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAssignUserModalOpen, setIsAssignUserModalOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const permsMenuRef = useRef<HTMLDivElement>(null);
   const usersMenuRef = useRef<HTMLDivElement>(null);
 
+  useHeader({
+    title: 'Detalle del Rol',
+    subtitle: 'Información completa del rol y usuarios asignados',
+    backTo: '/accounts/roles',
+    actions: <DetailHeaderMenu editTitle="Editar Rol" deleteTitle="Eliminar Rol" onEdit={() => setIsEditModalOpen(true)} onDelete={() => setIsDeleteModalOpen(true)} />,
+  });
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
       if (permsMenuRef.current && !permsMenuRef.current.contains(event.target as Node)) {
         setShowPermsMenu(false);
       }
@@ -177,14 +179,14 @@ export function RoleDetail() {
       }
     };
 
-    if (showMenu || showPermsMenu || showUsersMenu) {
+    if (showPermsMenu || showUsersMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu, showPermsMenu, showUsersMenu]);
+  }, [showPermsMenu, showUsersMenu]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return (firstName[0] + lastName[0]).toUpperCase();
@@ -282,20 +284,6 @@ export function RoleDetail() {
                     </div>
                   </div>
                 </div>
-                <div className="relative flex-shrink-0" ref={menuRef}>
-                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
-                    <MoreVertical size={18} />
-                  </button>
-                  {showMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                      <button onClick={() => { setIsEditModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Rol</button>
-                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Shield size={12} />Editar Permisos</button>
-                      <button onClick={() => { setIsAssignUserModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><UserPlus size={12} />Asignar Usuario</button>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button onClick={() => { setIsDeleteModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Rol</button>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -323,8 +311,8 @@ export function RoleDetail() {
                     <MoreVertical size={14} />
                   </button>
                   {showUsersMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-[100]">
-                      <button onClick={() => { setIsAssignUserModalOpen(true); setShowUsersMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                    <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
+                      <button onClick={() => { setIsAssignUserModalOpen(true); setShowUsersMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                         <UserPlus size={12} />
                         Asignar Usuario
                       </button>
@@ -346,9 +334,9 @@ export function RoleDetail() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-semibold text-gray-900">{user.firstName} {user.lastName}</span>
-                      <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{user.userType}</span>
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{user.userType}</span>
                     </div>
-                    <p className="text-[9px] text-gray-500 mt-0.5 truncate">{user.email}</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5 truncate">{user.email}</p>
                   </div>
                 </div>
               ))}
@@ -376,8 +364,8 @@ export function RoleDetail() {
                     <MoreVertical size={14} />
                   </button>
                   {showPermsMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl py-1 z-[100]">
-                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermsMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                    <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-[100]">
+                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermsMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                         <Shield size={12} />
                         Editar Permisos
                       </button>
@@ -401,12 +389,12 @@ export function RoleDetail() {
                       <p className="text-[10px] font-semibold text-gray-900">{module.name}</p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {allGranted ? (
-                          <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100 inline-flex items-center gap-0.5">
+                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100 inline-flex items-center gap-0.5">
                             <CheckCircle size={8} />Completo
                           </span>
                         ) : (
                           grantedPerms.map((perm) => (
-                            <span key={perm.key} className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                            <span key={perm.key} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
                               {perm.label}
                             </span>
                           ))

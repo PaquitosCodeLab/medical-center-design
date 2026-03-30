@@ -221,7 +221,7 @@ export function Preferences() {
               </div>
               <div className="flex items-center gap-0.5">
                 {[
-                  { key: 'sm', label: 'A', size: 'text-[9px]' },
+                  { key: 'sm', label: 'A', size: 'text-[10px]' },
                   { key: 'md', label: 'A', size: 'text-[11px]' },
                   { key: 'lg', label: 'A', size: 'text-[13px]' },
                 ].map((opt) => (

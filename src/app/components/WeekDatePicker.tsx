@@ -61,7 +61,7 @@ export function WeekDatePicker({ selectedDate, onDateChange, appointmentCounts =
               onClick={() => onDateChange(day)}
               className="flex items-center justify-center py-1.5 transition-all relative hover:bg-gray-50"
             >
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[8px] font-medium transition-all ${
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
                 isSelected
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-gray-600'
@@ -69,7 +69,7 @@ export function WeekDatePicker({ selectedDate, onDateChange, appointmentCounts =
                 <span className={isSelected ? 'text-blue-200' : 'text-gray-400'}>{dayNames[i]}</span>
                 <span className={`text-xs font-bold ${isSelected ? 'text-white' : isToday ? 'text-blue-600' : 'text-gray-900'}`}>{day.getDate()}</span>
                 {count > 0 && (
-                  <span className={`text-[7px] font-semibold w-3.5 h-3.5 flex items-center justify-center rounded-full ${
+                  <span className={`text-[10px] font-semibold w-3.5 h-3.5 flex items-center justify-center rounded-full ${
                     isSelected ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
                   }`}>{count}</span>
                 )}
@@ -141,7 +141,7 @@ export function MonthCalendarBadge({ selectedDate, onDateChange }: MonthCalendar
           </div>
           <div className="grid grid-cols-7 px-2 pt-2">
             {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => (
-              <div key={d} className="text-center text-[8px] font-medium text-gray-400 py-1">{d}</div>
+              <div key={d} className="text-center text-[10px] font-medium text-gray-400 py-1">{d}</div>
             ))}
           </div>
           <div className="grid grid-cols-7 px-2 pb-2">

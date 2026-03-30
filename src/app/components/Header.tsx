@@ -71,7 +71,7 @@ export function Header() {
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {config.actions && (
-                <div className="inline-flex items-center gap-1 p-0 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300 cursor-pointer">
+                <div className="inline-flex items-center gap-1 px-1 py-0.5 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300 cursor-pointer">
                   {config.actions}
                 </div>
               )}
@@ -101,7 +101,7 @@ export function Header() {
             </div>
             <div className="flex items-center gap-2 pointer-events-auto">
               {config.actions && (
-                <div className="inline-flex items-center gap-1 p-1.5 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 cursor-pointer shadow-blue-500/30">
+                <div className="inline-flex items-center gap-1 px-2 py-1.5 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 cursor-pointer shadow-blue-500/30">
                   {config.actions}
                 </div>
               )}

@@ -158,10 +158,10 @@ export function Appointments2() {
                     : 'hover:bg-gray-50 text-gray-600'
                 }`}
               >
-                <span className={`text-[9px] font-medium uppercase ${isSelected ? 'text-blue-200' : 'text-gray-400'}`}>{dayNames[i]}</span>
+                <span className={`text-[10px] font-medium uppercase ${isSelected ? 'text-blue-200' : 'text-gray-400'}`}>{dayNames[i]}</span>
                 <span className={`text-lg font-bold mt-0.5 ${isSelected ? 'text-white' : isToday ? 'text-blue-600' : 'text-gray-900'}`}>{day.getDate()}</span>
                 {dayCount > 0 && (
-                  <span className={`text-[8px] font-semibold mt-1 px-1.5 py-0.5 rounded-full ${
+                  <span className={`text-[10px] font-semibold mt-1 px-1.5 py-0.5 rounded-full ${
                     isSelected ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'
                   }`}>{dayCount}</span>
                 )}
@@ -217,7 +217,7 @@ export function Appointments2() {
                   }`}
                 >
                   {tab.label}
-                  <span className={`text-[9px] px-1 py-0.5 rounded-full ${
+                  <span className={`text-[10px] px-1 py-0.5 rounded-full ${
                     statusFilter === tab.value ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                   }`}>{tab.count}</span>
                 </button>
@@ -238,11 +238,11 @@ export function Appointments2() {
                       {/* Time */}
                       <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                         <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
-                        <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                        <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                       </div>
                       <div className="flex-shrink-0 text-center">
                         <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
-                        <p className="text-[9px] text-gray-400">{apt.duration}</p>
+                        <p className="text-[10px] text-gray-400">{apt.duration}</p>
                       </div>
                       <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
@@ -253,12 +253,12 @@ export function Appointments2() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span onClick={(e) => { e.stopPropagation(); navigate(`/patients/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.patient}</span>
-                          <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusConfig[apt.status].color}`}>
+                          <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${statusConfig[apt.status].color}`}>
                             <StatusIcon size={8} />
                             {apt.status}
                           </span>
                         </div>
-                        <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                        <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                           <span onClick={(e) => { e.stopPropagation(); navigate(`/doctors/${apt.id}`); }} className="flex items-center gap-0.5 hover:text-blue-600 hover:underline cursor-pointer"><Stethoscope size={9} />{apt.doctor}</span>
                           <span>·</span>
                           <span>{apt.type}</span>
@@ -333,14 +333,14 @@ export function Appointments2() {
                 const apt = docAppts[0];
                 return (
                   <div key={i} className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 last:border-0">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0" style={{ backgroundColor: apt?.color || '#6b7280' }}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0" style={{ backgroundColor: apt?.color || '#6b7280' }}>
                       {doctor.split(' ').map(w => w[0]).join('').slice(0, 2)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{doctor}</p>
-                      <p className="text-[9px] text-gray-500">{apt?.specialty}</p>
+                      <p className="text-[10px] text-gray-500">{apt?.specialty}</p>
                     </div>
-                    <span className="text-[9px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full">
                       {docAppts.length} citas
                     </span>
                   </div>
@@ -377,11 +377,11 @@ export function Appointments2() {
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                   <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(selectedAppointment.date.split('-')[2])}</span>
-                  <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(selectedAppointment.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                  <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(selectedAppointment.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                 </div>
                 <div className="flex-shrink-0 text-center">
                   <p className="text-[10px] font-bold text-gray-900">{selectedAppointment.time}</p>
-                  <p className="text-[9px] text-gray-400">{selectedAppointment.duration}</p>
+                  <p className="text-[10px] text-gray-400">{selectedAppointment.duration}</p>
                 </div>
                 <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
@@ -390,9 +390,9 @@ export function Appointments2() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span onClick={() => { setSelectedAppointment(null); navigate(`/patients/${selectedAppointment.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{selectedAppointment.patient}</span>
-                    <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusConfig[selectedAppointment.status].color}`}>{selectedAppointment.status}</span>
+                    <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${statusConfig[selectedAppointment.status].color}`}>{selectedAppointment.status}</span>
                   </div>
-                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                     <span onClick={() => { setSelectedAppointment(null); navigate(`/doctors/${selectedAppointment.id}`); }} className="flex items-center gap-0.5 hover:text-blue-600 hover:underline cursor-pointer"><Stethoscope size={9} />{selectedAppointment.doctor}</span>
                     <span>·</span>
                     <span>{selectedAppointment.type}</span>

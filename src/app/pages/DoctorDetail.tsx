@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Mail, Phone, Calendar, Clock, MoreVertical, Edit, Trash2, Shield, GraduationCap, Award, Stethoscope, Building, MapPin, User, IdCard, Cake, FileText, X, Plus, Search, CheckCircle } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useHeader } from '../components/HeaderContext';
+import { DetailHeaderMenu } from '../components/DetailHeaderMenu';
 import { Badge } from '../components/Badge';
 import { WeekDatePicker, MonthCalendarBadge } from '../components/WeekDatePicker';
 import {
@@ -40,11 +41,11 @@ function CitaDetailModal({ record, onClose, onNavigatePatient }: { record: { id:
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
             <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
               <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(record.date.split('-')[2])}</span>
-              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+              <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(record.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
             </div>
             <div className="flex-shrink-0 text-center">
               <p className="text-[10px] font-bold text-gray-900">{record.time}</p>
-              <p className="text-[9px] text-gray-400">{record.duration}</p>
+              <p className="text-[10px] text-gray-400">{record.duration}</p>
             </div>
             <div className="w-0.5 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: record.color }} />
             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0" style={{ backgroundColor: record.color }}>
@@ -53,9 +54,9 @@ function CitaDetailModal({ record, onClose, onNavigatePatient }: { record: { id:
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span onClick={() => { onClose(); onNavigatePatient?.(record.id); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{record.patient}</span>
-                <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
+                <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${statusColor}`}>{record.status}</span>
               </div>
-              <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+              <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                 <span>{record.type}</span>
                 <span>·</span>
                 <span>{record.specialty}</span>
@@ -360,7 +361,7 @@ function EditStudiesModal({ isOpen, onClose, studies: initial, onSave }: { isOpe
               <div key={index} className={`group relative border rounded-xl transition-all hover:shadow-md hover:border-gray-300 ${study.inProgress ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white' : 'border-gray-200 bg-white'}`}>
                 {/* In progress badge */}
                 {study.inProgress && (
-                  <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">En curso</div>
+                  <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">En curso</div>
                 )}
                 {/* Top bar: icon + toggle + delete */}
                 <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
@@ -416,7 +417,12 @@ function EditStudiesModal({ isOpen, onClose, studies: initial, onSave }: { isOpe
 }
 
 export function DoctorDetail() {
-  useHeader({ title: 'Detalle del Doctor', subtitle: 'Información completa y actividad del doctor', backTo: '/doctors' });
+  useHeader({
+    title: 'Detalle del Doctor',
+    subtitle: 'Información completa y actividad del doctor',
+    backTo: '/doctors',
+    actions: <DetailHeaderMenu editTitle="Editar Doctor" deleteTitle="Eliminar Doctor" onEdit={() => setIsEditDoctorModalOpen(true)} onDelete={() => console.log('Eliminar doctor')} />,
+  });
   const { id } = useParams();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
@@ -537,18 +543,6 @@ export function DoctorDetail() {
                       Modificado: {new Date(doctor.lastModified).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </Badge>
                   </div>
-                </div>
-                <div className="relative flex-shrink-0" ref={menuRef}>
-                  <button onClick={() => setShowMenu(!showMenu)} className="p-1.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mt-1">
-                    <MoreVertical size={18} />
-                  </button>
-                  {showMenu && (
-                    <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                      <button onClick={() => { setIsEditDoctorModalOpen(true); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 flex items-center gap-2"><Edit size={12} />Editar Doctor</button>
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button onClick={() => { console.log('Eliminar doctor'); setShowMenu(false); }} className="w-full px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50 flex items-center gap-2"><Trash2 size={12} />Eliminar Doctor</button>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -724,11 +718,11 @@ export function DoctorDetail() {
                   <div key={apt.id} onClick={() => setSelectedRecord(apt)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
                       <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
-                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                      <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                     </div>
                     <div className="flex-shrink-0 text-center">
                       <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
-                      <p className="text-[9px] text-gray-400">{apt.duration}</p>
+                      <p className="text-[10px] text-gray-400">{apt.duration}</p>
                     </div>
                     <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 bg-blue-600">
@@ -737,12 +731,12 @@ export function DoctorDetail() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span onClick={(e) => { e.stopPropagation(); navigate(`/patients/${apt.id}`); }} className="text-[10px] font-semibold text-gray-900 truncate hover:text-blue-600 hover:underline cursor-pointer">{apt.patient}</span>
-                        <span className={`inline-flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
                           apt.status === 'Confirmada' ? 'text-blue-600 bg-blue-50 border-blue-100' : apt.status === 'Completada' ? 'text-green-600 bg-green-50 border-green-100' : apt.status === 'Pendiente' ? 'text-yellow-600 bg-yellow-50 border-yellow-100' : 'text-red-600 bg-red-50 border-red-100'
                         }`}>{apt.status}</span>
-                        {apt.isProblematic && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
+                        {apt.isProblematic && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
                       </div>
-                      <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                      <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                         <span>{apt.type}</span>
                         <span>·</span>
                         <span>{apt.specialty}</span>
@@ -803,9 +797,9 @@ export function DoctorDetail() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-semibold text-gray-900">{doctor.name}</span>
-                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{doctor.licenseNumber}</span>
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{doctor.licenseNumber}</span>
                   </div>
-                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
                     <span>{doctor.gender}</span>
                     <span>·</span>
                     <span>{doctor.age} años</span>
@@ -819,11 +813,11 @@ export function DoctorDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Stethoscope size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Especialidades</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Especialidades</span>
                 </div>
                 <div className="px-3 py-2 flex flex-wrap gap-1.5">
                   {doctor.specialties.map((spec, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+                    <span key={i} className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                       <Stethoscope size={9} />
                       {spec}
                     </span>
@@ -835,19 +829,19 @@ export function DoctorDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <GraduationCap size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Educación</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Educación</span>
                 </div>
                 {[...studies].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()).map((study, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><GraduationCap size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{study.title}</p>
-                      <p className="text-[9px] text-gray-500">{study.institution}</p>
+                      <p className="text-[10px] text-gray-500">{study.institution}</p>
                     </div>
                     {study.inProgress ? (
-                      <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">En curso</span>
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">En curso</span>
                     ) : (
-                      <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
                         {new Date(study.startDate).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })} — {new Date(study.endDate).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}
                       </span>
                     )}
@@ -859,16 +853,16 @@ export function DoctorDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Phone size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
                 {doctor.phones.map((phone, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
-                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                      <p className="text-[10px] text-gray-500">{phone.type}</p>
                     </div>
-                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {phone.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -877,16 +871,16 @@ export function DoctorDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <Mail size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Correos</span>
                 </div>
                 {doctor.emails.map((email, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
-                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                      <p className="text-[10px] text-gray-500">{email.type}</p>
                     </div>
-                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {email.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>
@@ -895,16 +889,16 @@ export function DoctorDetail() {
               <div className="bg-gray-50 rounded-lg border border-gray-100">
                 <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
                   <MapPin size={10} className="text-gray-400" />
-                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
                 {doctor.addresses.map((address, index) => (
                   <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
-                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                      <p className="text-[10px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
                     </div>
-                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                    {address.isPrimary && <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
                   </div>
                 ))}
               </div>

@@ -49,7 +49,7 @@ function CatalogModal({ catalog, onClose }: { catalog: CatalogDef | null; onClos
             </div>
             <div>
               <h2 className="text-sm font-semibold text-gray-900">{catalog.name}</h2>
-              <p className="text-[9px] text-gray-500">{catalog.description}</p>
+              <p className="text-[10px] text-gray-500">{catalog.description}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors">
@@ -145,7 +145,7 @@ export function Catalogs() {
               </div>
               <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 rounded-b-xl flex items-center justify-between">
                 <Badge variant="blue" size="sm">{catalog.values.length} elementos</Badge>
-                <span className="text-[9px] text-gray-400">{new Date(catalog.lastModified).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                <span className="text-[10px] text-gray-400">{new Date(catalog.lastModified).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
               </div>
             </div>
           );
