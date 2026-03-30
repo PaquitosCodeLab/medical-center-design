@@ -12,6 +12,7 @@ const GENDER_OPTIONS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
 const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'No definido'];
 
 const STEPS = [
+  { key: 'search', label: 'Buscar', icon: Search },
   { key: 'personal', label: 'Personal', icon: User },
   { key: 'contacts', label: 'Contactos', icon: Phone },
   { key: 'addresses', label: 'Direcciones', icon: Calendar },
@@ -19,41 +20,57 @@ const STEPS = [
   { key: 'preview', label: 'Resumen', icon: Search },
 ] as const;
 
+const mockPersons = [
+  { id: 1, firstName: 'María', lastName: 'García López', gender: 'Femenino', birthDate: '1985-05-15', identifications: [{ type: 'DNI', number: '12345678A' }, { type: 'Pasaporte', number: 'ES9876543' }], emails: [{ address: 'maria.garcia@email.com', type: 'Personal', isPrimary: true }], phones: [{ number: '+34 612 345 678', type: 'Móvil', isPrimary: true }], addresses: [{ street: 'Calle Mayor 123', city: 'Madrid', postalCode: '28013', type: 'Casa', isPrimary: true }] },
+  { id: 2, firstName: 'Juan', lastName: 'Pérez Soto', gender: 'Masculino', birthDate: '1990-08-22', identifications: [{ type: 'DNI', number: '87654321B' }], emails: [{ address: 'juan.perez@email.com', type: 'Personal', isPrimary: true }], phones: [{ number: '+34 698 765 432', type: 'Móvil', isPrimary: true }], addresses: [{ street: 'Av. Libertad 456', city: 'Barcelona', postalCode: '08001', type: 'Casa', isPrimary: true }] },
+  { id: 3, firstName: 'Ana', lastName: 'Rodríguez Vega', gender: 'Femenino', birthDate: '1978-03-10', identifications: [{ type: 'NIE', number: 'X1234567Z' }], emails: [{ address: 'ana.rodriguez@email.com', type: 'Personal', isPrimary: true }], phones: [{ number: '+34 611 222 333', type: 'Móvil', isPrimary: true }], addresses: [{ street: 'Plaza España 12', city: 'Sevilla', postalCode: '41001', type: 'Casa', isPrimary: true }] },
+];
+
 function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [step, setStep] = useState(4);
-  const [firstName, setFirstName] = useState('María');
-  const [lastName, setLastName] = useState('García López');
-  const [gender, setGender] = useState('Femenino');
-  const [birthDate, setBirthDate] = useState('1985-05-15');
+  const [step, setStep] = useState(0);
+  const [personSearch, setPersonSearch] = useState('');
+  const [selectedPerson, setSelectedPerson] = useState<typeof mockPersons[0] | null>(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [idType, setIdType] = useState('DNI');
   const [idNumber, setIdNumber] = useState('');
-  const [identifications, setIdentifications] = useState([{ type: 'DNI', number: '12345678A' }, { type: 'Pasaporte', number: 'ES9876543' }]);
-  const [emails, setEmails] = useState<{ address: string; type: string; isPrimary: boolean }[]>([
-    { address: 'maria.garcia@email.com', type: 'Personal', isPrimary: true },
-    { address: 'mgarcia@empresa.com', type: 'Trabajo', isPrimary: false },
-  ]);
-  const [phones, setPhones] = useState<{ number: string; type: string; isPrimary: boolean }[]>([
-    { number: '+34 612 345 678', type: 'Móvil', isPrimary: true },
-    { number: '+34 91 234 5678', type: 'Trabajo', isPrimary: false },
-  ]);
-  const [addresses, setAddresses] = useState<{ street: string; city: string; postalCode: string; type: string; isPrimary: boolean }[]>([
-    { street: 'Calle Mayor 123', city: 'Madrid', postalCode: '28013', type: 'Casa', isPrimary: true },
-    { street: 'Av. de la Castellana 261', city: 'Madrid', postalCode: '28046', type: 'Trabajo', isPrimary: false },
-  ]);
-  const [bloodType, setBloodType] = useState('O+');
-  const [allergies, setAllergies] = useState<{ name: string; severity: 'Leve' | 'Moderada' | 'Severa' }[]>([
-    { name: 'Penicilina', severity: 'Severa' },
-    { name: 'Aspirina', severity: 'Moderada' },
-    { name: 'Látex', severity: 'Leve' },
-  ]);
-  const [isProblematic, setIsProblematic] = useState(true);
+  const [identifications, setIdentifications] = useState([{ type: 'DNI', number: '' }]);
+  const [emails, setEmails] = useState<{ address: string; type: string; isPrimary: boolean }[]>([]);
+  const [phones, setPhones] = useState<{ number: string; type: string; isPrimary: boolean }[]>([]);
+  const [addresses, setAddresses] = useState<{ street: string; city: string; postalCode: string; type: string; isPrimary: boolean }[]>([]);
+  const [bloodType, setBloodType] = useState('');
+  const [allergies, setAllergies] = useState<{ name: string; severity: 'Leve' | 'Moderada' | 'Severa' }[]>([]);
+  const [isProblematic, setIsProblematic] = useState(false);
+
+  const loadPerson = (person: typeof mockPersons[0]) => {
+    setSelectedPerson(person);
+    setFirstName(person.firstName);
+    setLastName(person.lastName);
+    setGender(person.gender);
+    setBirthDate(person.birthDate);
+    setIdentifications(person.identifications);
+    setEmails(person.emails);
+    setPhones(person.phones);
+    setAddresses(person.addresses);
+    setStep(1);
+  };
+
+  const startNew = () => {
+    setSelectedPerson(null);
+    setFirstName(''); setLastName(''); setGender(''); setBirthDate('');
+    setIdentifications([{ type: 'DNI', number: '' }]);
+    setEmails([]); setPhones([]); setAddresses([]);
+    setBloodType(''); setAllergies([]); setIsProblematic(false);
+    setStep(1);
+  };
 
   const handleReset = () => {
-    setStep(0); setFirstName(''); setLastName(''); setGender(''); setBirthDate('');
+    setStep(0); setPersonSearch(''); setSelectedPerson(null);
+    setFirstName(''); setLastName(''); setGender(''); setBirthDate('');
     setIdentifications([{ type: 'DNI', number: '' }]);
-    setEmails([]);
-    setPhones([]);
-    setAddresses([]);
+    setEmails([]); setPhones([]); setAddresses([]);
     setBloodType(''); setAllergies([]); setIsProblematic(false);
   };
 
@@ -94,8 +111,53 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
-          {/* Step 1: Personal + Identificaciones */}
+          {/* Step 0: Buscar Persona */}
           {step === 0 && (
+            <div className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                <input type="text" value={personSearch} onChange={(e) => setPersonSearch(e.target.value)} placeholder="Buscar persona por nombre o identificación..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
+              </div>
+
+              {personSearch ? (
+                <div className="space-y-1">
+                  {mockPersons.filter(p => `${p.firstName} ${p.lastName}`.toLowerCase().includes(personSearch.toLowerCase()) || p.identifications.some(id => id.number.toLowerCase().includes(personSearch.toLowerCase()))).map(person => (
+                    <button key={person.id} onClick={() => { loadPerson(person); setPersonSearch(''); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 border border-transparent transition-all">
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                        {person.firstName[0]}{person.lastName[0]}
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-xs font-medium text-gray-900">{person.firstName} {person.lastName}</p>
+                        <p className="text-[10px] text-gray-500">{person.identifications[0]?.type} {person.identifications[0]?.number} · {person.gender}</p>
+                      </div>
+                    </button>
+                  ))}
+                  {mockPersons.filter(p => `${p.firstName} ${p.lastName}`.toLowerCase().includes(personSearch.toLowerCase()) || p.identifications.some(id => id.number.toLowerCase().includes(personSearch.toLowerCase()))).length === 0 && (
+                    <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <Search size={16} className="text-gray-400" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-500">No se encontró la persona</p>
+                      <button onClick={startNew} className="mt-2 px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Crear persona nueva
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 border border-dashed border-gray-200 rounded-xl">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <User size={20} className="text-gray-400" />
+                  </div>
+                  <p className="text-xs font-medium text-gray-500">Buscar persona existente</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre o número de identificación</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 1: Personal + Identificaciones */}
+          {step === 1 && (
             <div className="grid grid-cols-2 gap-4">
               {/* Info Personal */}
               <div>
@@ -166,7 +228,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           )}
 
           {/* Step 2: Contactos (Teléfonos | Correos) */}
-          {step === 1 && (
+          {step === 2 && (
             <div className="grid grid-cols-2 gap-4">
               {/* Teléfonos */}
               <div>
@@ -252,7 +314,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           )}
 
           {/* Step 3: Direcciones */}
-          {step === 2 && (
+          {step === 3 && (
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -311,7 +373,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           )}
 
           {/* Step 4: Datos Médicos */}
-          {step === 3 && (
+          {step === 4 && (
             <div className="grid grid-cols-2 gap-4">
               {/* Left — Tipo de Sangre + Problemático */}
               <div>
@@ -379,7 +441,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           )}
 
           {/* Step 5: Resumen */}
-          {step === 4 && (
+          {step === 5 && (
             <div className="space-y-3">
               {/* Header card */}
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">

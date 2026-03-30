@@ -53,18 +53,303 @@ const statusConfig = {
   Cancelada: { icon: XCircle, color: 'text-red-600 bg-red-50 border-red-100', dot: 'bg-red-500' },
 };
 
+// --- Create Appointment Modal ---
+const APPOINTMENT_TYPES = ['Consulta General', 'Control', 'Seguimiento', 'Primera Vez', 'Urgencia'];
+const SPECIALTIES = ['Cardiología', 'Pediatría', 'Neurología', 'Dermatología', 'Traumatología', 'Ginecología'];
+const DURATIONS = ['15 min', '30 min', '45 min', '60 min'];
+
+const mockPatients = [
+  { id: 1, name: 'María García', avatar: 'MG' },
+  { id: 2, name: 'Juan Pérez', avatar: 'JP' },
+  { id: 3, name: 'Ana Rodríguez', avatar: 'AR' },
+  { id: 4, name: 'Carlos Díaz', avatar: 'CD' },
+  { id: 5, name: 'Laura Fernández', avatar: 'LF' },
+];
+
+const mockDoctors = [
+  { id: 1, name: 'Dr. López', specialty: 'Cardiología', avatar: 'DL' },
+  { id: 2, name: 'Dra. Martínez', specialty: 'Pediatría', avatar: 'DM' },
+  { id: 3, name: 'Dr. Sánchez', specialty: 'Neurología', avatar: 'DS' },
+  { id: 4, name: 'Dra. Torres', specialty: 'Dermatología', avatar: 'DT' },
+  { id: 5, name: 'Dr. Ramírez', specialty: 'Traumatología', avatar: 'DR' },
+];
+
+function AppointmentHeaderButton({ onNew }: { onNew: () => void }) {
+  return (
+    <button onClick={onNew} className="p-1 text-white" title="Nueva Cita">
+      <Plus size={15} />
+    </button>
+  );
+}
+
+function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [step, setStep] = useState(0);
+  const [selectedPatient, setSelectedPatient] = useState<typeof mockPatients[0] | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<typeof mockDoctors[0] | null>(null);
+  const [date, setDate] = useState('2026-03-29');
+  const [time, setTime] = useState('09:00');
+  const [duration, setDuration] = useState('30 min');
+  const [type, setType] = useState('Consulta General');
+  const [specialty, setSpecialty] = useState('Cardiología');
+  const [notes, setNotes] = useState('');
+  const [patientSearch, setPatientSearch] = useState('');
+  const [doctorSearch, setDoctorSearch] = useState('');
+
+  const inputClass = "w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white";
+
+  const handleClose = () => {
+    setStep(0); setSelectedPatient(null); setSelectedDoctor(null);
+    setDate('2026-03-29'); setTime('09:00'); setDuration('30 min');
+    setType('Consulta General'); setSpecialty('Cardiología'); setNotes('');
+    setPatientSearch(''); setDoctorSearch('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  const steps = [
+    { key: 'patient', label: 'Paciente', icon: User },
+    { key: 'doctor', label: 'Doctor', icon: Stethoscope },
+    { key: 'details', label: 'Detalles', icon: Calendar },
+    { key: 'preview', label: 'Resumen', icon: Eye },
+  ];
+
+  const canNext = step === 0 ? !!selectedPatient : step === 1 ? !!selectedDoctor : step === 2 ? !!date && !!time : true;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-blue-100 rounded-lg"><Calendar size={16} className="text-blue-600" /></div>
+            <h2 className="text-sm font-semibold text-gray-900">Nueva Cita</h2>
+          </div>
+          <button onClick={handleClose} className="p-1 text-gray-400 hover:text-gray-600 hover:bg-white rounded transition-colors"><X size={16} /></button>
+        </div>
+
+        {/* Stepper */}
+        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            const isActive = i === step;
+            const isDone = i < step;
+            return (
+              <button key={s.key} onClick={() => i <= step && setStep(i)} className="flex items-center gap-2 group">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${isActive ? 'bg-blue-600 text-white' : isDone ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
+                  {isDone ? '✓' : i + 1}
+                </div>
+                <span className={`text-[10px] font-medium transition-colors ${isActive ? 'text-blue-600' : isDone ? 'text-gray-700' : 'text-gray-400'}`}>{s.label}</span>
+                {i < steps.length - 1 && <div className={`w-8 h-px mx-1 ${isDone ? 'bg-blue-300' : 'bg-gray-200'}`} />}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* Step 1: Patient */}
+          {step === 0 && (
+            <div className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                <input type="text" value={patientSearch} onChange={(e) => setPatientSearch(e.target.value)} placeholder="Buscar paciente por nombre..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
+              </div>
+              {patientSearch ? (
+                <div className="space-y-1">
+                  {mockPatients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).map(patient => (
+                    <button key={patient.id} onClick={() => { setSelectedPatient(patient); setPatientSearch(''); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${selectedPatient?.id === patient.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'}`}>
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">{patient.avatar}</div>
+                      <span className="text-xs font-medium text-gray-900">{patient.name}</span>
+                      {selectedPatient?.id === patient.id && <CheckCircle size={14} className="text-blue-600 ml-auto" />}
+                    </button>
+                  ))}
+                  {mockPatients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).length === 0 && (
+                    <p className="text-center text-[10px] text-gray-400 py-4">No se encontraron pacientes</p>
+                  )}
+                </div>
+              ) : null}
+              {selectedPatient && (
+                <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">{selectedPatient.avatar}</div>
+                  <span className="text-xs font-semibold text-gray-900 flex-1">{selectedPatient.name}</span>
+                  <button onClick={() => setSelectedPatient(null)} className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors"><X size={14} /></button>
+                </div>
+              )}
+              {!selectedPatient && !patientSearch && (
+                <div className="text-center py-8 border border-dashed border-gray-200 rounded-xl">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <User size={20} className="text-gray-400" />
+                  </div>
+                  <p className="text-xs font-medium text-gray-500">Selecciona un paciente</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre para encontrar al paciente</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 2: Doctor */}
+          {step === 1 && (
+            <div className="space-y-3">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                <input type="text" value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="Buscar doctor por nombre..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
+              </div>
+              {doctorSearch ? (
+                <div className="space-y-1">
+                  {mockDoctors.filter(d => d.name.toLowerCase().includes(doctorSearch.toLowerCase())).map(doctor => (
+                    <button key={doctor.id} onClick={() => { setSelectedDoctor(doctor); setSpecialty(doctor.specialty); setDoctorSearch(''); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${selectedDoctor?.id === doctor.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'}`}>
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">{doctor.avatar}</div>
+                      <div className="text-left">
+                        <p className="text-xs font-medium text-gray-900">{doctor.name}</p>
+                        <p className="text-[10px] text-gray-500">{doctor.specialty}</p>
+                      </div>
+                      {selectedDoctor?.id === doctor.id && <CheckCircle size={14} className="text-blue-600 ml-auto" />}
+                  </button>
+                ))}
+                  {mockDoctors.filter(d => d.name.toLowerCase().includes(doctorSearch.toLowerCase())).length === 0 && (
+                    <p className="text-center text-[10px] text-gray-400 py-4">No se encontraron doctores</p>
+                  )}
+                </div>
+              ) : null}
+              {selectedDoctor && (
+                <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">{selectedDoctor.avatar}</div>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-gray-900">{selectedDoctor.name}</p>
+                    <p className="text-[10px] text-gray-500">{selectedDoctor.specialty}</p>
+                  </div>
+                  <button onClick={() => setSelectedDoctor(null)} className="p-1 text-gray-400 hover:text-red-500 rounded transition-colors"><X size={14} /></button>
+                </div>
+              )}
+              {!selectedDoctor && !doctorSearch && (
+                <div className="text-center py-8 border border-dashed border-gray-200 rounded-xl">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <Stethoscope size={20} className="text-gray-400" />
+                  </div>
+                  <p className="text-xs font-medium text-gray-500">Selecciona un doctor</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre para encontrar al doctor</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 3: Details */}
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Fecha</label>
+                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Hora</label>
+                  <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={inputClass} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Tipo de Cita</label>
+                  <select value={type} onChange={(e) => setType(e.target.value)} className={inputClass}>
+                    {APPOINTMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Duración</label>
+                  <select value={duration} onChange={(e) => setDuration(e.target.value)} className={inputClass}>
+                    {DURATIONS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-gray-600 mb-1">Especialidad</label>
+                <select value={specialty} onChange={(e) => setSpecialty(e.target.value)} className={inputClass}>
+                  {SPECIALTIES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-gray-600 mb-1">Notas (opcional)</label>
+                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones adicionales..." className={`${inputClass} h-20 resize-none`} />
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Preview */}
+          {step === 3 && (
+            <div className="space-y-3">
+              {/* Preview item — same design as cita items */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
+                  <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(date.split('-')[2])}</span>
+                  <span className="text-[10px] font-medium text-blue-500 uppercase">{new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
+                </div>
+                <div className="flex-shrink-0 text-center">
+                  <p className="text-[10px] font-bold text-gray-900">{time}</p>
+                  <p className="text-[10px] text-gray-400">{duration}</p>
+                </div>
+                <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                  {selectedPatient?.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-gray-900">{selectedPatient?.name}</span>
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-yellow-600 bg-yellow-50 border-yellow-100">Pendiente</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2">
+                    <span className="flex items-center gap-0.5"><Stethoscope size={10} />{selectedDoctor?.name}</span>
+                    <span>·</span>
+                    <span>{type}</span>
+                    <span>·</span>
+                    <span>{specialty}</span>
+                  </p>
+                </div>
+              </div>
+
+              {notes && (
+                <div className="bg-gray-50 rounded-lg border border-gray-100 p-3">
+                  <p className="text-[10px] font-semibold text-gray-500 uppercase mb-1">Notas</p>
+                  <p className="text-xs text-gray-700">{notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
+          <span className="text-[10px] text-gray-400">Paso {step + 1} de {steps.length}</span>
+          <div className="flex items-center gap-2">
+            {step > 0 && (
+              <button onClick={() => setStep(step - 1)} className="px-3 py-1.5 text-[10px] font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                Anterior
+              </button>
+            )}
+            {step < steps.length - 1 ? (
+              <button onClick={() => canNext && setStep(step + 1)} className={`px-3 py-1.5 text-[10px] font-medium rounded-lg transition-colors ${canNext ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
+                Siguiente
+              </button>
+            ) : (
+              <button onClick={handleClose} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Crear Cita
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Appointments2() {
   useHeader({
     title: 'Citas',
     subtitle: 'Gestión del calendario médico',
-    actions: (
-      <button className="p-1 text-white" title="Nueva Cita">
-        <Plus size={15} />
-      </button>
-    ),
+    actions: <AppointmentHeaderButton onNew={() => setIsCreateModalOpen(true)} />,
   });
 
   const navigate = useNavigate();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date(2026, 2, 29));
   const [statusFilter, setStatusFilter] = useState<'all' | 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelada'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -512,6 +797,8 @@ export function Appointments2() {
           </div>
         </div>
       )}
+
+      <CreateAppointmentModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
 }
