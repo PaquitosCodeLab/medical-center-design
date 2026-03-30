@@ -27,6 +27,7 @@ interface EditUserModalProps {
   onClose: () => void;
   userData: UserData;
   onSave: (userData: UserData) => void;
+  section?: 'all' | 'roles' | 'permissions';
 }
 
 export interface UserData {
@@ -81,7 +82,7 @@ function IndeterminateCheckbox({ checked, indeterminate, onChange, className }: 
   return <input ref={ref} type="checkbox" checked={checked} onChange={onChange} className={className} />;
 }
 
-export function EditUserModal({ isOpen, onClose, userData, onSave }: EditUserModalProps) {
+export function EditUserModal({ isOpen, onClose, userData, onSave, section = 'all' }: EditUserModalProps) {
   const [firstName, setFirstName] = useState(userData.firstName);
   const [lastName, setLastName] = useState(userData.lastName);
   const [email, setEmail] = useState(userData.email);
@@ -144,20 +145,24 @@ export function EditUserModal({ isOpen, onClose, userData, onSave }: EditUserMod
   const filteredRoles = availableRoles.filter(r => r.name.toLowerCase().includes(roleSearchQuery.toLowerCase()));
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Editar Usuario" maxWidth="2xl" footer={
+    <Modal isOpen={isOpen} onClose={onClose} title={section === 'roles' ? 'Editar Roles' : section === 'permissions' ? 'Editar Permisos' : 'Editar Usuario'} maxWidth={section === 'all' ? '2xl' : 'lg'} footer={
       <><ModalButton onClick={onClose} variant="secondary">Cancelar</ModalButton><ModalButton onClick={handleSave} variant="primary">Guardar Cambios</ModalButton></>
     }>
       <div className="space-y-3">
-        <div className="grid grid-cols-3 gap-2">
-          <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Nombre</label><input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="Nombre" /></div>
-          <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Apellido</label><input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="Apellido" /></div>
-          <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Tipo</label><select value={userType} onChange={(e) => setUserType(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all bg-white"><option>Usuario</option><option>Administrador</option><option>Desarrollador</option></select></div>
-        </div>
-        <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Correo Electrónico</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="correo@ejemplo.com" /></div>
+        {section === 'all' && (
+          <>
+            <div className="grid grid-cols-3 gap-2">
+              <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Nombre</label><input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="Nombre" /></div>
+              <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Apellido</label><input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="Apellido" /></div>
+              <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Tipo</label><select value={userType} onChange={(e) => setUserType(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all bg-white"><option>Usuario</option><option>Administrador</option><option>Desarrollador</option></select></div>
+            </div>
+            <div><label className="block text-[10px] font-medium text-gray-600 mb-1">Correo Electrónico</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-xs transition-all" placeholder="correo@ejemplo.com" /></div>
+          </>
+        )}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={section === 'all' ? 'grid grid-cols-2 gap-4' : ''}>
           {/* Roles */}
-          <div>
+          {(section === 'all' || section === 'roles') && <div>
             <label className="block text-[10px] font-medium text-gray-600 mb-1.5">Asignar Roles</label>
             <div className="relative" ref={roleDropdownRef}>
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={12} />
@@ -184,10 +189,10 @@ export function EditUserModal({ isOpen, onClose, userData, onSave }: EditUserMod
                 ))}
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Permisos Directos */}
-          <div>
+          {(section === 'all' || section === 'permissions') && <div>
             <label className="block text-[10px] font-medium text-gray-600 mb-1.5">Permisos Directos</label>
             <div className="border border-gray-200 rounded-xl overflow-hidden max-h-64 overflow-y-auto">
               {availableModules.map((module) => {
@@ -242,7 +247,7 @@ export function EditUserModal({ isOpen, onClose, userData, onSave }: EditUserMod
                 );
               })}
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </Modal>

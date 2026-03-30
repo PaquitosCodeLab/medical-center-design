@@ -499,8 +499,8 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
             <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
-              <span className="text-sm font-bold text-blue-700 leading-none">{new Date(record.date).getDate()}</span>
-              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+              <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(record.date.split('-')[2])}</span>
+              <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(record.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
             </div>
             <div className="flex-shrink-0 text-center">
               <p className="text-[10px] font-bold text-gray-900">{record.time}</p>
@@ -523,12 +523,11 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
             </div>
           </div>
 
+          {/* Observación (siempre visible) */}
           {record.observation ? (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <div className="p-1 bg-blue-100 rounded">
-                  <FileText size={12} className="text-blue-600" />
-                </div>
+                <div className="p-1 bg-blue-100 rounded"><FileText size={12} className="text-blue-600" /></div>
                 <h3 className="text-xs font-semibold text-gray-900">Observación de la Cita</h3>
               </div>
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
@@ -541,24 +540,56 @@ function CitaDetailModal({ record, onClose, onNavigateDoctor }: { record: { id: 
               <p className="text-[10px] text-gray-500">Sin observaciones registradas</p>
             </div>
           )}
+
+          {/* Result / Cancel Reason */}
+          {record.status === 'Completada' && record.result && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1 bg-green-100 rounded"><CheckCircle size={12} className="text-green-600" /></div>
+                <h3 className="text-xs font-semibold text-gray-900">Resultado de la Cita</h3>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{record.result}</p>
+              </div>
+            </div>
+          )}
+          {record.status === 'Cancelada' && record.cancelReason && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1 bg-red-100 rounded"><X size={12} className="text-red-600" /></div>
+                <h3 className="text-xs font-semibold text-gray-900">Motivo de Cancelación</h3>
+              </div>
+              <div className="p-3 bg-red-50 rounded-lg border border-red-100">
+                <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{record.cancelReason}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          {(record.status === 'Pendiente' || record.status === 'Confirmada') && (
+            <div className="flex items-center gap-2 pt-1">
+              <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-all">
+                <X size={12} />
+                Cancelar Cita
+              </button>
+              {record.status === 'Pendiente' && (
+                <button onClick={onClose} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-sm shadow-blue-500/20">
+                  <CheckCircle size={12} />
+                  Confirmar Cita
+                </button>
+              )}
+              {record.status === 'Confirmada' && (
+                <button onClick={() => { setSubModal('complete'); setSubModalText(''); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-white bg-green-600 rounded-full hover:bg-green-700 transition-all shadow-sm shadow-green-500/20">
+                  <CheckCircle size={12} />
+                  Completar Cita
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2.5 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-end px-4 py-2.5 border-t border-gray-200 bg-gray-50">
           <button onClick={onClose} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">Cerrar</button>
-          <div className="flex items-center gap-2">
-            {record.status === 'Pendiente' && (
-              <>
-                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
-                <button onClick={onClose} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Confirmar</button>
-              </>
-            )}
-            {record.status === 'Confirmada' && (
-              <>
-                <button onClick={() => { setSubModal('cancel'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">Cancelar</button>
-                <button onClick={() => { setSubModal('complete'); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Completar</button>
-              </>
-            )}
-          </div>
         </div>
       </div>
 
@@ -926,13 +957,13 @@ export function PatientDetail() {
   const [selectedRecord, setSelectedRecord] = useState<typeof allPatientAppointments[0] | null>(null);
 
   const allPatientAppointments = [
-    { id: 1, date: '2026-03-25', time: '09:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.' },
+    { id: 1, date: '2026-03-25', time: '09:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Control de rutina', observation: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.', result: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.' },
     { id: 2, date: '2026-03-25', time: '11:00', type: 'Seguimiento', specialty: 'Pediatría', duration: '45 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Pendiente' as const, notes: 'Revisión', observation: '' },
     { id: 3, date: '2026-03-25', time: '14:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Confirmada' as const, notes: 'Evaluación', observation: '' },
-    { id: 4, date: '2026-03-25', time: '16:00', type: 'Urgencia', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente canceló', observation: '' },
-    { id: 5, date: '2026-03-26', time: '09:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Completada' as const, notes: '', observation: 'Evaluación neurológica sin hallazgos patológicos. Reflejos normales. Se descarta origen neurológico de los mareos.' },
-    { id: 6, date: '2026-03-27', time: '11:00', type: 'Primera Consulta', specialty: 'Cardiología', duration: '45 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1. Se solicitan exámenes de laboratorio completos. Se inicia tratamiento con Losartán 25mg/día.' },
-    { id: 7, date: '2026-03-28', time: '14:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '' },
+    { id: 4, date: '2026-03-25', time: '16:00', type: 'Urgencia', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente canceló', observation: '', cancelReason: 'El paciente no pudo asistir por emergencia familiar.' },
+    { id: 5, date: '2026-03-26', time: '09:00', type: 'Consulta', specialty: 'Neurología', duration: '30 min', color: '#10B981', avatar: 'DS', doctor: 'Dr. Sánchez', status: 'Completada' as const, notes: '', observation: 'Evaluación neurológica sin hallazgos patológicos. Reflejos normales. Se descarta origen neurológico de los mareos.', result: 'Evaluación neurológica sin hallazgos patológicos. Reflejos normales. Se descarta origen neurológico de los mareos.' },
+    { id: 6, date: '2026-03-27', time: '11:00', type: 'Primera Consulta', specialty: 'Cardiología', duration: '45 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Completada' as const, notes: 'Evaluación inicial', observation: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1. Se solicitan exámenes de laboratorio completos. Se inicia tratamiento con Losartán 25mg/día.', result: 'Evaluación integral del paciente. Se detecta hipertensión arterial grado 1. Se solicitan exámenes de laboratorio completos. Se inicia tratamiento con Losartán 25mg/día.' },
+    { id: 7, date: '2026-03-28', time: '14:00', type: 'Control', specialty: 'Cardiología', duration: '30 min', color: '#3B82F6', avatar: 'DL', doctor: 'Dr. López', status: 'Cancelada' as const, notes: 'Paciente no asistió', observation: '', cancelReason: 'Doctor no disponible por emergencia en otro paciente.' },
     { id: 8, date: '2026-03-29', time: '10:30', type: 'Urgencia', specialty: 'Pediatría', duration: '30 min', color: '#8B5CF6', avatar: 'DM', doctor: 'Dra. Martínez', status: 'Confirmada' as const, notes: 'Episodio de mareo', observation: '' },
   ];
 
@@ -1121,8 +1152,8 @@ export function PatientDetail() {
                             className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-all border-b border-gray-50 last:border-0 cursor-pointer min-w-0"
                           >
                             <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-1.5 py-0.5">
-                              <span className="text-xs font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
-                              <span className="text-[7px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+                              <span className="text-xs font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
+                              <span className="text-[7px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                             </div>
                             <div className="flex-shrink-0 text-center">
                               <p className="text-[9px] font-bold text-gray-900">{apt.time}</p>
@@ -1285,8 +1316,8 @@ export function PatientDetail() {
                 dayCitas.map((apt) => (
                   <div key={apt.id} onClick={() => setSelectedRecord(apt)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-all border-b border-gray-100 last:border-0 cursor-pointer">
                     <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
-                      <span className="text-sm font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
-                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+                      <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
+                      <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                     </div>
                     <div className="flex-shrink-0 text-center">
                       <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
@@ -1375,81 +1406,122 @@ export function PatientDetail() {
               </div>
             </div>
             <div className="p-4 space-y-3">
-              {/* Info Grid */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col gap-1 p-2.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1"><IdCard size={10} />Identificación</label>
-                  <p className="text-xs text-gray-900 font-medium">{patient.identification}</p>
+              {/* Info unificada */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  {patient.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
                 </div>
-                <div className="flex flex-col gap-1 p-2.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1"><Cake size={10} />Edad</label>
-                  <p className="text-xs text-gray-900 font-medium">{patient.age} años</p>
-                  <p className="text-[10px] text-gray-600">{patient.birthDate}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-gray-900">{patient.name}</span>
+                    {patient.isProblematic && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">Problemático</span>}
+                  </div>
+                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                    <span>{patient.gender}</span>
+                    <span>·</span>
+                    <span>{patient.age} años</span>
+                    <span>·</span>
+                    <span>{patient.bloodType}</span>
+                  </p>
                 </div>
               </div>
 
               {/* Alergias */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2"><AlertCircle size={10} />Alergias</label>
-                <div className="space-y-1.5">
-                  {allergies.map((allergy, index) => (
-                    <div key={index} className="p-2.5 bg-gradient-to-br from-red-50 to-white rounded-lg border border-red-200 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <AlertCircle size={10} className="text-red-600" />
-                          <p className="text-xs text-gray-900 font-medium">{allergy.name}</p>
-                        </div>
-                        <span className="text-[9px] font-medium text-red-600 bg-red-100 px-1.5 py-0.5 rounded-full">{allergy.severity}</span>
-                      </div>
-                    </div>
-                  ))}
-                  {allergies.length === 0 && (
-                    <p className="text-[10px] text-gray-500 italic">Sin alergias registradas</p>
-                  )}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <AlertCircle size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Alergias</span>
                 </div>
+                {allergies.length > 0 ? allergies.map((allergy, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-red-100 flex items-center justify-center flex-shrink-0"><AlertCircle size={11} className="text-red-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{allergy.name}</p>
+                    </div>
+                    <span className={`text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${
+                      allergy.severity === 'Severa' ? 'bg-red-50 text-red-600 border-red-100' : allergy.severity === 'Moderada' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' : 'bg-green-50 text-green-600 border-green-100'
+                    }`}>{allergy.severity}</span>
+                  </div>
+                )) : (
+                  <div className="px-3 py-3 text-center">
+                    <p className="text-[9px] text-gray-400">Sin alergias registradas</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Identificaciones */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <IdCard size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
+                </div>
+                {[
+                  { type: 'DNI', number: '12345678A', isPrimary: true },
+                  { type: 'Pasaporte', number: 'ES9876543', isPrimary: false },
+                ].map((id, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
+                      <p className="text-[9px] text-gray-500">{id.type}</p>
+                    </div>
+                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
 
               {/* Teléfonos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2"><Phone size={10} />Teléfonos</label>
-                <div className="space-y-2">
-                  {patient.phones.map((phone, index) => (
-                    <div key={index} className={`relative rounded-lg p-3 transition-all ${phone.isPrimary ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' : 'border border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
-                      {phone.isPrimary && <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
-                      <div className="flex items-center gap-1.5 mb-1.5">{getPhoneTypeIcon(phone.type)}<span className="text-[10px] font-medium text-gray-600">{phone.type}</span></div>
-                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
-                    </div>
-                  ))}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Phone size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
+                {patient.phones.map((phone, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
+                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                    </div>
+                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
 
               {/* Correos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2"><Mail size={10} />Correos Electrónicos</label>
-                <div className="space-y-2">
-                  {patient.emails.map((email, index) => (
-                    <div key={index} className={`relative rounded-lg p-3 transition-all ${email.isPrimary ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' : 'border border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
-                      {email.isPrimary && <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
-                      <div className="flex items-center gap-1.5 mb-1.5">{getEmailTypeIcon(email.type)}<span className="text-[10px] font-medium text-gray-600">{email.type}</span></div>
-                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
-                    </div>
-                  ))}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Mail size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
                 </div>
+                {patient.emails.map((email, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
+                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                    </div>
+                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
 
               {/* Direcciones */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2"><MapPin size={10} />Direcciones</label>
-                <div className="space-y-2.5">
-                  {patient.addresses.map((address, index) => (
-                    <div key={index} className={`relative rounded-lg p-3 transition-all ${address.isPrimary ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' : 'border border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
-                      {address.isPrimary && <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">Principal</div>}
-                      <div className="flex items-center gap-1.5 mb-2">{getAddressTypeIcon(address.type)}<span className="text-[10px] font-medium text-gray-600">{address.type}</span></div>
-                      <p className="text-xs text-gray-900 font-medium">{address.street}</p>
-                      <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
-                    </div>
-                  ))}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <MapPin size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
+                {patient.addresses.map((address, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
+                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                    </div>
+                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, Search, Calendar, Clock, User, Stethoscope, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, XCircle, MoreVertical, Edit, Trash2, Eye, X } from 'lucide-react';
+import { Plus, Search, Calendar, Clock, User, Stethoscope, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, XCircle, MoreVertical, Edit, Trash2, Eye, X, FileText } from 'lucide-react';
 import { useHeader } from '../components/HeaderContext';
 import { Badge } from '../components/Badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -17,14 +17,16 @@ interface Appointment {
   specialty: string;
   color: string;
   avatar: string;
+  result?: string;
+  cancelReason?: string;
 }
 
 const allAppointments: Appointment[] = [
   { id: 1, patient: 'María García', doctor: 'Dr. López', date: '2026-03-29', time: '09:00', duration: '30 min', status: 'Confirmada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'MG' },
   { id: 2, patient: 'Juan Pérez', doctor: 'Dra. Martínez', date: '2026-03-29', time: '09:30', duration: '45 min', status: 'Pendiente', type: 'Seguimiento', specialty: 'Pediatría', color: '#8B5CF6', avatar: 'JP' },
-  { id: 3, patient: 'Ana Rodríguez', doctor: 'Dr. Sánchez', date: '2026-03-29', time: '10:00', duration: '30 min', status: 'Completada', type: 'Primera Vez', specialty: 'Neurología', color: '#10B981', avatar: 'AR' },
-  { id: 4, patient: 'Carlos Díaz', doctor: 'Dra. Torres', date: '2026-03-29', time: '11:00', duration: '30 min', status: 'Cancelada', type: 'Consulta', specialty: 'Dermatología', color: '#F59E0B', avatar: 'CD' },
-  { id: 5, patient: 'Laura Fernández', doctor: 'Dr. López', date: '2026-03-29', time: '11:30', duration: '45 min', status: 'Completada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'LF' },
+  { id: 3, patient: 'Ana Rodríguez', doctor: 'Dr. Sánchez', date: '2026-03-29', time: '10:00', duration: '30 min', status: 'Completada', type: 'Primera Vez', specialty: 'Neurología', color: '#10B981', avatar: 'AR', result: 'Evaluación neurológica sin hallazgos patológicos. Reflejos normales. Se descarta origen neurológico de los mareos.' },
+  { id: 4, patient: 'Carlos Díaz', doctor: 'Dra. Torres', date: '2026-03-29', time: '11:00', duration: '30 min', status: 'Cancelada', type: 'Consulta', specialty: 'Dermatología', color: '#F59E0B', avatar: 'CD', cancelReason: 'El paciente solicitó reprogramar la cita por motivos personales.' },
+  { id: 5, patient: 'Laura Fernández', doctor: 'Dr. López', date: '2026-03-29', time: '11:30', duration: '45 min', status: 'Completada', type: 'Control', specialty: 'Cardiología', color: '#3B82F6', avatar: 'LF', result: 'Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.' },
   { id: 6, patient: 'Pedro Martínez', doctor: 'Dra. Martínez', date: '2026-03-29', time: '14:00', duration: '30 min', status: 'Pendiente', type: 'Consulta', specialty: 'Pediatría', color: '#8B5CF6', avatar: 'PM' },
   { id: 7, patient: 'Sofía Gómez', doctor: 'Dr. Sánchez', date: '2026-03-30', time: '10:00', duration: '30 min', status: 'Confirmada', type: 'Seguimiento', specialty: 'Neurología', color: '#10B981', avatar: 'SG' },
   { id: 8, patient: 'Miguel Ángel', doctor: 'Dra. Torres', date: '2026-03-30', time: '15:00', duration: '45 min', status: 'Confirmada', type: 'Primera Vez', specialty: 'Dermatología', color: '#F59E0B', avatar: 'MA' },
@@ -235,8 +237,8 @@ export function Appointments2() {
                     >
                       {/* Time */}
                       <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
-                        <span className="text-sm font-bold text-blue-700 leading-none">{new Date(apt.date).getDate()}</span>
-                        <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+                        <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(apt.date.split('-')[2])}</span>
+                        <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(apt.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                       </div>
                       <div className="flex-shrink-0 text-center">
                         <p className="text-[10px] font-bold text-gray-900">{apt.time}</p>
@@ -374,8 +376,8 @@ export function Appointments2() {
               {/* Info Row — same design as Citas del Día items */}
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="flex flex-col items-center justify-center flex-shrink-0 bg-blue-50 border border-blue-100 rounded-lg px-2 py-1">
-                  <span className="text-sm font-bold text-blue-700 leading-none">{new Date(selectedAppointment.date).getDate()}</span>
-                  <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(selectedAppointment.date).toLocaleDateString('es-ES', { month: 'short' })}</span>
+                  <span className="text-sm font-bold text-blue-700 leading-none">{parseInt(selectedAppointment.date.split('-')[2])}</span>
+                  <span className="text-[8px] font-medium text-blue-500 uppercase">{new Date(selectedAppointment.date + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}</span>
                 </div>
                 <div className="flex-shrink-0 text-center">
                   <p className="text-[10px] font-bold text-gray-900">{selectedAppointment.time}</p>
@@ -400,49 +402,70 @@ export function Appointments2() {
                 </div>
               </div>
 
-              {/* Observación */}
+              {/* Observación (siempre visible) */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="p-1 bg-blue-100 rounded">
-                    <Eye size={12} className="text-blue-600" />
-                  </div>
-                  <h3 className="text-xs font-semibold text-gray-900">Observación de la Cita</h3>
+                  <div className="p-1 bg-blue-100 rounded"><Eye size={12} className="text-blue-600" /></div>
+                  <h3 className="text-xs font-semibold text-gray-900">Observación</h3>
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-                  <p className="text-xs text-gray-700 leading-relaxed">
-                    Paciente presenta presión arterial estable (120/80). Se mantiene medicación actual. Próximo control en 3 meses.
-                  </p>
+                <div className="text-center py-4 border border-dashed border-gray-300 rounded-xl">
+                  <FileText size={16} className="text-gray-400 mx-auto mb-1" />
+                  <p className="text-[10px] text-gray-500">Sin observaciones registradas</p>
                 </div>
               </div>
+
+              {/* Result / Cancel Reason */}
+              {selectedAppointment.status === 'Completada' && selectedAppointment.result && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1 bg-green-100 rounded"><CheckCircle size={12} className="text-green-600" /></div>
+                    <h3 className="text-xs font-semibold text-gray-900">Resultado de la Cita</h3>
+                  </div>
+                  <div className="p-3 bg-green-50 rounded-lg border border-green-100">
+                    <p className="text-xs text-gray-700 leading-relaxed">{selectedAppointment.result}</p>
+                  </div>
+                </div>
+              )}
+              {selectedAppointment.status === 'Cancelada' && selectedAppointment.cancelReason && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1 bg-red-100 rounded"><XCircle size={12} className="text-red-600" /></div>
+                    <h3 className="text-xs font-semibold text-gray-900">Motivo de Cancelación</h3>
+                  </div>
+                  <div className="p-3 bg-red-50 rounded-lg border border-red-100">
+                    <p className="text-xs text-gray-700 leading-relaxed">{selectedAppointment.cancelReason}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              {(selectedAppointment.status === 'Pendiente' || selectedAppointment.status === 'Confirmada') && (
+                <div className="flex items-center gap-2 pt-1">
+                  <button onClick={() => { setSubModal({ type: 'cancel', aptId: selectedAppointment.id }); setSubModalText(''); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-all">
+                    <X size={12} />
+                    Cancelar Cita
+                  </button>
+                  {selectedAppointment.status === 'Pendiente' && (
+                    <button onClick={() => setSelectedAppointment(null)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all shadow-sm shadow-blue-500/20">
+                      <CheckCircle size={12} />
+                      Confirmar Cita
+                    </button>
+                  )}
+                  {selectedAppointment.status === 'Confirmada' && (
+                    <button onClick={() => { setSubModal({ type: 'complete', aptId: selectedAppointment.id }); setSubModalText(''); }} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-medium text-white bg-green-600 rounded-full hover:bg-green-700 transition-all shadow-sm shadow-green-500/20">
+                      <CheckCircle size={12} />
+                      Completar Cita
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Footer with action buttons */}
-            <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+            {/* Footer */}
+            <div className="px-4 py-2.5 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
               <button onClick={() => setSelectedAppointment(null)} className="px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors">
                 Cerrar
               </button>
-              <div className="flex items-center gap-2">
-                {selectedAppointment.status === 'Pendiente' && (
-                  <>
-                    <button onClick={() => { setSubModal({ type: 'cancel', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-                      Cancelar
-                    </button>
-                    <button onClick={() => setSelectedAppointment(null)} className="px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                      Confirmar
-                    </button>
-                  </>
-                )}
-                {selectedAppointment.status === 'Confirmada' && (
-                  <>
-                    <button onClick={() => { setSubModal({ type: 'cancel', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-                      Cancelar
-                    </button>
-                    <button onClick={() => { setSubModal({ type: 'complete', aptId: selectedAppointment.id }); setSubModalText(''); }} className="px-3 py-1.5 text-[10px] font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                      Completar
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         </div>

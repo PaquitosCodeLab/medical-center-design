@@ -1,5 +1,5 @@
 import { X, IdCard, Calendar, User, Users, HelpCircle, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Identification {
   type: string;
@@ -7,6 +7,9 @@ interface Identification {
 }
 
 export interface BasicInfoData {
+  firstName?: string;
+  lastName?: string;
+  userType?: string;
   identifications: Identification[];
   gender: string;
   birthDate: string;
@@ -21,8 +24,23 @@ interface EditBasicInfoModalProps {
 
 const IDENTIFICATION_TYPES = ['DNI', 'NIE', 'Pasaporte', 'Otro'];
 const GENDER_OPTIONS = ['Masculino', 'Femenino', 'Otro', 'Prefiero no decir'];
+const USER_TYPE_OPTIONS = ['Usuario', 'Administrador', 'Desarrollador'];
 
 export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: EditBasicInfoModalProps) {
+  const [firstName, setFirstName] = useState(basicInfoData.firstName || '');
+  const [lastName, setLastName] = useState(basicInfoData.lastName || '');
+  const [userType, setUserType] = useState(basicInfoData.userType || '');
+
+  useEffect(() => {
+    if (isOpen) {
+      setFirstName(basicInfoData.firstName || '');
+      setLastName(basicInfoData.lastName || '');
+      setUserType(basicInfoData.userType || '');
+      setIdentifications(basicInfoData.identifications);
+      setGender(basicInfoData.gender);
+      setBirthDate(basicInfoData.birthDate);
+    }
+  }, [isOpen]);
   const [identifications, setIdentifications] = useState<Identification[]>(basicInfoData.identifications);
   const [gender, setGender] = useState(basicInfoData.gender);
   const [birthDate, setBirthDate] = useState(basicInfoData.birthDate);
@@ -153,100 +171,6 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="grid grid-cols-2 gap-4">
-            {/* Identificaciones */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="p-1 bg-blue-100 rounded">
-                    <IdCard size={12} className="text-blue-600" />
-                  </div>
-                  <h3 className="text-xs font-semibold text-gray-900">Identificaciones</h3>
-                  <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
-                    {identifications.length}
-                  </span>
-                </div>
-                <button
-                  onClick={handleAddIdentification}
-                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
-                  title="Agregar identificación"
-                >
-                  <Plus size={13} />
-                  <span>Agregar</span>
-                </button>
-              </div>
-
-              <div className="space-y-2.5">
-                {identifications.map((identification, index) => (
-                  <div
-                    key={index}
-                    className="group relative border rounded-xl p-3 transition-all hover:shadow-md border-gray-200 bg-white hover:border-gray-300"
-                  >
-                    {/* Type Selector */}
-                    <div className="flex items-center gap-1.5 mb-2">
-                      {IDENTIFICATION_TYPES.map((type) => (
-                        <button
-                          key={type}
-                          onClick={() => handleIdentificationChange(index, 'type', type)}
-                          className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${
-                            identification.type === type
-                              ? getIdTypeColor(type)
-                              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                          }`}
-                        >
-                          {getIdTypeIcon(type)}
-                          <span>{type}</span>
-                        </button>
-                      ))}
-
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => handleRemoveIdentification(index)}
-                        className="ml-auto p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        disabled={identifications.length === 1}
-                        title="Eliminar"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-
-                    {/* Number Input */}
-                    <div className="space-y-1.5">
-                      <label className="block text-[10px] font-medium text-gray-600">
-                        Número de identificación
-                      </label>
-                      <input
-                        type="text"
-                        value={identification.number}
-                        onChange={(e) => handleIdentificationChange(index, 'number', e.target.value)}
-                        placeholder="Ej: 12345678A"
-                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
-                          errors[index]?.number ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
-                        }`}
-                      />
-                      {errors[index]?.number && (
-                        <p className="text-[10px] text-red-600 ml-1">{errors[index].number}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {identifications.length === 0 && (
-                <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
-                    <IdCard size={20} className="text-gray-400" />
-                  </div>
-                  <p className="text-xs text-gray-600 mb-2">No hay identificaciones agregadas</p>
-                  <button
-                    onClick={handleAddIdentification}
-                    className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
-                  >
-                    Agregar identificación
-                  </button>
-                </div>
-              )}
-            </div>
-
             {/* Información Personal */}
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -257,6 +181,26 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
               </div>
 
               <div className="border rounded-xl p-3 border-gray-200 bg-white space-y-3">
+                {/* Nombre, Apellido y Tipo */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">Nombre</label>
+                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Nombre" className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">Apellido</label>
+                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Apellido" className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                  </div>
+                  {userType && (
+                    <div>
+                      <label className="block text-[10px] font-medium text-gray-600 mb-1">Tipo de Usuario</label>
+                      <select value={userType} onChange={(e) => setUserType(e.target.value)} className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white">
+                        {USER_TYPE_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  )}
+                </div>
+
                 {/* Género */}
                 <div>
                   <label className="block text-[10px] font-medium text-gray-600 mb-1.5">
@@ -298,6 +242,93 @@ export function EditBasicInfoModal({ isOpen, onClose, basicInfoData, onSave }: E
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Identificaciones */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-blue-100 rounded">
+                    <IdCard size={12} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Identificaciones</h3>
+                  <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full">
+                    {identifications.length}
+                  </span>
+                </div>
+                <button
+                  onClick={handleAddIdentification}
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                  title="Agregar identificación"
+                >
+                  <Plus size={13} />
+                  <span>Agregar</span>
+                </button>
+              </div>
+
+              <div className="space-y-2.5">
+                {identifications.map((identification, index) => (
+                  <div
+                    key={index}
+                    className="group relative border rounded-xl p-3 transition-all hover:shadow-md border-gray-200 bg-white hover:border-gray-300"
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      {IDENTIFICATION_TYPES.map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => handleIdentificationChange(index, 'type', type)}
+                          className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-lg border transition-all ${
+                            identification.type === type
+                              ? getIdTypeColor(type)
+                              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                          }`}
+                        >
+                          {getIdTypeIcon(type)}
+                          <span>{type}</span>
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => handleRemoveIdentification(index)}
+                        className="ml-auto p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        disabled={identifications.length === 1}
+                        title="Eliminar"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-medium text-gray-600">Número de identificación</label>
+                      <input
+                        type="text"
+                        value={identification.number}
+                        onChange={(e) => handleIdentificationChange(index, 'number', e.target.value)}
+                        placeholder="Ej: 12345678A"
+                        className={`w-full px-2.5 py-1.5 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                          errors[index]?.number ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+                        }`}
+                      />
+                      {errors[index]?.number && (
+                        <p className="text-[10px] text-red-600 ml-1">{errors[index].number}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {identifications.length === 0 && (
+                <div className="text-center py-6 border border-dashed border-gray-300 rounded-xl">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-2">
+                    <IdCard size={20} className="text-gray-400" />
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">No hay identificaciones agregadas</p>
+                  <button
+                    onClick={handleAddIdentification}
+                    className="px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                  >
+                    Agregar identificación
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

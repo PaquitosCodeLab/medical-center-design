@@ -258,27 +258,31 @@ export function UserDetail() {
   const [isBasicInfoModalOpen, setIsBasicInfoModalOpen] = useState(false);
   const [isContactsModalOpen, setIsContactsModalOpen] = useState(false);
   const [isAddressesModalOpen, setIsAddressesModalOpen] = useState(false);
+  const [isEditRolesModalOpen, setIsEditRolesModalOpen] = useState(false);
+  const [isEditPermissionsModalOpen, setIsEditPermissionsModalOpen] = useState(false);
+  const [showRolesMenu, setShowRolesMenu] = useState(false);
+  const [showPermissionsMenu, setShowPermissionsMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const personMenuRef = useRef<HTMLDivElement>(null);
+  const rolesMenuRef = useRef<HTMLDivElement>(null);
+  const permissionsMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
-      if (personMenuRef.current && !personMenuRef.current.contains(event.target as Node)) {
-        setShowPersonMenu(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setShowMenu(false);
+      if (personMenuRef.current && !personMenuRef.current.contains(event.target as Node)) setShowPersonMenu(false);
+      if (rolesMenuRef.current && !rolesMenuRef.current.contains(event.target as Node)) setShowRolesMenu(false);
+      if (permissionsMenuRef.current && !permissionsMenuRef.current.contains(event.target as Node)) setShowPermissionsMenu(false);
     };
 
-    if (showMenu || showPersonMenu) {
+    if (showMenu || showPersonMenu || showRolesMenu || showPermissionsMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMenu, showPersonMenu]);
+  }, [showMenu, showPersonMenu, showRolesMenu, showPermissionsMenu]);
 
   const getInitials = (firstName: string, lastName: string) => {
     return (firstName[0] + lastName[0]).toUpperCase();
@@ -402,17 +406,34 @@ export function UserDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Roles Asignados */}
+          {/* Roles */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <Shield size={14} className="text-blue-600" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 rounded-lg">
+                    <Shield size={14} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Roles</h3>
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Roles Asignados</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  {userData.roles.length} {userData.roles.length === 1 ? 'rol' : 'roles'}
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="gray" size="sm">
+                    {userData.roles.length} {userData.roles.length === 1 ? 'rol' : 'roles'}
+                  </Badge>
+                  <div className="relative" ref={rolesMenuRef}>
+                  <button onClick={() => setShowRolesMenu(!showRolesMenu)} className="p-1 text-gray-500 hover:text-gray-700 hover:bg-white rounded transition-colors">
+                    <MoreVertical size={14} />
+                  </button>
+                  {showRolesMenu && (
+                    <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                      <button onClick={() => { setIsEditRolesModalOpen(true); setShowRolesMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Edit size={12} />
+                        Editar Roles
+                      </button>
+                    </div>
+                  )}
+                </div>
+                </div>
               </div>
             </div>
             <div className="p-4 space-y-4">
@@ -438,17 +459,34 @@ export function UserDetail() {
             </div>
           </div>
 
-          {/* Permisos Directos */}
+          {/* Permisos */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
-                  <CheckCircle size={14} className="text-blue-600" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-blue-100 rounded-lg">
+                    <CheckCircle size={14} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-xs font-semibold text-gray-900">Permisos</h3>
                 </div>
-                <h3 className="text-xs font-semibold text-gray-900">Permisos Directos</h3>
-                <Badge variant="gray" size="sm" className="ml-auto">
-                  {userData.directModules.length} módulos
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="gray" size="sm">
+                    {userData.directModules.length} módulos
+                  </Badge>
+                  <div className="relative" ref={permissionsMenuRef}>
+                  <button onClick={() => setShowPermissionsMenu(!showPermissionsMenu)} className="p-1 text-gray-500 hover:text-gray-700 hover:bg-white rounded transition-colors">
+                    <MoreVertical size={14} />
+                  </button>
+                  {showPermissionsMenu && (
+                    <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                      <button onClick={() => { setIsEditPermissionsModalOpen(true); setShowPermissionsMenu(false); }} className="flex items-center gap-2 w-full px-3 py-2 text-[10px] text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Edit size={12} />
+                        Editar Permisos
+                      </button>
+                    </div>
+                  )}
+                </div>
+                </div>
               </div>
             </div>
             <div className="p-4">
@@ -513,7 +551,7 @@ export function UserDetail() {
 
         {/* Right Column */}
         <div className="space-y-5">
-          {/* Persona Vinculada */}
+          {/* Información del Usuario */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
               <div className="flex items-center justify-between">
@@ -521,7 +559,7 @@ export function UserDetail() {
                   <div className="p-1.5 bg-blue-100 rounded-lg">
                     <User size={14} className="text-blue-600" />
                   </div>
-                  <h3 className="text-xs font-semibold text-gray-900">Persona Vinculada</h3>
+                  <h3 className="text-xs font-semibold text-gray-900">Información del Usuario</h3>
                 </div>
                 <div className="relative" ref={personMenuRef}>
                   <button
@@ -568,140 +606,99 @@ export function UserDetail() {
               </div>
             </div>
             <div className="p-4 space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100">
-                  <User size={14} className="text-indigo-600" />
+              {/* Info unificada */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  {userData.linkedPerson.firstName[0]}{userData.linkedPerson.lastName[0]}
                 </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Nombre Completo</label>
-                  <p className="text-xs text-gray-900 font-medium">
-                    {userData.linkedPerson.firstName} {userData.linkedPerson.lastName}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-gray-900">{userData.linkedPerson.firstName} {userData.linkedPerson.lastName}</span>
+                    <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full border text-blue-600 bg-blue-50 border-blue-100">{userData.userType}</span>
+                  </div>
+                  <p className="text-[9px] text-gray-500 mt-0.5 flex items-center gap-2">
+                    <span>{userData.linkedPerson.gender}</span>
+                    <span>·</span>
+                    <span>{userData.linkedPerson.age} años</span>
+                    <span>·</span>
+                    <span className={`text-[8px] font-medium px-1.5 py-0.5 rounded-full border ${userData.status === 'Confirmado' ? 'text-green-600 bg-green-50 border-green-100' : 'text-yellow-600 bg-yellow-50 border-yellow-100'}`}>{userData.status}</span>
                   </p>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col gap-1 p-2.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1">
-                    <IdCard size={10} />
-                    Identificación
-                  </label>
-                  <p className="text-xs text-gray-900 font-medium">{userData.linkedPerson.identificationType}</p>
-                  <p className="text-[10px] text-gray-600 font-mono">{userData.linkedPerson.identificationNumber}</p>
+
+              {/* Identificaciones */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <IdCard size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Identificaciones</span>
                 </div>
-                <div className="flex flex-col gap-1 p-2.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                  <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1">
-                    <Cake size={10} />
-                    Edad
-                  </label>
-                  <p className="text-xs text-gray-900 font-medium">{userData.linkedPerson.age} años</p>
-                  <p className="text-[10px] text-gray-600">{userData.linkedPerson.birthDate}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-all">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100">
-                  <User size={14} className="text-purple-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-medium text-gray-500 mb-0.5">Género</label>
-                  <p className="text-xs text-gray-900 font-medium">{userData.linkedPerson.gender}</p>
-                </div>
-              </div>
-              
-              {/* Teléfonos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
-                  <Phone size={10} />
-                  Teléfonos
-                </label>
-                <div className="space-y-2">
-                  {userData.linkedPerson.phones.map((phone, index) => (
-                    <div 
-                      key={index} 
-                      className={`relative rounded-lg p-3 transition-all ${
-                        phone.isPrimary 
-                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      {phone.isPrimary && (
-                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          Principal
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {getPhoneTypeIcon(phone.type)}
-                        <span className="text-[10px] font-medium text-gray-600">{phone.type}</span>
-                      </div>
-                      <p className="text-xs text-gray-900 font-medium">{phone.number}</p>
+                {[
+                  { type: userData.linkedPerson.identificationType, number: userData.linkedPerson.identificationNumber, isPrimary: true },
+                  { type: 'Pasaporte', number: 'ES9876543', isPrimary: false },
+                ].map((id, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><IdCard size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{id.number}</p>
+                      <p className="text-[9px] text-gray-500">{id.type}</p>
                     </div>
-                  ))}
-                </div>
+                    {id.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
 
-              {/* Correos Electrónicos */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
-                  <Mail size={10} />
-                  Correos Electrónicos
-                </label>
-                <div className="space-y-2">
-                  {userData.linkedPerson.emails.map((email, index) => (
-                    <div 
-                      key={index} 
-                      className={`relative rounded-lg p-3 transition-all ${
-                        email.isPrimary 
-                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      {email.isPrimary && (
-                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          Principal
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {getEmailTypeIcon(email.type)}
-                        <span className="text-[10px] font-medium text-gray-600">{email.type}</span>
-                      </div>
-                      <p className="text-xs text-gray-900 font-medium truncate">{email.address}</p>
-                    </div>
-                  ))}
+              {/* Teléfonos */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Phone size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Teléfonos</span>
                 </div>
+                {userData.linkedPerson.phones.map((phone, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Phone size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900">{phone.number}</p>
+                      <p className="text-[9px] text-gray-500">{phone.type}</p>
+                    </div>
+                    {phone.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Correos */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Mail size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Correos</span>
+                </div>
+                {userData.linkedPerson.emails.map((email, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><Mail size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{email.address}</p>
+                      <p className="text-[9px] text-gray-500">{email.type}</p>
+                    </div>
+                    {email.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
 
               {/* Direcciones */}
-              <div>
-                <label className="text-[10px] font-medium text-gray-500 flex items-center gap-1 mb-2">
-                  <MapPin size={10} />
-                  Direcciones
-                </label>
-                <div className="space-y-2.5">
-                  {userData.linkedPerson.addresses.map((address, index) => (
-                    <div 
-                      key={index} 
-                      className={`relative rounded-lg p-3 transition-all ${
-                        address.isPrimary 
-                          ? 'border border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-md shadow-sm' 
-                          : 'border border-gray-100 bg-gray-50 hover:border-gray-200'
-                      }`}
-                    >
-                      {address.isPrimary && (
-                        <div className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          Principal
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1.5 mb-2">
-                        {getAddressTypeIcon(address.type)}
-                        <span className="text-[10px] font-medium text-gray-600">{address.type}</span>
-                      </div>
-                      <p className="text-xs text-gray-900 font-medium">{address.street}</p>
-                      <p className="text-[10px] text-gray-600 mt-1">{address.city}, {address.postalCode}</p>
-                      <p className="text-[10px] text-gray-600">{address.country}</p>
-                    </div>
-                  ))}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <MapPin size={10} className="text-gray-400" />
+                  <span className="text-[9px] font-semibold text-gray-500 uppercase">Direcciones</span>
                 </div>
+                {userData.linkedPerson.addresses.map((address, index) => (
+                  <div key={index} className="flex items-center gap-2.5 px-3 py-2 border-b border-gray-100 last:border-0">
+                    <div className="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0"><MapPin size={11} className="text-blue-600" /></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-semibold text-gray-900 truncate">{address.street}</p>
+                      <p className="text-[9px] text-gray-500">{address.city}, {address.postalCode} · {address.type}</p>
+                    </div>
+                    {address.isPrimary && <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">Principal</span>}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -726,9 +723,12 @@ export function UserDetail() {
         isOpen={isBasicInfoModalOpen}
         onClose={() => setIsBasicInfoModalOpen(false)}
         basicInfoData={{
-          identifications: [{ 
-            type: userData.linkedPerson.identificationType, 
-            number: userData.linkedPerson.identificationNumber 
+          firstName: userData.linkedPerson.firstName,
+          lastName: userData.linkedPerson.lastName,
+          userType: userData.userType,
+          identifications: [{
+            type: userData.linkedPerson.identificationType,
+            number: userData.linkedPerson.identificationNumber
           }],
           gender: userData.linkedPerson.gender,
           birthDate: userData.linkedPerson.birthDate,
@@ -751,6 +751,22 @@ export function UserDetail() {
           addresses: userData.linkedPerson.addresses,
         }}
         onSave={handleEditAddresses}
+      />
+      {/* Edit Roles Modal */}
+      <EditUserModal
+        isOpen={isEditRolesModalOpen}
+        onClose={() => setIsEditRolesModalOpen(false)}
+        userData={userData}
+        onSave={handleEditUser}
+        section="roles"
+      />
+      {/* Edit Permissions Modal */}
+      <EditUserModal
+        isOpen={isEditPermissionsModalOpen}
+        onClose={() => setIsEditPermissionsModalOpen(false)}
+        userData={userData}
+        onSave={handleEditUser}
+        section="permissions"
       />
     </div>
   );
