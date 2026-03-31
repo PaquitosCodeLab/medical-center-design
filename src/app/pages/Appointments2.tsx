@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Search, Calendar, Clock, User, Stethoscope, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, XCircle, MoreVertical, Edit, Trash2, Eye, X, FileText } from 'lucide-react';
 import { useHeader } from '../components/HeaderContext';
+import { CreatePatientModal } from './Patients';
+import { CreateDoctorModal } from './Doctors';
 import { Badge } from '../components/Badge';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
@@ -88,7 +90,8 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
   const [selectedDoctor, setSelectedDoctor] = useState<typeof mockDoctors[0] | null>(null);
   const [date, setDate] = useState('2026-03-29');
   const [time, setTime] = useState('09:00');
-  const [duration, setDuration] = useState('30 min');
+  const [durationValue, setDurationValue] = useState('30');
+  const [durationUnit, setDurationUnit] = useState<'min' | 'hrs'>('min');
   const [type, setType] = useState('Consulta General');
   const [specialty, setSpecialty] = useState('Cardiología');
   const [notes, setNotes] = useState('');
@@ -97,9 +100,12 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
 
   const inputClass = "w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white";
 
+  const [showCreatePatient, setShowCreatePatient] = useState(false);
+  const [showCreateDoctor, setShowCreateDoctor] = useState(false);
+
   const handleClose = () => {
     setStep(0); setSelectedPatient(null); setSelectedDoctor(null);
-    setDate('2026-03-29'); setTime('09:00'); setDuration('30 min');
+    setDate('2026-03-29'); setTime('09:00'); setDurationValue('30'); setDurationUnit('min');
     setType('Consulta General'); setSpecialty('Cardiología'); setNotes('');
     setPatientSearch(''); setDoctorSearch('');
     onClose();
@@ -153,7 +159,7 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
             <div className="space-y-3">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                <input type="text" value={patientSearch} onChange={(e) => setPatientSearch(e.target.value)} placeholder="Buscar paciente por nombre..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
+                <input type="text" value={patientSearch} onChange={(e) => setPatientSearch(e.target.value)} placeholder="Busca por nombre o identificación para encontrar el paciente..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
               </div>
               {patientSearch ? (
                 <div className="space-y-1">
@@ -165,7 +171,15 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
                     </button>
                   ))}
                   {mockPatients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).length === 0 && (
-                    <p className="text-center text-[10px] text-gray-400 py-4">No se encontraron pacientes</p>
+                    <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <User size={16} className="text-gray-400" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-500">No se encontró el paciente</p>
+                      <button onClick={() => setShowCreatePatient(true)} className="mt-2 px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Crear nuevo paciente
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : null}
@@ -182,7 +196,7 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <User size={20} className="text-gray-400" />
                   </div>
                   <p className="text-xs font-medium text-gray-500">Selecciona un paciente</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre para encontrar al paciente</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre o identificación para encontrar al paciente</p>
                 </div>
               )}
             </div>
@@ -193,7 +207,7 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
             <div className="space-y-3">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                <input type="text" value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="Buscar doctor por nombre..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
+                <input type="text" value={doctorSearch} onChange={(e) => setDoctorSearch(e.target.value)} placeholder="Busca por nombre o identificación para encontrar al doctor..." className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500/30 text-xs" />
               </div>
               {doctorSearch ? (
                 <div className="space-y-1">
@@ -208,7 +222,15 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
                   </button>
                 ))}
                   {mockDoctors.filter(d => d.name.toLowerCase().includes(doctorSearch.toLowerCase())).length === 0 && (
-                    <p className="text-center text-[10px] text-gray-400 py-4">No se encontraron doctores</p>
+                    <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <Stethoscope size={16} className="text-gray-400" />
+                      </div>
+                      <p className="text-xs font-medium text-gray-500">No se encontró el doctor</p>
+                      <button onClick={() => setShowCreateDoctor(true)} className="mt-2 px-3 py-1.5 text-[10px] font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Crear nuevo doctor
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : null}
@@ -228,7 +250,7 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
                     <Stethoscope size={20} className="text-gray-400" />
                   </div>
                   <p className="text-xs font-medium text-gray-500">Selecciona un doctor</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre para encontrar al doctor</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Busca por nombre o identificación para encontrar al doctor</p>
                 </div>
               )}
             </div>
@@ -236,40 +258,71 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
 
           {/* Step 3: Details */}
           {step === 2 && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Fecha</label>
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
+            <div className="space-y-3">
+              {/* Main details card */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <Calendar size={10} className="text-gray-400" />
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Detalles de la Cita</span>
                 </div>
-                <div>
-                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Hora</label>
-                  <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={inputClass} />
+                <div className="border rounded-xl p-3 m-3 border-gray-200 bg-white space-y-3">
+                  {/* Fecha, Hora, Duración */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-medium text-gray-500 mb-1">Fecha</label>
+                      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-gray-500 mb-1">Hora</label>
+                      <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-medium text-gray-500 mb-1">Duración</label>
+                      <div className="flex gap-1">
+                        <input type="number" min="1" value={durationValue} onChange={(e) => setDurationValue(e.target.value)} className={`${inputClass} flex-1`} />
+                        <select value={durationUnit} onChange={(e) => setDurationUnit(e.target.value as 'min' | 'hrs')} className="px-2 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white">
+                          <option value="min">min</option>
+                          <option value="hrs">hrs</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tipo de Cita */}
+                  <div>
+                    <label className="block text-[10px] font-medium text-gray-500 mb-1.5">Tipo de Cita</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {APPOINTMENT_TYPES.map(t => (
+                        <button key={t} onClick={() => setType(t)} className={`px-2.5 py-1 text-[10px] font-medium rounded-full border transition-all ${type === t ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Especialidad */}
+                  <div>
+                    <label className="block text-[10px] font-medium text-gray-500 mb-1.5">Especialidad</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SPECIALTIES.map(s => (
+                        <button key={s} onClick={() => setSpecialty(s)} className={`px-2.5 py-1 text-[10px] font-medium rounded-full border transition-all ${specialty === s ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Tipo de Cita</label>
-                  <select value={type} onChange={(e) => setType(e.target.value)} className={inputClass}>
-                    {APPOINTMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
+
+              {/* Notas */}
+              <div className="bg-gray-50 rounded-lg border border-gray-100">
+                <div className="px-3 py-1.5 border-b border-gray-100 flex items-center gap-1.5">
+                  <FileText size={10} className="text-gray-400" />
+                  <span className="text-[10px] font-semibold text-gray-500 uppercase">Notas (opcional)</span>
                 </div>
-                <div>
-                  <label className="block text-[10px] font-medium text-gray-600 mb-1">Duración</label>
-                  <select value={duration} onChange={(e) => setDuration(e.target.value)} className={inputClass}>
-                    {DURATIONS.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
+                <div className="p-3">
+                  <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones adicionales..." className={`${inputClass} h-16 resize-none`} />
                 </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-medium text-gray-600 mb-1">Especialidad</label>
-                <select value={specialty} onChange={(e) => setSpecialty(e.target.value)} className={inputClass}>
-                  {SPECIALTIES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[10px] font-medium text-gray-600 mb-1">Notas (opcional)</label>
-                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Observaciones adicionales..." className={`${inputClass} h-20 resize-none`} />
               </div>
             </div>
           )}
@@ -285,7 +338,7 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
                 </div>
                 <div className="flex-shrink-0 text-center">
                   <p className="text-[10px] font-bold text-gray-900">{time}</p>
-                  <p className="text-[10px] text-gray-400">{duration}</p>
+                  <p className="text-[10px] text-gray-400">{durationValue} {durationUnit}</p>
                 </div>
                 <div className="w-0.5 h-10 rounded-full flex-shrink-0 bg-blue-500" />
                 <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
@@ -337,6 +390,20 @@ function CreateAppointmentModal({ isOpen, onClose }: { isOpen: boolean; onClose:
           </div>
         </div>
       </div>
+
+      {/* Create Patient Modal */}
+      <CreatePatientModal
+        isOpen={showCreatePatient}
+        onClose={() => setShowCreatePatient(false)}
+        onSave={(data) => { setSelectedPatient({ id: 99, name: data.name, avatar: data.avatar }); setPatientSearch(''); }}
+      />
+
+      {/* Create Doctor Modal */}
+      <CreateDoctorModal
+        isOpen={showCreateDoctor}
+        onClose={() => setShowCreateDoctor(false)}
+        onSave={(data) => { setSelectedDoctor({ id: 99, name: data.name, specialty: data.specialty, avatar: data.avatar }); setSpecialty(data.specialty); setDoctorSearch(''); }}
+      />
     </div>
   );
 }

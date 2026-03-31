@@ -26,7 +26,7 @@ const mockPersons = [
   { id: 3, firstName: 'Ana', lastName: 'Rodríguez Vega', gender: 'Femenino', birthDate: '1978-03-10', identifications: [{ type: 'NIE', number: 'X1234567Z' }], emails: [{ address: 'ana.rodriguez@email.com', type: 'Personal', isPrimary: true }], phones: [{ number: '+34 611 222 333', type: 'Móvil', isPrimary: true }], addresses: [{ street: 'Plaza España 12', city: 'Sevilla', postalCode: '41001', type: 'Casa', isPrimary: true }] },
 ];
 
-function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function CreatePatientModal({ isOpen, onClose, onSave }: { isOpen: boolean; onClose: () => void; onSave?: (data: { name: string; avatar: string }) => void }) {
   const [step, setStep] = useState(0);
   const [personSearch, setPersonSearch] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<typeof mockPersons[0] | null>(null);
@@ -545,7 +545,7 @@ function CreatePatientModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
             {step < STEPS.length - 1 ? (
               <button onClick={() => setStep(step + 1)} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Siguiente</button>
             ) : (
-              <button onClick={handleClose} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Crear Paciente</button>
+              <button onClick={() => { onSave?.({ name: `${firstName} ${lastName}`, avatar: `${firstName[0] || ''}${lastName[0] || ''}` }); handleClose(); }} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Crear Paciente</button>
             )}
           </div>
         </div>

@@ -25,7 +25,7 @@ const mockDocPersons = [
   { id: 3, firstName: 'Pedro', lastName: 'Sánchez Vega', gender: 'Masculino', birthDate: '1975-06-08', identifications: [{ type: 'NIE', number: 'Y9876543Z' }], emails: [{ address: 'pedro.sanchez@clinica.com', type: 'Trabajo', isPrimary: true }], phones: [{ number: '+34 611 333 444', type: 'Móvil', isPrimary: true }], addresses: [{ street: 'Plaza Medicina 10', city: 'Sevilla', postalCode: '41002', type: 'Trabajo', isPrimary: true }] },
 ];
 
-function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function CreateDoctorModal({ isOpen, onClose, onSave }: { isOpen: boolean; onClose: () => void; onSave?: (data: { name: string; specialty: string; avatar: string }) => void }) {
   const [step, setStep] = useState(0);
   const [personSearch, setPersonSearch] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<typeof mockDocPersons[0] | null>(null);
@@ -399,7 +399,7 @@ function CreateDoctorModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
             {step < DOC_STEPS.length - 1 ? (
               <button onClick={() => setStep(step + 1)} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Siguiente</button>
             ) : (
-              <button onClick={handleClose} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Crear Doctor</button>
+              <button onClick={() => { onSave?.({ name: `${firstName} ${lastName}`, specialty: selectedSpecialties[0] || 'General', avatar: `${firstName[0] || ''}${lastName[0] || ''}` }); handleClose(); }} className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">Crear Doctor</button>
             )}
           </div>
         </div>
